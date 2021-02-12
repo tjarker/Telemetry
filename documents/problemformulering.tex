@@ -1,0 +1,96 @@
+\documentclass[]{article}
+\usepackage[utf8]{inputenc}
+%\usepackage[danish, english]{babel}
+\usepackage[danish]{babel}
+\usepackage{graphicx}
+%\usepackage[intoc]{nomencl} % Nomenclature package
+\usepackage[usenames]{xcolor}
+\usepackage{times}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{hyperref}
+\usepackage{textpos}
+%\usepackage[showboxes]{textpos}
+\usepackage{indentfirst}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{ifthen}
+\usepackage{float}
+%\usepackage{mathtools}
+\usepackage{pict2e}
+%\usepackage{steinmetz}
+\usepackage[export]{adjustbox}
+\pgfplotsset{compat=1.13}
+\usepackage{siunitx}
+\usepackage{tabularx}
+%
+% adjustment to page format
+\marginparwidth=0pt
+\oddsidemargin=0pt
+%\evensidemargin=0pt
+\marginparsep=0pt
+%\topmargin=-15 mm
+\textwidth=168 mm
+\textheight=230 mm
+\parskip 0.27 em
+\parindent=0pt
+%\leftmargin=1cm
+
+% Define DTU color
+\definecolor{dtured}{RGB}{153,0,0}
+
+\begin{document}
+% formel header
+\thispagestyle{empty}
+\vspace*{-1.9cm}
+\begin{textblock*}{18cm}[0,0](0cm,-2cm) %
+  \noindent
+  \includegraphics[width=4.5cm,valign=t]{tex_dtu_elektro_a}
+  \hspace*{10.6cm}
+  \includegraphics[width=1.5cm,valign=t]{tex_dtu_logo}
+\end{textblock*}
+\begin{textblock*}{19.0cm}(0cm,-2.5cm) %
+\begin{center}
+  {\color{dtured}\large31015 Fagprojekt}\\
+  \normalsize
+  s186083 Tjark Petersen\\
+  s194006 Steffan Martin Kunoy\\
+  s194027 Victor Alexander Hansen\\
+\end{center}
+\end{textblock*}
+% rød streg
+\vspace{1mm}
+{\hspace*{-0.1cm}
+\color{dtured}\noindent \rule{16.8cm}{5pt}}
+ 
+ \section*{Identifikation}
+ 
+ \begin{table}[H]
+     \centering
+     \begin{tabularx}{\textwidth}{|X|X|X|}
+     \hline
+          DTU Elektro&Forår 2021 & Gruppe: 7, ID: MEK2 \\\hline
+          Kursus 31015 & Titel & Gruppemedlemmer \\\hline
+          Fagprojekt - Elektroteknologi & ROAST Telemetri & \begin{tabular}{l} s186083 Tjark Petersen\\s194006 Steffan Martin Kunoy\\s194027 Victor Alexander Hansen \end{tabular}\\\hline
+          Dokument:& Projektformulering & 1 side\\\hline 
+          Version/Status: & 1. udgave &\today\\\hline
+     \end{tabularx}
+ \end{table}
+ 
+ \section*{Introduktion til emne/problemstilling}
+
+Dette projekt vil omhandle et telemetri modul som skal indgå i DTU Roadrunners Solar Team (ROAST). I 2023 deltager ROAST i Bridgestone World Solar Challenge, som er et løb på over 3000 km tværs gennem Australien. I løbet vil solbilen være ledsaget af en følgebil, som skal overvåge solbilens driftstatus og sende kommandoer til solbilen.
+
+
+Telemetri modulets opgave er at aflæse sensordata fra solbilens CAN bus og sende dataen via en RF-transceiver til følgebilen såvel som at logge dataen lokalt i en "black box". Et lignende modul skal også være til stede i følgebilen, så følgebilen omvendt kan reagere på denne data, enten automatisk eller ved menneskelig ageren, og sende kommandoer tilbage til solbilens CAN bus. Telemetri modulet spiller derfor en afgørende rolle, da man også skal tage højde for at afstanden mellem solbil og følgebil kan være op til 1 km alt afhængig af trafikforholdene.
+
+\section*{Problemformulering}
+Fjernmåling af data fra solbilen vil give ROAST en fordel i og med at support bilen kan indtage en mere aktiv rolle i styring og optimering af bilen. Det letter derfor på kørerens arbejdsbyrde, og fordeler ansvaret for hele ROAST-support holdet. Af denne grund vil vi afgrænse projektet på følgende punkter: 
+\begin{itemize}
+    \item Hvordan kan vi lave et modul der kan læse, sende og modtage sensor data og kommandoer i CAN bus netværket?
+    \item Hvordan kan CAN data overføres trådløst i en afstand på en kilometer?
+    \item Hvordan skal data behandles ved modtagelse i følgebilen?
+    \item Hvordan kan data bedst gemmes lokalt (black box) og udlæses på et senere tidspunkt?
+\end{itemize}
+
+\end{document}
