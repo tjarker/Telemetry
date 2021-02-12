@@ -1,3 +1,4 @@
+[back to README](../../README.md)
 # Meeting dd.mm.yyyy
 
 ## Dagsorden:

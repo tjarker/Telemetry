@@ -1,3 +1,4 @@
+[back to README](../../README.md)
 # Meeting Friday 12.02.2020
 
 ## Dagsorden:
