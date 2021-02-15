@@ -2,11 +2,8 @@
 # Meeting Friday 12.02.2020
 
 ## Dagsorden:
- - Hvad er jeres projekt ønske?
- - Hvad vil i hver især gerne lære af projektet?
- - Hvad er jeres styrker?
- - Hvad får i formentlig brug for hjælp til og i hvilken grad?
-
+ - åbne spørgsmål
+ - problemformulering
 
 ## Sted: Online
 
@@ -17,15 +14,28 @@
  - Christian Kampp Kruuse
 
 ---
-### Hvad er jeres projekt ønske?
+### prioriteten af PCB:
+- ikke højt -> prototype er nok
 
-### Hvad vil i hver især gerne lære af projektet?
+### eget løsning -> FGPA
+- kunne være spændende at kigge på
 
-### Hvad er jeres styrker?
+### output format i support bil siden?
+- bærbar modtager dataen -> usb -> hvilket serial output format
 
-### Hvad får i formentlig brug for hjælp til og i hvilken grad?
+### Can bus data rate
+- 125kbits lige nu, 250kbits kan overvejes 
+- fixed data rate
+
+### hvis afbrydelse -> stor nok buffer på transmitter siden
+
+### ugentlig møde?
+- mandag 16:30
+- send plan af 31015 til Christian
 
 ---
 # Åbne spørgsmål
 - hvad arbejder software på ift. support bil siden?
-- Hvad er prioriteten af PCB?
+- Hvor meget kommunikation foregår der på bussen (hvor mange enheder, hvilken rate)?
+    - hvilke data mængder forventes der at sendes via 
+    - 
