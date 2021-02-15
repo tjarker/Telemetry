@@ -1,7 +1,7 @@
 [back to README](../README.md)
 # Components
 
-## RF modules:
+## RF modules
 - CC1101: 
     * https://www.ti.com/lit/ds/symlink/cc1101.pdf?ts=1612980410973&ref_url=https%253A%252F%252Fwww.google.com%252F
 - nRF24: 
@@ -17,3 +17,9 @@
 
 ## FPGA
 * very small FPGA's: https://tinyfpga.com/
+
+## SPI flash memory
+- SST26VF032B: 
+    * https://docs.rs-online.com/8ccd/0900766b813d5922.pdf
+- W25Q128FVSG: 
+    * https://www.pjrc.com/teensy/W25Q128FV.pdf
