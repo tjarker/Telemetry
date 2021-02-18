@@ -1,10 +1,6 @@
 [back to README](../../README.md)
 # Meeting Friday 12.02.2020
 
-## Dagsorden:
- - åbne spørgsmål
- - problemformulering
-
 ## Sted: Online
 
 ## Personer:
@@ -12,6 +8,10 @@
  - Steffan
  - Victor
  - Christian Kampp Kruuse
+
+## Dagsorden:
+ - åbne spørgsmål
+ - problemformulering
 
 ---
 ### prioriteten af PCB:
@@ -38,4 +38,3 @@
 - hvad arbejder software på ift. support bil siden?
 - Hvor meget kommunikation foregår der på bussen (hvor mange enheder, hvilken rate)?
     - hvilke data mængder forventes der at sendes via 
-    - 
