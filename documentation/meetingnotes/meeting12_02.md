@@ -1,10 +1,6 @@
 [back to README](../../README.md)
 # Meeting Friday 12.02.2020
 
-## Dagsorden:
- - Vejleder
- - projekt afgrænsning
-
 ## Sted: Online
 
 ## Personer:
@@ -12,6 +8,9 @@
  - Steffan
  - Victor
 
+## Dagsorden:
+ - Vejleder
+ - projekt afgrænsning
 ---
 ## definere funktionaliteten af systemet næremere
 

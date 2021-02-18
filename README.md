@@ -10,6 +10,7 @@
 - [example note](documentation/meetingnotes/meetingexample.md)
 - [meeting 12.02.](documentation/meetingnotes/meeting12_02.md)
 - [meeting 15.02.](documentation/meetingnotes/meeting15_02.md)
+- [meeting 19.02.](documentation/meetingnotes/meeting19_02.md)
 
 ---
 ## [Markdown Tutorial](https://guides.github.com/features/mastering-markdown/)
