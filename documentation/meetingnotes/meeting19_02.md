@@ -12,7 +12,9 @@
 ## Agenda:
  - Presentation of the project
  - Discussion of implementation possibilities
-   - Implementation on FPGA, digital design with VHDL/Verilog
+   - Implementation on FPGA, digital design with VHDL/Verilog/Chisel
+   - Softcore on FPGA?
+   - Flash Memory (SPI?, file system?)
    - Interface with RF module and CAN bus  
 ---
 
