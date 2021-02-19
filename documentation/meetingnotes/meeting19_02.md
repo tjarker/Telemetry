@@ -40,3 +40,9 @@
    
  - what hardware are we building upon?
  - what is the software stack available on that platform?
+ - create more concrete implementation proposals
+ - Martin asks about sd card interface for patmos
+ - patmos: https://github.com/t-crest/patmos
+ - hardware or software?
+   - software is easier to implement, more flexible
+   - hardware is more challenging (maybe more fun? :))
