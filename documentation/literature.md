@@ -9,6 +9,7 @@
 ## FPGA or MCU
 - Pros and cons: https://lxp32.github.io/docs/why-use-a-soft-cpu-core/
 - Patmos soft core: https://github.com/t-crest/patmos
+- Patmos reference handbook: http://patmos.compute.dtu.dk/patmos_handbook.pdf
 
 ## CAN Bus
 ### CAN Classic
