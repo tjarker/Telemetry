@@ -6,6 +6,9 @@
 ## RTOS
 - FreeRTOS on Arduino: https://savjee.be/2020/01/multitasking-esp32-arduino-freertos/
 
+## FPGA or MCU
+- Pros and cons: https://lxp32.github.io/docs/why-use-a-soft-cpu-core/
+
 ## CAN Bus
 ### CAN Classic
 Classical CAN bus introduction, https://www.csselectronics.com/screen/page/simple-intro-to-can-bus/language/en
