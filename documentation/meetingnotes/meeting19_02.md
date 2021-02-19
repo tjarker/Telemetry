@@ -45,4 +45,6 @@
  - patmos: https://github.com/t-crest/patmos
  - hardware or software?
    - software is easier to implement, more flexible
-   - hardware is more challenging (maybe more fun? :))
+   - MCU implementation is the easiest, benefits from software improvements
+   - hardware is more challenging (maybe more fun? :)).
+   - We can explore both solutions, or a combination, before making a final decision
