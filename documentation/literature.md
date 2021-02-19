@@ -14,3 +14,5 @@
 Classical CAN bus introduction, https://www.csselectronics.com/screen/page/simple-intro-to-can-bus/language/en
 ### CAN FD
 Introduction to CAN FD and the importance of CAN FD. Not the CAN standard used in the ROAST EV: https://www.csselectronics.com/screen/page/can-fd-flexible-data-rate-intro/language/en
+### Arduino CAN communication example
+An introductory example using CAN to communicate data between two arduinos. https://circuitdigest.com/microcontroller-projects/arduino-can-tutorial-interfacing-mcp2515-can-bus-module-with-arduino
