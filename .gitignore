@@ -1,0 +1,7 @@
+/.idea
+/target
+/project
+/test_run_dir
+/.bsp
+*.fir
+*.anno.json
