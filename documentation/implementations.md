@@ -9,7 +9,7 @@
 # Solar Car unit
 <table>
 <tr><th>Main Controller </th><th> CAN Bus Controller</th><th>External Memory</th></tr>
-<tr><td>
+<tr><td style='vertical-align:top'>
 
 [**Teensy**](components.md#teensy):
 - pros:
@@ -19,24 +19,29 @@
 [**Patmos**](components.md#patmos):
 - pros:
 - cons:
+---
 
-</td><td>
+</td><td style='vertical-align:top'>
 
-Use the available CAN bus controller (SPI?)
+**Use the available CAN bus controller (SPI?)**
 - pros:
 - cons:
 
 ---
 
-Design own CAN bus controller on FPGA
+**Design own CAN bus controller on FPGA**
 - pros:
 - cons:
     - Would require custom circuitry in front of FPGA
+---
 
-</td><td>
+</td><td style='vertical-align:top'>
 
-1. [SPI SDCard](components.md#externalmemory)
+[**SPI SDCard**](components.md#externalmemory)
+- pros:
     - SPI interface will most likely be needed anyways for RF module
+- cons:
+---
 
 </td></tr> </table>
 
@@ -45,15 +50,27 @@ Design own CAN bus controller on FPGA
 # Support Vehicle unit
 <table>
 <tr><th>Controller </th><th> UART Controller </th></tr>
-<tr><td>
+<tr><td style='vertical-align:top'>
 
-1. Arduino
-2. [Teensy](components.md#teensy)
+**Arduino**
+- pros:
+- cons:
 
-</td><td>
+---
 
-1. Integrated in uC
-2. Implement on FPGA
+[**Teensy**](components.md#teensy)
+- pros:
+- cons:
+    - more performance than required (power is no concern in the support vehicle though)
+---
+
+</td><td style='vertical-align:top'>
+
+**Integrated in uC**
+- pros:
+- cons:
+
+---
 
 </td></tr> </table>
 
@@ -79,11 +96,26 @@ Design own CAN bus controller on FPGA
 <tr><th>RF Transceiver Modules </th></tr>
 <tr><td>
 
-1. [CC1101](components.md#CC1101)
-2. [nRF24](components.md#nrf24)
-3. [nRF905](components.md#nrf905)
-4. [SX1278 (LoRa)](components.md#sx1278)
+[**CC1101**](components.md#CC1101)
+- pros:
+- cons:
+---
+[**nRF24**](components.md#nrf24)
+- pros:
+- cons:
+---
+[**nRF905**](components.md#nrf905)
+- pros:
+- cons:
+---
+[**SX1278 (LoRa)**](components.md#sx1278)
+- pros:
     - long range and low power
-5. [HC12](components.md#hc12)
+- cons:
+---
+[**HC12**](components.md#hc12)
+- pros:
+- cons:
+---
 
 </td></tr> </table>
