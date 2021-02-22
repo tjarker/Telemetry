@@ -6,6 +6,9 @@
 ### Teensy
 - Homepage: https://www.pjrc.com/teensy/
 
+### ARTIX-7 FPGA:
+- RS: https://dk.rs-online.com/web/p/fpga-udvikling/1346483/
+
 ### Patmos
 - Patmos soft core: https://github.com/t-crest/patmos
 - Patmos reference handbook: http://patmos.compute.dtu.dk/patmos_handbook.pdf
