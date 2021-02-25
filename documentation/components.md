@@ -25,7 +25,8 @@
 * https://docs.rs-online.com/8ccd/0900766b813d5922.pdf
 ### W25Q128FVSG: 
 * https://www.pjrc.com/teensy/W25Q128FV.pdf
-
+### PMod:
+* https://dk.rs-online.com/web/p/memory-udvikling/1840475/
 ---
 
 ## RF transceiver modules
