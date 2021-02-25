@@ -41,6 +41,6 @@
 |:-----:|:---------:|:--------------:|:--:|
 | **[CC1101](https://www.ti.com/lit/ds/symlink/cc1101.pdf?ts=1612980410973&ref_url=https%253A%252F%252Fwww.google.com%252F)** | | 315/433/868/915 MHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/9212971/) |
 | **[HC-12](https://opencircuit.shop/resources/file/0f8d974f31fd813604c4d3fb0e9004ec3b483706466/HC-12-Datasheet.pdf)** | 1000 m | 433.4-473.0 MHz | [link]() | 
-| **[nRF24](https://www.sparkfun.com/datasheets/Components/SMD/nRF24L01Pluss_Preliminary_Product_Specification_v1_0.pdf)** | | 2.4 GHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855748/) |
-| **[nRF905](https://infocenter.nordicsemi.com/pdf/nRF905_PS_v1.5.pdf)** | | 433/868/915 MHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855794/) |
+| **[nRF24](https://www.sparkfun.com/datasheets/Components/SMD/nRF24L01Pluss_Preliminary_Product_Specification_v1_0.pdf)** | 100 m | 2.4 GHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855748/) |
+| **[nRF905](https://infocenter.nordicsemi.com/pdf/nRF905_PS_v1.5.pdf)** | 500 m | 433/868/915 MHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855794/) |
 | **[SX1278 (LoRa)](https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/2R0000001Rc1/QnUuV9TviODKUgt_rpBlPz.EZA_PNK7Rpi8HA5..Sbo)** | | UHF | [link]() |
