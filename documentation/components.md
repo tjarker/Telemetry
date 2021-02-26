@@ -58,3 +58,11 @@
 * [RS](https://dk.rs-online.com/web/p/can-interface-ic-er/4619771/)
 ### PCA82C251T/YM,112
 * [RS](https://dk.rs-online.com/web/p/can-transceivere/7974709/)
+
+# Software
+## Arduino
+* [Arduino IDE](https://www.arduino.cc/en/software)
+* Teensyduino, a software add-on for the Arduino IDE, [Teensyduino](https://www.pjrc.com/teensy/td_download.html). Note, the Teensyduino also includes the Teensy Loader Application, which PJRC includes as a step under [Getting Started](https://www.pjrc.com/teensy/loader.html). It is therefore not necessary to download this seperately.
+### Libraries
+* [Teensyduino standard libraries](https://www.pjrc.com/teensy/td_libs.html)
+* [Teensy CAN library](https://github.com/pierremolinaro/acan-t4)
