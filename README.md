@@ -33,7 +33,7 @@ June
 
 - [Meeting 22.02.](documentation/meetingnotes/meeting22_02.md)
 
-- [Meeting 26.02. morning](documentation/meetingnotes/meeting26_02_01.md)
+- [Meeting 26.02. morning](documentation/meetingnotes/meeting26_02_0.md)
 
 - [Meeting 26.02.](documentation/meetingnotes/meeting26_02.md)
 
