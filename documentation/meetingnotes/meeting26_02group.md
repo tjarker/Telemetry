@@ -19,3 +19,11 @@
     - How does it make sense to distribute the hardware
    
 ---
+
+# Hardware:
+- Teensy 4.1 for solar car
+- Teensy 4.0 for support vehicle
+- both 3.3V
+- 2x nRF24
+- is integrated on teensy board
+- CAN transceiver? (Ask if Christian can refer us to someone form økobilen, who worked with teensy+CAN)

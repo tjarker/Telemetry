@@ -19,3 +19,14 @@
  - Finalize project plan. Due Thu 04/03
    
 ---
+
+- tilføj indkøbs liste
+   - styk
+   - part number
+
+- hvor stor skal sd kortet være 
+
+---
+- Volatile flash memory
+   - temporært data log
+   - overfør til sd kort i større pakker hvor dataen er lidt "pænere" -> .csv?
