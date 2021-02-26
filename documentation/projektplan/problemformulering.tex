@@ -132,9 +132,12 @@ Målgruppen for vores projekt er DTU ROAST holdet, som skal integrere telemetrim
     \ganttgroup{Solar Car Unit}{1}{20} \\
     \ganttbar{Design af telemetrimodul}{1}{2} \\
     \ganttlinkedbar{Prototype udvikling}{3}{7} \ganttnewline
-    \ganttmilestone{Krav opfyldt}{7} \ganttnewline
-    \ganttbar{Produkt udvikling}{8}{12}\\
+    \ganttmilestone{Krav opfyldt}{7} 
+    \ganttlink{elem5}{elem6}\ganttnewline
+    \ganttbar{Produkt udvikling}{8}{12}
+    \ganttlink{elem6}{elem7}\\
     \ganttbar{GUI}{8}{12}
+    \ganttlink{elem6}{elem8}
     \ganttlink{elem2}{elem3}\\
     \ganttgroup{Support Vehicle Unit}{1}{20} \\
 \end{ganttchart}
