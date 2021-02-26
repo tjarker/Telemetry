@@ -32,8 +32,9 @@
 ## RF transceiver modules
 ### CC1101: 
 *-* https://www.ti.com/lit/ds/symlink/cc1101.pdf?ts=1612980410973&ref_url=https%253A%252F%252Fwww.google.com%252F
-### nRF24: 
+### nRF24L01+PA+LNA: 
 * https://www.sparkfun.com/datasheets/Components/SMD/nRF24L01Pluss_Preliminary_Product_Specification_v1_0.pdf
+* https://www.amazon.com/MakerFocus-NRF24L01-Transceiver-Antistatic-Compatible/dp/B01IK78PQA/ref=sr_1_2_sspa?dchild=1&keywords=NRF24L01%2BPA%2BLNA+Wireless+Transceiver&qid=1614330857&sr=8-2-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExUFNBTTRTU0tCNEtKJmVuY3J5cHRlZElkPUEwMTY1ODczTVRWMFM5WENNVURXJmVuY3J5cHRlZEFkSWQ9QTA0NDY4MjExSVZBNFo4UVJEOURHJndpZGdldE5hbWU9c3BfYXRmJmFjdGlvbj1jbGlja1JlZGlyZWN0JmRvTm90TG9nQ2xpY2s9dHJ1ZQ==
 ### nRF905: 
 * https://infocenter.nordicsemi.com/pdf/nRF905_PS_v1.5.pdf
 ### SX1278 (LoRa):
@@ -47,7 +48,7 @@
 |:-----:|:---------:|:--------------:|:--:|
 | **[CC1101](https://www.ti.com/lit/ds/symlink/cc1101.pdf?ts=1612980410973&ref_url=https%253A%252F%252Fwww.google.com%252F)** | | 315/433/868/915 MHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/9212971/) |
 | **[HC-12](https://opencircuit.shop/resources/file/0f8d974f31fd813604c4d3fb0e9004ec3b483706466/HC-12-Datasheet.pdf)** | 1000 m | 433.4-473.0 MHz | [link]() | 
-| **[nRF24](https://www.sparkfun.com/datasheets/Components/SMD/nRF24L01Pluss_Preliminary_Product_Specification_v1_0.pdf)** | | 2.4 GHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855748/) |
+| **[nRF24](https://www.sparkfun.com/datasheets/Components/SMD/nRF24L01Pluss_Preliminary_Product_Specification_v1_0.pdf)** | 1000 m | 2.4 GHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855748/) |
 | **[nRF905](https://infocenter.nordicsemi.com/pdf/nRF905_PS_v1.5.pdf)** | | 433/868/915 MHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855794/) |
 | **[SX1278 (LoRa)](https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/2R0000001Rc1/QnUuV9TviODKUgt_rpBlPz.EZA_PNK7Rpi8HA5..Sbo)** | | UHF | [link]() |
 
