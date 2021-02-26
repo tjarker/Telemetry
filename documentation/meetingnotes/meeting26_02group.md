@@ -1,5 +1,5 @@
 [back to README](../../README.md)
-# Meeting Friday 26.02.2021 morning
+# Meeting Friday 26.02.2021 Group
 
 ## Where: Online
 

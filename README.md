@@ -33,9 +33,11 @@ June
 
 - [Meeting 22.02.](documentation/meetingnotes/meeting22_02.md)
 
-- [Meeting 26.02. morning](documentation/meetingnotes/meeting26_02_0.md)
+- [Meeting 26.02. Group](documentation/meetingnotes/meeting26_02group.md)
 
-- [Meeting 26.02.](documentation/meetingnotes/meeting26_02.md)
+- [Meeting 26.02. ROAST](documentation/meetingnotes/meeting26_02roast.md)
+
+- [Meeting 26.02. Martin](documentation/meetingnotes/meeting26_02martin.md)
 
 </td><td>
 
