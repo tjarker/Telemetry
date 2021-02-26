@@ -10,6 +10,7 @@
  - Martin Schoeberl
 
 ## Agenda:
-
+ - Storing CAN data as CSV txt file on SD card. 
+ - 
    
 ---
