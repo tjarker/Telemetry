@@ -65,8 +65,6 @@
 {\hspace*{-0.1cm}
 \color{dtured}\noindent \rule{16.8cm}{5pt}}
  
-\section{Identifikation}
- 
 \begin{table}[H]
      \centering
      \begin{tabularx}{\textwidth}{|X|X|X|}
@@ -121,27 +119,14 @@ Målgruppen for vores projekt er DTU ROAST holdet, som skal integrere telemetrim
     \item MCP2515 CAN Module (Transceiver & Controller)
 \end{itemize}
 \section{Aktivitetsplan}
-
-\begin{ganttchart}{1}{20}
-    \gantttitle{Roast Telemetry}{20} \\
-    \gantttitlelist{9,10,11,12,14,15,16,17,18,19}{2} \\
-    \ganttbar{Møder}{1}{20} \\
-    \ganttbar{Rap. skrivning}{7}{8}
-    \ganttbar{}{18}{20} \ganttnewline
-    % Hvordan fjernes det mærkelige link på figur?
-    \ganttgroup{Solar Car Unit}{1}{20} \\
-    \ganttbar{Design af telemetrimodul}{1}{2} \\
-    \ganttlinkedbar{Prototype udvikling}{3}{7} \ganttnewline
-    \ganttmilestone{Krav opfyldt}{7} 
-    \ganttlink{elem5}{elem6}\ganttnewline
-    \ganttbar{Produkt udvikling}{8}{12}
-    \ganttlink{elem6}{elem7}\\
-    \ganttbar{GUI}{8}{12}
-    \ganttlink{elem6}{elem8}
-    \ganttlink{elem2}{elem3}\\
-    \ganttgroup{Support Vehicle Unit}{1}{20} \\
-\end{ganttchart}
+\begin{landscape}
+\hspace{1.5cm}\includegraphics[width=1.4\textwidth]{documentation/images/projectPlan.pdf}
+\end{landscape}
 \section{Referenceliste}
-https://worldsolarchallenge.org/
+\begin{thebibliography}{9}
+\bibitem{wsc}
+Bridgestone World Solar Challenge, 
+URL: https://worldsolarchallenge.org/
+\end{thebibliography}
 \section{Grøn dyst?}
 \end{document}
