@@ -81,10 +81,11 @@
  
 \section{Introduktion til emne/problemstilling}
 
-Dette projekt vil omhandle et telemetri modul som skal indgå i DTU Roadrunners Solar Team (ROAST). I 2023 deltager ROAST i Bridgestone World Solar Challenge, som er et løb på over 3000 km tværs gennem Australien. I løbet vil solbilen være ledsaget af en følgebil, som skal overvåge solbilens driftstatus og sende kommandoer til solbilen.
+Dette projekt vil omhandle et telemetri modul som skal indgå i DTU Roadrunners Solar Team (ROAST). I 2023 deltager ROAST i Bridgestone World Solar Challenge, som er et løb på over 3000 km tværs gennem Australien. Solbilen skal køre en distance på 3 x 1200km, hvor bilen ikke har mulighed for at oplade. Den primære energikilde for bilen under løbet er derfor solenergi.\\
+I løbet vil solbilen være ledsaget af en følgebil, som skal overvåge solbilens driftstatus og sende kommandoer til solbilen. Dette er en yderst vigtig opgave, da bilerne skal køre tværs gennem Australien i offentlig trafik, hvor alt fra varme til dæktryk udfordrer solbilen. Følgebilen vil derfor have mulighed for at analysere og reagere på data fra solbilen, hvis køreren i solbilen er optaget af trafik og betjening af solbilen.
 
 
-Telemetri modulets opgave er at aflæse sensordata fra solbilens CAN bus og sende dataen via en RF-transceiver til følgebilen såvel som at logge dataen lokalt i en "black box". Et lignende modul skal også være til stede i følgebilen, så følgebilen omvendt kan reagere på denne data, enten automatisk eller ved menneskelig ageren, og sende kommandoer tilbage til solbilens CAN bus. Telemetri modulet spiller derfor en afgørende rolle, da man også skal tage højde for at afstanden mellem solbil og følgebil kan være op til 1 km alt afhængig af trafikforholdene.
+Telemetri modulets opgave er at aflæse sensordata fra solbilens CAN (Controller Area Network) bus og sende dataen via en RF-transceiver til følgebilen såvel som at logge dataen lokalt i en "black box". Et lignende modul skal også være til stede i følgebilen, så følgebilen omvendt kan reagere på denne data, enten automatisk eller ved menneskelig ageren, og sende kommandoer tilbage til solbilens CAN bus. Telemetri modulet spiller derfor en afgørende rolle, da man også skal tage højde for at afstanden mellem solbil og følgebil kan være op til 1 km alt afhængig af trafikforholdene.
 
 \section{Problemformulering}
 Fjernmåling af data fra solbilen vil give ROAST en fordel i og med at support bilen kan indtage en mere aktiv rolle i styring og optimering af bilen. Det letter derfor på kørerens arbejdsbyrde, og fordeler ansvaret for hele ROAST-support holdet. Af denne grund vil vi afgrænse projektet på følgende punkter: 
@@ -97,7 +98,7 @@ Fjernmåling af data fra solbilen vil give ROAST en fordel i og med at support b
 
 \section{Afgrænsning}
 Vi har i vores gruppe diskuteret flere forskellige umiddelbare løsningsformer for projektets produkt, heriblandt at lave en løsning på et PCB board, eller en løsning på et Teensy board/FPGA board. Vi har valgt at afgrænse os til at se på Teensy og FPGA løsninger, og ikke PCB boards. Dette skyldes at det hardware design vi kommer frem til som produkt kan redigeres mere fleksibelt undervejs på et Teensy og FPGA board, fremfor et PCB board som er mere special designet til formålet.\\
-Det skal dog siges at vi forventer at et PCB board design ville være mindre strømkrævende end de løsninger vi ser på, men vi har i dette projekt valgt at prioritere et godt design over strømbesparelse.
+Det skal dog siges at vi forventer at et PCB board design ville være mindre strømkrævende end de løsninger vi ser på, men vi har i dette projekt valgt at prioritere et godt design over strømbesparelse, siden der formentlig er tale om forskel i størrelsesorden af nogen tiende af mA.
 \section{Målgruppe}
 Målgruppen for vores projekt er DTU ROAST holdet, som skal integrere telemetrimodulet i deres solbil. Efter planen skal bilen så deltage ved Bridgestone World Solar Challenge i 2023.
 \section{Løsningsmetode}
@@ -124,14 +125,20 @@ Målgruppen for vores projekt er DTU ROAST holdet, som skal integrere telemetrim
 \begin{ganttchart}{1}{20}
     \gantttitle{Roast Telemetry}{20} \\
     \gantttitlelist{9,10,11,12,14,15,16,17,18,19}{2} \\
+    \ganttbar{Møder}{1}{20} \\
+    \ganttbar{Rap. skrivning}{7}{8}
+    \ganttbar{}{18}{20} \ganttnewline
+    % Hvordan fjernes det mærkelige link på figur?
     \ganttgroup{Solar Car Unit}{1}{20} \\
-    \ganttbar{Task 1}{1}{2} \\
-    \ganttlinkedbar{Task 2}{3}{7} \ganttnewline
-    \ganttmilestone{Milestone}{7} \ganttnewline
-    \ganttbar{Final Task}{8}{12}
+    \ganttbar{Design af telemetrimodul}{1}{2} \\
+    \ganttlinkedbar{Prototype udvikling}{3}{7} \ganttnewline
+    \ganttmilestone{Krav opfyldt}{7} \ganttnewline
+    \ganttbar{Produkt udvikling}{8}{12}\\
+    \ganttbar{GUI}{8}{12}
     \ganttlink{elem2}{elem3}\\
     \ganttgroup{Support Vehicle Unit}{1}{20} \\
 \end{ganttchart}
 \section{Referenceliste}
+https://worldsolarchallenge.org/
 \section{Grøn dyst?}
 \end{document}
