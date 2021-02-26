@@ -50,3 +50,10 @@
 | **[nRF24](https://www.sparkfun.com/datasheets/Components/SMD/nRF24L01Pluss_Preliminary_Product_Specification_v1_0.pdf)** | | 2.4 GHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855748/) |
 | **[nRF905](https://infocenter.nordicsemi.com/pdf/nRF905_PS_v1.5.pdf)** | | 433/868/915 MHz | [link](https://dk.rs-online.com/web/p/rf-ic-er/8855794/) |
 | **[SX1278 (LoRa)](https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/2R0000001Rc1/QnUuV9TviODKUgt_rpBlPz.EZA_PNK7Rpi8HA5..Sbo)** | | UHF | [link]() |
+
+## CAN-bus tranceiver modules
+### SN65HVD232D
+* https://www.ti.com/lit/ds/symlink/sn65hvd230.pdf?ts=1614315589062&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FSN65HVD230
+* [RS](https://dk.rs-online.com/web/p/can-interface-ic-er/4619771/)
+### PCA82C251T/YM,112
+* [RS](https://dk.rs-online.com/web/p/can-transceivere/7974709/)
