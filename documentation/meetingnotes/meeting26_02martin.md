@@ -10,6 +10,9 @@
  - Martin Schoeberl
 
 ## Agenda:
-
+- report on hardware decisions
    
+
+- how to save the data?
+- RTOS?
 ---
