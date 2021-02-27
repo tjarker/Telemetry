@@ -24,7 +24,7 @@
 \pgfplotsset{compat=1.13}
 \usepackage{siunitx}
 \usepackage{tabularx}
-%
+
 % adjustment to page format
 \marginparwidth=0pt
 \oddsidemargin=0pt
@@ -36,7 +36,7 @@
 \parskip 0.27 em
 \parindent=0pt
 %\leftmargin=1cm
-
+\pagenumbering{arabic}
 % Define DTU color
 \definecolor{dtured}{RGB}{153,0,0}
 \title{Projektplan}
@@ -80,9 +80,12 @@
 
 This project will concern a telemetry module for use by the DTU Roadrunners Solar Team (ROAST). In 2023 ROAST is set to participate in the Bridgestone World Solar Challenge, a race spanning 3000 km across Australia \cite{wsc}. The solar car must be able to drive 3 stretches of 1200 km without recharging. Thus, solar power will be the main energy source during the race. \\
 %Dette projekt vil omhandle et telemetri modul som skal indgå i DTU Roadrunners Solar Team (ROAST). I 2023 deltager ROAST i Bridgestone World Solar Challenge, som er et løb på over 3000 km tværs gennem Australien \cite{wsc}. Solbilen skal køre en distance på 3 x 1200km, hvor bilen ikke har mulighed for at oplade. Den primære energikilde for bilen under løbet er derfor solenergi.\\
+\\
 Throughout the race the solar car will be monitored by a support car, which can monitor the car's conditions and issue commands. This is a crucial function as the solar car will be navigating Australia's busy highways, where the heat and tire pressure may cause a detriment to the vehicle. The support car will therefore be able to analyze and react to the data stream being transmitted from the solar car, even when the driver is preoccupied by driving the car and navigating traffic. \\
 %I løbet vil solbilen være ledsaget af en følgebil, som skal overvåge solbilens driftstatus og sende kommandoer til solbilen. Dette er en yderst vigtig opgave, da bilerne skal køre tværs gennem Australien i offentlig trafik, hvor alt fra varme til dæktryk udfordrer solbilen. Følgebilen vil derfor have mulighed for at analysere og reagere på data fra solbilen, hvis køreren i solbilen er optaget af trafik og betjening af solbilen.
-Telemetri modulets opgave er at aflæse sensordata fra solbilens CAN (Controller Area Network) bus og sende dataen via en RF-transceiver til følgebilen såvel som at logge dataen lokalt i et "black box" hukommelseschip. Et lignende modul skal også være til stede i følgebilen, så følgebilen omvendt kan reagere på denne data, enten automatisk eller ved menneskelig ageren, og sende kommandoer tilbage til solbilens CAN bus. Telemetri modulet spiller derfor en afgørende rolle, da man også skal tage højde for at afstanden mellem solbil og følgebil kan være op til 1 km alt afhængig af trafikforholdene.
+\\
+The main function of the telemetry module is to read data from the solar car's onboard CAN (Controller Area Network) bus and transmit it via an RF-transceiver to the support car, while simultaneosly logging data locally in a "black box" memory chip. The support car is equipped with a similar module such that the support crew can react to the data manually or automatically by sending commands back to the CAN bus. As a consequence, the telemetry module plays a vital role in the communication between both vehicles, considering the distance between them may be up to 1 km depending on traffic conditions. 
+%Telemetri modulets opgave er at aflæse sensordata fra solbilens CAN (Controller Area Network) bus og sende dataen via en RF-transceiver til følgebilen såvel som at logge dataen lokalt i et "black box" hukommelseschip. Et lignende modul skal også være til stede i følgebilen, så følgebilen omvendt kan reagere på denne data, enten automatisk eller ved menneskelig ageren, og sende kommandoer tilbage til solbilens CAN bus. Telemetri modulet spiller derfor en afgørende rolle, da man også skal tage højde for at afstanden mellem solbil og følgebil kan være op til 1 km alt afhængig af trafikforholdene.
 
 \section{Problem description}
 Remote sensing of data from the solar car will give the ROAST team a competitive advantage as the support vehicle will take on a more active role in controlling and optimising the car's performance. This will ease the burden on the driver and engage a large part of the supporting crew. For these reasons we have chosen to focus our project on the following points:   
@@ -100,9 +103,10 @@ Remote sensing of data from the solar car will give the ROAST team a competitive
 
 \section{Afgrænsning}
 Vi har i vores gruppe diskuteret flere forskellige umiddelbare løsningsformer for projektets produkt, heriblandt at lave en løsning på et PCB board, eller en løsning på et Teensy board/FPGA board. Vi har valgt at afgrænse os til at se på Teensy og FPGA løsninger, og ikke PCB boards. Dette skyldes at det hardware design vi kommer frem til som produkt kan redigeres mere fleksibelt undervejs på et Teensy og FPGA board, fremfor et PCB board som er mere special designet til formålet.\\
+\\
 Det skal dog siges at vi forventer at et PCB board design ville være mindre strømkrævende end de løsninger vi ser på, men vi har i dette projekt valgt at prioritere et godt design over strømbesparelse, siden der formentlig er tale om forskel i størrelsesorden af nogen tiende af mA.
-\section{Målgruppe}
-Målgruppen for vores projekt er DTU ROAST holdet, som skal integrere telemetrimodulet i deres solbil. Efter planen skal bilen så deltage ved Bridgestone World Solar Challenge i 2023.
+\section{Target audience}
+The target audience for our project is the DTU ROAST team, who will integrate the telemetry module in the solar car and support vehicle. Subsequently, the car is set to enter the 2023 Bridgestone World Solar Challenge.
 
 \section{Problem solution}
 \begin{enumerate}
@@ -130,8 +134,8 @@ Målgruppen for vores projekt er DTU ROAST holdet, som skal integrere telemetrim
     \item 1x Teensy 4.0 development board
     \item 1x Teensy 4.1 development board
     \item 2x nRF24L01 + PA/LNA Wireless Transceiver with antenna
-    \item 1x SD memory card
-    \item 2x MCP2551 CAN Module (Transceiver & Controller) m. breakout board
+    \item 1x Micro SD memory card
+    \item 1x MCP2551 CAN Transceiver w/ breakout board
 \end{itemize}
 \begin{landscape}
 \section{Aktivitetsplan}
@@ -141,11 +145,15 @@ Meetings:\\
 We will have a weekly meeting with both the project coordinator Christian Kampp Kruuse and our advisor Martin Schoeberl at Friday.
 Report writing:\\
 
-\section{Referenceliste}
-\begin{thebibliography}{9}
+\section{References}
+\begingroup
+\renewcommand{\section}[2]{}%
+%\renewcommand{\chapter}[2]{}% for other classes
+\begin{thebibliography}{}
 \bibitem{wsc}
 Bridgestone World Solar Challenge, 
 URL: https://worldsolarchallenge.org/
 \end{thebibliography}
+\endgroup
 \section{Grøn dyst?}
 \end{document}
