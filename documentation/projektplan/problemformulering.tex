@@ -2,7 +2,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage[danish,english]{babel}
 \usepackage{graphicx}
-%\usepackage[intoc]{nomencl} % Nomenclature package
 \usepackage[usenames]{xcolor}
 \usepackage{times}
 \usepackage{listings}
@@ -11,15 +10,12 @@
 \usepackage{textpos}
 \usepackage{pgfgantt}
 \usepackage{lscape}
-%\usepackage[showboxes]{textpos}
 \usepackage{indentfirst}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{ifthen}
 \usepackage{float}
-%\usepackage{mathtools}
 \usepackage{pict2e}
-%\usepackage{steinmetz}
 \usepackage[export]{adjustbox}
 \pgfplotsset{compat=1.13}
 \usepackage{siunitx}
@@ -32,7 +28,7 @@
 \marginparsep=0pt
 %\topmargin=-15 mm
 \textwidth=168 mm
-\textheight=230 mm
+\textheight=210 mm
 \parskip 0.27 em
 \parindent=0pt
 %\leftmargin=1cm
@@ -40,6 +36,7 @@
 % Define DTU color
 \definecolor{dtured}{RGB}{153,0,0}
 \title{Projektplan}
+
 \begin{document}
 % formel header
 \thispagestyle{empty}
@@ -52,7 +49,7 @@
 \end{textblock*}
 \begin{textblock*}{19.0cm}(0cm,-2.5cm) %
 \begin{center}
-  {\color{dtured}\large31015 Fagprojekt}\\
+  {\color{dtured}\large31015 Introductory project}\\
   \normalsize
   s186083 Tjark Petersen\\
   s194006 Steffan Martin Kunoy\\
@@ -63,16 +60,17 @@
 \vspace{1mm}
 {\hspace*{-0.1cm}
 \color{dtured}\noindent \rule{16.8cm}{5pt}}
+
  
 \begin{table}[H]
      \centering
      \begin{tabularx}{\textwidth}{|X|X|X|}
      \hline
-          DTU Elektro&Forår 2021 & Gruppe: 7, ID: MEK2 \\\hline
-          Kursus 31015 & Titel & Gruppemedlemmer \\\hline
-          Fagprojekt - Elektroteknologi & ROAST Telemetri & \begin{tabular}{l} s186083 Tjark Petersen\\s194006 Steffan Martin Kunoy\\s194027 Victor Alexander Hansen \end{tabular}\\\hline
-          Dokument:& Projektformulering & 1 side\\\hline 
-          Version/Status: & 1. udgave &\today\\\hline
+          DTU Electro&Spring 2021 & Group: 7, ID: MEK2 \\\hline
+          Course 31015 & Title & Group members \\\hline
+          Introductory project - Electrotechnology & ROAST Telemetry & \begin{tabular}{l} s186083 Tjark Petersen\\s194006 Steffan Martin Kunoy\\s194027 Victor Alexander Hansen \end{tabular}\\\hline
+          Document:& Project plan & 4 pages\\\hline 
+          Version/Status: & 1. edition &\today\\\hline
      \end{tabularx}
  \end{table}
  
@@ -137,10 +135,15 @@ The target audience for our project is the DTU ROAST team, who will integrate th
     \item 1x Micro SD memory card
     \item 1x MCP2551 CAN Transceiver w/ breakout board
 \end{itemize}
+\newpage
+
+
 \begin{landscape}
-\section{Aktivitetsplan}
-\hspace{1.5cm}\includegraphics[width=1.45\textwidth]{documentation/images/projectPlan.pdf}
+\section{Activity Plan}
+\hspace{1.5cm}\includegraphics[width=1.35\textwidth]{documentation/images/projectPlan.pdf}
 \end{landscape}
+
+\newpage
 Meetings:\\
 We will have a weekly meeting with both the project coordinator Christian Kampp Kruuse and our advisor Martin Schoeberl at Friday.
 Report writing:\\
@@ -155,5 +158,7 @@ Bridgestone World Solar Challenge,
 URL: https://worldsolarchallenge.org/
 \end{thebibliography}
 \endgroup
-\section{Grøn dyst?}
+\section{Green challenge?}
+
+
 \end{document}
