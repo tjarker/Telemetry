@@ -5,6 +5,7 @@
 - Steffan 
 - Tjark
 - Victor
+
 ## Agenda: 
 - Status on components 
   * RS components arriving on wednesday next week, pickup at building 413. 
@@ -13,3 +14,6 @@
   * Measuring equipment may be required later on
 - Testing setup with generated CAN data
   * MCP2515 Shield available, setup with Arduino
+
+- get ordered items on Wednesday
+- we can use CAN transceiver + controller boards if needed (available in approx. 2 weeks?)
