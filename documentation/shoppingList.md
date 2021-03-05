@@ -1,4 +1,4 @@
-[back to README](../../README.md)
+[back to README](../README.md)
 # Shopping List
  - Teensy 4.0 Development Board:  [Digi-Key](https://www.digikey.dk/product-detail/en/sparkfun-electronics/DEV-15583/1568-DEV-15583-ND/10384551?utm_adgroup=Evaluation%20Boards%20-%20Embedded%20-%20MCU%2C%20DSP&utm_source=google&utm_medium=cpc&utm_campaign=Shopping_Product_Development%20Boards%2C%20Kits%2C%20Programmers&utm_term=&productid=10384551&gclid=CjwKCAiA1eKBBhBZEiwAX3gql22bQCOUdEQ0cEV0HRYais2YaRJ9TYxkJ-Sa8wGi3uhPbDUVuXbW3BoCOZIQAvD_BwE), [PJRC](https://www.pjrc.com/store/teensy40.html)
  - Teensy 4.1 Development Board: [PJRC](https://www.pjrc.com/store/teensy41.html)
