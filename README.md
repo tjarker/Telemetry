@@ -45,7 +45,7 @@ June
 - [Meeting 05.03. ROAST](documentation/meetingnotes/meeting05_03roast.md)
 
 - [Meeting 05.03. Martin](documentation/meetingnotes/meeting05_03martin.md)
-- 
+
 </td><td>
 
 </td><td>
