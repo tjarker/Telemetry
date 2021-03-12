@@ -102,7 +102,10 @@ Remote sensing of data from the solar car will give the ROAST team a competitive
 \end{itemize}
 
 \section{Problem scope}
-
+% 11-03 tilføjet {
+As mentioned in the introduction, the car will be using the CAN standard for distributing data, which scopes how we gather data and interact with the car significantly. A solution therefore requires an interface between the CAN bus and the microcontroller.\\
+% }
+\\
 There are multiple solutions to the problem at hand that were discussed, among them implementing a whole solution on a PCB or more modular solutions involving prebuild microcontrollers like the Teensy\cite{teensy}. We chose to consider prebuild microcontroller based solutions and to not focus on implementing the final product on a PCB. The decision was based on us wanting to design a product which is modular and flexible and thus can be altered and improved during its life time.\\
 \\
 A PCB implementation is expected to achieve a higher efficiency due to reduced current draw compared to the implementations we are considering. We prioritized a more modular and flexible product over the potential power savings though since the difference in current draw is expected to be of the order of some tenths of milli-Ampère.
@@ -137,7 +140,7 @@ The target audience for our project is the DTU ROAST team, who will integrate th
 \section{Resources}
 \begin{itemize}
     \item 1x Teensy 4.0 development board
-    \item 1x Teensy 4.1 development board
+    \item 1x Teensy 3.6 development board
     \item 2x nRF24L01 + PA/LNA Wireless Transceiver with antenna
     \item 1x Micro SD memory card (32GB)
     \item 2x MCP2551 CAN Transceiver w/ breakout board
