@@ -61,7 +61,7 @@ The following table gives an exhaustive list of all the features of the solar ca
 |SC.BUF.clr         |Empty the buffer
 
 ---
-[back to TOC](#table-of-contents)
+[back to top](#top)
 ##  Implementation
 
 ### Schematic
