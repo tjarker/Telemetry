@@ -67,3 +67,6 @@
 ### Libraries
 * [Teensyduino standard libraries](https://www.pjrc.com/teensy/td_libs.html)
 * [Teensy CAN library](https://github.com/pierremolinaro/acan-t4)
+
+# Examples:
+ - CAN data logger: https://forum.pjrc.com/threads/62705-Utilizing-a-Teensy-4-1-for-an-in-vehicle-CAN-data-logger

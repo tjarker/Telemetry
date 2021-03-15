@@ -10,6 +10,10 @@
 |[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)
 ---
 
+# Documentation
+
+- [Solar Car Unit](documentation/SolarCarUnit.md)
+
 # Meeting Notes
 
 <table>
