@@ -11,9 +11,21 @@
 #include <nRF24L01.h>
 #include <ACAN.h> //3.6 h-file
 
-// struct can_frame canMsg;
+// struct for CAN frame
+CANMessage msg;
 
-CANMessage data;
+void CreateData(int t, int error){
+  msg.id = 0x0F1;
+  msg.len = 8;
+  msg.data[0] = error;
+  msg.data[1] = t;
+  msg.data[2] = 0x00;
+  msg.data[3] = 0x00;
+  msg.data[4] = 0x00;
+  msg.data[5] = 0x00;
+  msg.data[6] = 0x00;
+  msg.data[7] = 0x00;
+}
 
 void setup() {
   while (!Serial);
@@ -24,19 +36,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-}
-/*problem: initialization with '{...}' expected for aggregate object
-// Possibly due to C++ syntax?
+  
+  
 
-void CreateData(int t, int error){
-  CANMessage id = 0x0F1;
-CANMessage len = 8;
-CANMessage data[0] = error;
-CANMessage data[1] = t;
-CANMessage data[2] = 0x00;
-CANMessage data[3] = 0x00;
-CANMessage data[4] = 0x00;
-CANMessage data[5] = 0x00;
-CANMessage data[6] = 0x00;
-CANMessage data{7} = 0x00;
-}*/
+}
