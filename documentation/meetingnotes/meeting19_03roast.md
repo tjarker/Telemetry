@@ -13,7 +13,9 @@
 
 ### Agenda
 
-1. Components have arrived
-2. Relevant bitbucket repositories for RF and CAN examples
-* Main repository: dtucar/ecocar
-* Useful directory: dtucar/ecocar/Code/canLib & dtucar/ecocar/Code/FlexCAN
+- Components have arrived
+- Relevant bitbucket repositories for RF and CAN examples
+  * Main repository: dtucar/ecocar
+  * Useful directory: dtucar/ecocar/Code/canLib 
+- Using DTU Roadrunners facilities on campus
+  * Only Wednesdays and Thursdays available, however Monday mornings could be an option
