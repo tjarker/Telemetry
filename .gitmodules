@@ -1,3 +1,6 @@
 [submodule "code/Teensy/lib/acan"]
 	path = code/Teensy/lib/acan
 	url = https://github.com/pierremolinaro/acan.git
+[submodule "code/Teensy/lib/ecocar"]
+	path = code/Teensy/lib/ecocar
+	url = https://tjapet@bitbucket.org/dtucar/ecocar.git
