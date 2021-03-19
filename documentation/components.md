@@ -66,7 +66,8 @@
 * Teensyduino, a software add-on for the Arduino IDE, [Teensyduino](https://www.pjrc.com/teensy/td_download.html). Note, the Teensyduino also includes the Teensy Loader Application, which PJRC includes as a step under [Getting Started](https://www.pjrc.com/teensy/loader.html). It is therefore not necessary to download this seperately.
 ### Libraries
 * [Teensyduino standard libraries](https://www.pjrc.com/teensy/td_libs.html)
-* [Teensy CAN library](https://github.com/pierremolinaro/acan-t4)
+* [Teensy 4.x CAN library](https://github.com/pierremolinaro/acan-t4)
+* [Teensy 3.x CAN library](https://github.com/pierremolinaro/acan)
 
 # Examples:
  - CAN data logger: https://forum.pjrc.com/threads/62705-Utilizing-a-Teensy-4-1-for-an-in-vehicle-CAN-data-logger
