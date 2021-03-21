@@ -1,0 +1,3 @@
+[submodule "code/Teensy/lib/ecocar"]
+	path = code/Teensy/lib/ecocar
+	url = https://tjapet@bitbucket.org/dtucar/ecocar.git
