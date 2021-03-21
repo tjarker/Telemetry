@@ -11,6 +11,14 @@
   https://bitbucket.org/dtucar/ecocar/src/master/Code/CanLib/canbusKeywords.h
 */
 
+/* TODO:
+ * Make function / new file to receive data from nRF24.
+ * Configure CreateData function to desired frame. Currently configured for simple
+ * example from CANBUS.pdf
+ * Some elements are taken from the ACAN library example, would be nice to know
+ * what the ACANPrimaryFilter class does, since it is not described in great detail
+*/
+
 #include <Arduino.h>
 #include <SPI.h>
 #include <nRF24L01.h>
