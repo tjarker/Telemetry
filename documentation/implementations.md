@@ -76,7 +76,7 @@
 
 ---
 
-# Support Vehicle Laptop
+# Support Vehicle Computer Program
 
 <table>
 <tr><th>Interface </th></tr>
