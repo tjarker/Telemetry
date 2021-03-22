@@ -18,6 +18,8 @@ The nRF24L01+ transceiver module uses a packet structure known as Enhanced Shock
 
 <img src="https://github.com/tjarker/FagProjekt/blob/main/documentation/images/RFProtocol.png" alt="Enhanced ShockBurst Protocol">
 
+In short, the nRF24L01+ uses an acknowledge flag with an interrupt to indicate whether a message was succesully transmitted and received. 
+
 [Read full article](https://lastminuteengineers.com/nrf24l01-arduino-wireless-communication/)
 
 ---
