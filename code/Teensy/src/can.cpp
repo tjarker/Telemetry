@@ -42,11 +42,13 @@ void CANtransmit (uint8_t CanId){
 // Function for receiving message through CAN1
 // Pre condition: Listens for a data frame to receive
 // Post condition: Prints received data fram to serial monitor
-void CANreceive(){
-    ACAN::can1.receive(frame);
+bool CANreceive(){
+    const bool ok = ACAN::can1.receive(frame);
     for (int i = 0; i < 8; i++){
         Serial.print(frame.data[i]);
+        Serial.print(" ");
     }
+    return ok;
 }
 
 void setup(){
@@ -56,5 +58,7 @@ void setup(){
 
 void loop(){
     CANtransmit(0);
-    CANreceive();
+    if (CANreceive()){
+        Serial.print("Succes");
+    }
 }
