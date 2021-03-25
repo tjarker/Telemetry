@@ -36,7 +36,7 @@ static unsigned gSentFrameCount1 = 0 ;
 
 static const unsigned MESSAGE_COUNT = 10 * 1000 ;
 
-void read_data(){
+uint8_t read_data(int i){
 
 	ifstream in("sample.csv");
 
@@ -57,6 +57,8 @@ void read_data(){
 
         array.push_back(v);  // add the 1D array to the 2D array
     }
+
+    array[i][3];
 }
 
 void setup() {
@@ -90,12 +92,12 @@ void loop(){
   const bool ok = ACAN::can0.tryToSend(msg);
   for (int i = 1; i < 119; i++){
     // Read identifier from array
-    frame.id = array[i][3];
-    frame.len = 8;
+    msg.id = read_data(i);
+    msg.len = 8;
     for (int j=0; j<8; j++){
-      frame.data[j] = i;
+      msg.data[j] = i;
     }
-    const bool ok = ACAN::can0.tryToSend(frame);
+    const bool ok = ACAN::can0.tryToSend(msg);
     if (ok) {
       gSentFrameCount0++;
     }
@@ -103,14 +105,14 @@ void loop(){
 
   // Receive message from CAN0
   if (ACAN::can0.available()){
-    ACAN::can0.receive(frame);
+    ACAN::can0.receive(msg);
     gReceivedFrameCount0++;
     Serial.print("Received: ");
     Serial.println(gReceivedFrameCount1);
   }
   // Receive message from CAN1
   if (ACAN::can1.available()){
-    ACAN::can1.receive(frame);
+    ACAN::can1.receive(msg);
     gReceivedFrameCount1++;
     Serial.print("Received: ");
     Serial.println(gReceivedFrameCount1);

@@ -61,12 +61,12 @@ void loop(){
   const bool ok = ACAN::can0.tryToSend(msg);
   if (gSentFrameCount0 < MESSAGE_COUNT){
     // Create even identifier
-    frame.id = millis() & 0x7FE;
-    frame.len = 8;
+    msg.id = millis() & 0x7FE;
+    msg.len = 8;
     for (uint8_t i=0; i<8; i++){
-      frame.data[i] = i;
+      msg.data[i] = i;
     }
-    const bool ok = ACAN::can0.tryToSend(frame);
+    const bool ok = ACAN::can0.tryToSend(msg);
     if (ok) {
       gSentFrameCount0++;
     }
@@ -74,10 +74,10 @@ void loop(){
   // Send message from CAN1
   if (gSentFrameCount1 < MESSAGE_COUNT){
     // Odd identifier
-    frame.id = (millis() & 0x7FE) | 1;
-    frame.len = 8;
+    msg.id = (millis() & 0x7FE) | 1;
+    msg.len = 8;
     // Send frame with CAN1
-    const bool ok = ACAN::can1.tryToSend(frame);
+    const bool ok = ACAN::can1.tryToSend(msg);
     if (ok) {
       gSentFrameCount1++;
     }
@@ -85,14 +85,14 @@ void loop(){
 
   // Receive message from CAN0
   if (ACAN::can0.available()){
-    ACAN::can0.receive(frame);
+    ACAN::can0.receive(msg);
     gReceivedFrameCount0++;
     Serial.print("Received: ");
     Serial.println(gReceivedFrameCount1);
   }
   // Receive message from CAN1
   if (ACAN::can1.available()){
-    ACAN::can1.receive(frame);
+    ACAN::can1.receive(msg);
     gReceivedFrameCount1++;
     Serial.print("Received: ");
     Serial.println(gReceivedFrameCount1);
