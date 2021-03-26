@@ -54,6 +54,8 @@ bool CANreceive(){
 void setup(){
     Serial.begin(9600); // Baud rate
     ACANSettings settings (125 * 1000); // Sets wished bitrate
+    ACAN::can1.begin(settings);
+    ACAN::can0.begin(settings);
 }
 
 void loop(){
