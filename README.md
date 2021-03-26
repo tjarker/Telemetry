@@ -19,7 +19,6 @@
 
 # Open Issue List
 - Which Frequencies are open for public use in Australia?
-- We need a logic level converter from 3.3V to 5V form teensy 3.6 to the CAN transceiver
 - Do we need a new CAN library? The one linked to is for Teensy 4.0.
 - Do we want to use a real time OS? If so, there is no freeRTOS port for the Teensy 3.6. [ChibiOS](https://platformio.org/lib/show/2986/ChRt) seems like a nice alternative.
 - A protocol for wireless data transmission needs to be specified (see [RF Transmission Protocol](documentation/transmissionProtocol.md)). 
