@@ -12,3 +12,4 @@
 ## Agenda:
  - Do we need some kind of security when transferring wirelessly?
  - Where is the excel table with the CAN devices and their id's
+ - What is the best implementation of our final product? PCB, stripboard, perfboard or other? 
