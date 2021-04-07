@@ -6,13 +6,10 @@
  * Verification for the canRF.cpp
 */
 
-#include <Arduino.h>
 #include <unity.h>
 #include <canRF.h>
 
 CANbus can;
-
-#ifdef UNIT_TEST
 
 // Checks that CAN ports are ready
 void test_canX_begin() {
@@ -25,25 +22,11 @@ void test_fail() {
     TEST_ASSERT_TRUE_MESSAGE(false, "Test should fail");
 }
 
-void setup() {
+int main(int argc, char **argv) {
     UNITY_BEGIN();
     RUN_TEST(test_fail);
     RUN_TEST(test_canX_begin);
-    UNITY_END();
-}
-
-void loop() {
-    Serial.print("Testing test_canRF.cpp");
-    delay(100);
-}
-
-/*int main(int argc, char **argv) {
-    UNITY_BEGIN();
-    RUN_TEST(test_canX_begin);
-    RUN_TEST(test_fail);
     UNITY_END();
 
     return 0;
-}*/
-
-#endif
+}
