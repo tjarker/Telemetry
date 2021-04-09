@@ -26,6 +26,8 @@ void test_fail() {
 }
 
 void setup() {
+    // Waits for 2 seconds, due to lack of software reset via Serial
+    delay(2000);
     UNITY_BEGIN();
     RUN_TEST(test_fail);
     RUN_TEST(test_canX_begin);
@@ -36,14 +38,5 @@ void loop() {
     Serial.print("Testing test_canRF.cpp");
     delay(100);
 }
-
-/*int main(int argc, char **argv) {
-    UNITY_BEGIN();
-    RUN_TEST(test_canX_begin);
-    RUN_TEST(test_fail);
-    UNITY_END();
-
-    return 0;
-}*/
 
 #endif
