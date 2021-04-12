@@ -68,6 +68,9 @@
 * [Teensyduino standard libraries](https://www.pjrc.com/teensy/td_libs.html)
 * [Teensy 4.x CAN library](https://github.com/pierremolinaro/acan-t4)
 * [Teensy 3.x CAN library](https://github.com/pierremolinaro/acan)
-
+## ChibiOS
+* ChibiOS is a free, open-source RTOS for embedded systems. It handles task scheduling, timing, threads and dynamic data allocation. 
+* Can be used to schedule tasks on Solar Car & Support Car units, including RF TX/RX and CAN bus interaction.
+* (nRF24L01)[https://www.playembedded.org/blog/a-radio-frequency-transceiver-library-nrf24l01-and-chibiosrt/]
 # Examples:
  - CAN data logger: https://forum.pjrc.com/threads/62705-Utilizing-a-Teensy-4-1-for-an-in-vehicle-CAN-data-logger
