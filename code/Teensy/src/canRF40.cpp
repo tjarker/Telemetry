@@ -24,7 +24,7 @@
 #ifndef UNIT_TEST // disable program main loop while unit testing in progress
 
 #include <Arduino.h>
-#include <ACAN.h>
+#include <ACAN_T4.h>
 #include <SPI.h>
 
 CANMessage frame;
@@ -44,7 +44,7 @@ void RFtoCAN (uint32_t payloadR){
     frame.data[6] = (0x11 << 12) & payloadR;
     frame.data[7] = (0x11 << 14) & payloadR;
 
-    ACAN::can0.tryToSend(frame);
+    ACAN_T4::can1.tryToSend(frame);
 }
 
 // Transforms a CAN message to antenna payload on the form
@@ -53,8 +53,8 @@ uint32_t CANtoRF (){
     uint32_t payloadT = 0x0;
     int n = 0;
 
-    if(ACAN::can1.available()){
-        ACAN::can1.receive(frame);
+    if(ACAN_T4::can2.available()){
+        ACAN_T4::can2.receive(frame);
     }
     // Transforms canData to one integer
     while(n < 8){
@@ -69,9 +69,9 @@ uint32_t CANtoRF (){
 
 void setup(){
     Serial.begin(9600); // Baud rate
-    ACANSettings settings (125 * 1000); // Sets wished bitrate
-    ACAN::can1.begin(settings);
-    ACAN::can0.begin(settings);
+    ACAN_T4_Settings settings (125 * 1000); // Sets wished bitrate
+    ACAN_T4::can1.begin(settings);
+    ACAN_T4::can2.begin(settings);
 }
 
 void loop(){

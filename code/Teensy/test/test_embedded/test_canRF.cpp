@@ -10,6 +10,8 @@
 #include <unity.h>
 #include <canRF.h>
 
+CANbus can;
+
 #ifdef UNIT_TEST
 
 // Checks that CAN ports are ready
@@ -24,9 +26,11 @@ void test_fail() {
 }
 
 void setup() {
+    // Waits for 2 seconds, due to lack of software reset via Serial
+    delay(2000);
     UNITY_BEGIN();
-    RUN_TEST(test_canX_begin);
     RUN_TEST(test_fail);
+    RUN_TEST(test_canX_begin);
     UNITY_END();
 }
 
