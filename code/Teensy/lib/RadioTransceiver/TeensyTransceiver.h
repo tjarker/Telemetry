@@ -1,8 +1,12 @@
 #include <Arduino.h>
 #include <SPI.h>
+#include <Array.h>
 #include "RF24.h"
 
 static const byte address[][6] = {"NodeA", "NodeB"};
+const int BUFFER_SIZE = 1000; 
+Array<uint32_t, BUFFER_SIZE> write_buffer;  // FIFO CAN data buffer to transmit
+Array<uint32_t, BUFFER_SIZE> read_buffer;   // FIFO CAN data buffer to receive
 
 class RF24Transceiver 
 {
