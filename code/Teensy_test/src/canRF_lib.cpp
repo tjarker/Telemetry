@@ -21,16 +21,17 @@
  * 
  * Make a test, https://docs.platformio.org/en/latest/plus/unit-testing.html
 */
-#ifndef UNIT_TEST // disable program main loop while unit testing in progress
 
-#include <Arduino.h>
-#include <ACAN_T4.h>
-#include <SPI.h>
+#include "canRF.h"
 
-CANMessage frame;
+void CANbus::setCan() {
+    // ACANSettings settings (125 * 1000); // Sets wished bitrate
+    ACAN::can1.begin(settings);
+    ACAN::can0.begin(settings);
+}
 
 // Function for transmitting message from RF24 to CAN
-void RFtoCAN (uint32_t payloadR){
+void CANbus::RFtoCAN (uint32_t payloadR){
     frame.id = ((0x11 << 16) & payloadR); // Identifier
     frame.rtr = 0; // Remote Transmit Request, 0 = data frame, 1 = request frame
     frame.len = 8; // Data Lenght Code, sets the length of Data field
@@ -44,18 +45,20 @@ void RFtoCAN (uint32_t payloadR){
     frame.data[6] = (0x11 << 12) & payloadR;
     frame.data[7] = (0x11 << 14) & payloadR;
 
-    ACAN_T4::can1.tryToSend(frame);
+    //ACAN::can0.tryToSend(frame);
 }
 
 // Transforms a CAN message to antenna payload on the form
 // CanId,canData[7][6][5][4][3][2][1][0]
-uint32_t CANtoRF (){
+uint32_t CANbus::CANtoRF () {
     uint32_t payloadT = 0x0;
     int n = 0;
 
-    if(ACAN_T4::can2.available()){
-        ACAN_T4::can2.receive(frame);
+    // Receive CAN message
+    if (ACAN::can1.available()) {
+        ACAN::can1.receive(frame);
     }
+
     // Transforms canData to one integer
     while(n < 8){
         payloadT += (frame.data[n] << (n*2));
@@ -66,17 +69,3 @@ uint32_t CANtoRF (){
 
     return payloadT;
 }
-
-void setup(){
-    Serial.begin(9600); // Baud rate
-    ACAN_T4_Settings settings (125 * 1000); // Sets wished bitrate
-    ACAN_T4::can1.begin(settings);
-    ACAN_T4::can2.begin(settings);
-}
-
-void loop(){
-    RFtoCAN(0x124);
-    CANtoRF();
-}
-
-#endif
