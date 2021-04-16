@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <ACAN.h>
 #include "BlackBox.h"
+#include "RF24Transceiver.h"
 #include "util.h"
 
 
@@ -11,6 +12,9 @@
 #define LOG_TYPE BBCANMessage
 
 BlackBox<LOG_TYPE> bb;
+
+// Initialize RF24Transceiver object
+RF24Transceiver radio(9, 10, 0);    // CE pin, CSN pin, radioNumber (0 or 1)
 
 void chSetup(){
   chSysInit();
@@ -47,6 +51,7 @@ void loop(){
     msg.msg = frame;
     bb.addNewLogStr(&msg);
     Serial.println();
+    radio.transmit(msg.toString());    // Transmit CAN frame string
   }
 
   if(Serial.available() && Serial.read() == 13){
