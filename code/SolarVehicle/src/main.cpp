@@ -1,32 +1,10 @@
 #include <ChRt.h>
 #include <Arduino.h>
 #include <ACAN.h>
-#include "CANChatterGen.h"
 #include "BlackBox.h"
 #include "util.h"
 
-//-------------------------------------------------------------------------------------
-// Can bus data generator (simulating can bus chatter for now)
-THD_WORKING_AREA(waCanSender,256);
-THD_FUNCTION(canSenderFunc, arg){
 
-  Serial.println("Starting sender thread...");
-
-  CANChatterGen msgGen;
-
-  uint32_t lastSend = micros();
-  
-  while(true){
-    if(ACAN::can1.tryToSend(msgGen.newChatter())){
-      uint32_t now = micros();
-      Serial.printf("%d us between messages\n\n",now-lastSend);
-      lastSend = now;
-    } else {
-      msgGen.reverse();
-    }
-    chThdSleepMilliseconds(800);
-  }
-}
 //-------------------------------------------------------------------------------------
 
 
@@ -34,10 +12,8 @@ THD_FUNCTION(canSenderFunc, arg){
 
 BlackBox<LOG_TYPE> bb;
 
-
 void chSetup(){
   chSysInit();
-  chThdCreateStatic(waCanSender, sizeof(waCanSender), NORMALPRIO + 1, canSenderFunc, NULL);
 }
 
 void setup(){
@@ -47,8 +23,6 @@ void setup(){
 
   ACANSettings settings(125 * 1000); // next three lines took 49 ns
   ACAN::can0.begin(settings);
-  ACAN::can1.begin(settings);
-
 
   Serial.println("Starting bouncing messages!");
 
@@ -72,10 +46,14 @@ void loop(){
     Serial.printf("New Message from %d: %" PRIx64 "\n", frame.id, frame.data64);
     msg.msg = frame;
     bb.addNewLogStr(&msg);
+    Serial.println();
   }
 
   if(Serial.available() && Serial.read() == 13){
     Serial.println("\n\nStopping execution...");
+    bb.endLogFile();
+    bb.printLogFiles();
+    bb.printLastLog();
     bb.~BlackBox();
     while(true){}
   }

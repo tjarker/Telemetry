@@ -105,6 +105,11 @@ class BlackBox: public SdFs
      */
     public: void endLogFile(){
         sdBuffer.sync();
+        file.truncate();
+        file.rewind();
+        while(file.available()){
+            Serial.print(file.readString());
+        }
         file.close();
     }
 
@@ -118,6 +123,23 @@ class BlackBox: public SdFs
         if(sdBuffer.bytesUsed() >= 800){
             MEASURE_EXEC_TIME("Write to SD"){sdBuffer.writeOut(sdBuffer.bytesUsed());}
         }
+    }
+
+    public: void printLogFiles(){
+        FsFile dir = this->open("/");
+        dir.ls(&Serial,LS_R);
+    }
+    public: void printLastLog(){
+        FsFile fi;
+        if(!fi.open(fileName, O_RDWR | O_CREAT | O_TRUNC)){Serial.println("Failed to open!");}
+        fi.truncate();
+        fi.rewind();
+        Serial.println("Starting printing file");
+        while(fi.available()){
+            Serial.println("Printing");
+            Serial.print(fi.readString());
+        }
+        Serial.println("Done...");
     }
 };
 
