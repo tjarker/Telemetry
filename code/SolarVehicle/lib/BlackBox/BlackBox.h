@@ -113,11 +113,15 @@ class BlackBox: public SdFs
         file.close();
     }
 
-    public: void addNewLogStr(DT* log){
+    public: void addNewLogStr(DT* logIN){
+        logType *log = (logType*) logIN;
         MEASURE_EXEC_TIME("Fetching time"){
             log->secs = second();
             log->mins = minute();
             log->hours = hour();
+            log->days = day();
+            log->months = month();
+            log->years = year();
         }
         MEASURE_EXEC_TIME("Printing to buffer"){sdBuffer.println(log->toString());}
         if(sdBuffer.bytesUsed() >= 800){
@@ -131,13 +135,21 @@ class BlackBox: public SdFs
     }
     public: void printLastLog(){
         FsFile fi;
-        if(!fi.open(fileName, O_RDWR | O_CREAT | O_TRUNC)){Serial.println("Failed to open!");}
-        fi.truncate();
-        fi.rewind();
+        char buf[32];
+        buf[31] = '\0';
+        if(!fi.open(fileName, O_READ)){
+            Serial.println("Failed to open!");
+        }
+        /*
         Serial.println("Starting printing file");
         while(fi.available()){
-            Serial.println("Printing");
             Serial.print(fi.readString());
+        }*/
+        fi.rewind();
+        while(fi.available()){
+            uint8_t len = fi.readBytes(buf,8);
+            buf[len] = '\0';
+            Serial.print(buf);
         }
         Serial.println("Done...");
     }
