@@ -19,7 +19,7 @@ class BBCANMessage : public logType {
         
         const String toString(){
             char tmp[200];
-            snprintf(tmp,200,"\"%d-%d-%d\",%" PRIx32 ",%d,%d,%d,%" PRIu64 "",hours,mins,secs,msg.id,msg.ext,msg.rtr,msg.len,msg.data64);
+            snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx32 ",%d,%d,%d,%" PRIu64 "",days,months,years,hours,mins,secs,msg.id,msg.ext,msg.rtr,msg.len,msg.data64);
             return String(tmp);
         }
         static const String getHeader(){
