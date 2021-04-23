@@ -11,6 +11,6 @@ void setup()
 void loop() 
 {
   StampedCANMessage received;
-  radio.receive(*received); 
+  radio.receive(received); 
   Serial.println(received.toString()); 
 }

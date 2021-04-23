@@ -6,7 +6,7 @@
 #include <Arduino.h>
 #include <TimeLib.h>
 #include "util.h"
-#include "logType.h"
+#include "StampedCANMessage.h"
 
 
 #define SD_CONFIG  SdioConfig(FIFO_SDIO)

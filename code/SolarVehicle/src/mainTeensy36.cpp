@@ -1,9 +1,14 @@
+#define TEENSY36
+
 #include <ChRt.h>
 #include <Arduino.h>
 #include <ACAN.h>
 #include "BlackBox.h"
 #include "RF24Transceiver.h"
 #include "util.h"
+#include "StampedCANMessage.h"
+
+
 
 
 //-------------------------------------------------------------------------------------
