@@ -47,12 +47,12 @@ class StampedCANMessage {
         
     public: const String toString(){
         char tmp[200];
-        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx32 ",%d,%d,%" PRIu64 "",
+        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIu16 ",%d,%d,%" PRIu64 "",
         d,mon,y,h,m,s,id,rtr,len,data64);
         return String(tmp);
     }
     public: uint32_t toString(char *buf){
-        snprintf(buf,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx32 ",%d,%d,%" PRIu64 "",
+        snprintf(buf,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIu16 ",%d,%d,%" PRIu64 "",
         d,mon,y,h,m,s,id,rtr,len,data64);
     }
 
