@@ -10,5 +10,7 @@ void setup()
 
 void loop() 
 {
-  radio.receive();
+  StampedCANMessage received;
+  radio.receive(*received); 
+  Serial.println(received.toString()); 
 }
