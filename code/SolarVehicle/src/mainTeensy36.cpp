@@ -48,7 +48,7 @@ void loop(){
     Serial.print(msg.toString());
     bb.addNewLogStr(&msg);
     Serial.println();
-    radio.transmit(msg.toString());    // Transmit CAN frame string
+    radio.transmit(msg);    // Transmit CAN frame string
   }
 
   if(Serial.available() && Serial.read() == 13){
