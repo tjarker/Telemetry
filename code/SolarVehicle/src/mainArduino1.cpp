@@ -1,3 +1,4 @@
+#define ARDUINO
 #include "RF24Transceiver.h"
 
 RF24Transceiver radio(9, 10, 1); // CE pin, CSN pin, radioNumber (0 or 1)
