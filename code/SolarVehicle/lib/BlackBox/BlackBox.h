@@ -11,7 +11,7 @@
 
 #define SD_CONFIG  SdioConfig(FIFO_SDIO)
 
-template<class DT>
+
 class BlackBox: public SdFs
 {
     private:
@@ -96,7 +96,7 @@ class BlackBox: public SdFs
             file.open(fileName, O_RDWR | O_CREAT | O_TRUNC);
             
             sdBuffer.begin(&file);
-            sdBuffer.println(DT::getHeader());
+            sdBuffer.println(StampedCANMessage::getHeader());
         }
     }
 
@@ -113,16 +113,8 @@ class BlackBox: public SdFs
         file.close();
     }
 
-    public: void addNewLogStr(DT* logIN){
-        logType *log = (logType*) logIN;
-        MEASURE_EXEC_TIME("Fetching time"){
-            log->secs = second();
-            log->mins = minute();
-            log->hours = hour();
-            log->days = day();
-            log->months = month();
-            log->years = year();
-        }
+    public: void addNewLogStr(StampedCANMessage *log){
+    
         MEASURE_EXEC_TIME("Printing to buffer"){sdBuffer.println(log->toString());}
         if(sdBuffer.bytesUsed() >= 800){
             MEASURE_EXEC_TIME("Write to SD"){sdBuffer.writeOut(sdBuffer.bytesUsed());}

@@ -21,34 +21,38 @@ class StampedCANMessage {
         uint8_t mon;
         uint8_t y;
 
-    public: StampedCANMessage(CANMessage msg){
-        id = msg.id;
-        rtr = msg.rtr;
-        len = msg.len;
-        data64 = msg.data64;
+    public: StampedCANMessage(CANMessage *msg){
+        id = msg->id;
+        rtr = msg->rtr;
+        len = msg->len;
+        data64 = msg->data64;
         stamp();
+    }
+
+    public: StampedCANMessage(){
+        // nothing
     }
 
     public: ~StampedCANMessage(){
         // nothing
     }
 
-    public: void update(CANMessage msg){
-        id = msg.id;
-        rtr = msg.rtr;
-        len = msg.len;
-        data64 = msg.data64;
+    public: void update(CANMessage *msg){
+        id = msg->id;
+        rtr = msg->rtr;
+        len = msg->len;
+        data64 = msg->data64;
         stamp();
     }
         
     public: const String toString(){
         char tmp[200];
-        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx32 ",%d,%d,%" PRIu64 "",
+        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIu16 ",%d,%d,%" PRIu64 "",
         d,mon,y,h,m,s,id,rtr,len,data64);
         return String(tmp);
     }
     public: uint32_t toString(char *buf){
-        snprintf(buf,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx32 ",%d,%d,%" PRIu64 "",
+        snprintf(buf,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIu16 ",%d,%d,%" PRIu64 "",
         d,mon,y,h,m,s,id,rtr,len,data64);
     }
 

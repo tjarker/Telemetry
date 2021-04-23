@@ -9,9 +9,8 @@
 //-------------------------------------------------------------------------------------
 
 
-#define LOG_TYPE BBCANMessage
 
-BlackBox<LOG_TYPE> bb;
+BlackBox bb;
 
 // Initialize RF24Transceiver object
 RF24Transceiver radio(9, 10, 0);    // CE pin, CSN pin, radioNumber (0 or 1)
@@ -42,13 +41,11 @@ void setup(){
 void loop(){
 
   CANMessage frame;
-  BBCANMessage msg;
-
-  
+  StampedCANMessage msg;
 
   if (ACAN::can0.receive(frame)){
-    Serial.printf("New Message from %d: %" PRIx64 "\n", frame.id, frame.data64);
-    msg.msg = frame;
+    msg.update(&frame);
+    Serial.print(msg.toString());
     bb.addNewLogStr(&msg);
     Serial.println();
     radio.transmit(msg.toString());    // Transmit CAN frame string
