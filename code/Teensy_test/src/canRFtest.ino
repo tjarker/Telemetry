@@ -18,11 +18,20 @@
 #line 2 "canRFtest.ino"
 
 #include <AUnit.h>
+#include <ACAN.h>
+#include <time.h>
+#include <string>
+#include "RF24Transceiver.h"
+#include "StampedCANMessage.h"
+
+
+using namespace std;
 using aunit::TestRunner;
 
-#include <canRF.h>
-CANbus bus;
+RF24Transceiver RFtrans;
+StampedCANMessage CANmsg;
 
+ACANSettings settings (125 * 1000); // Sets wished bitrate
 //----------------------------------------------------------------------------
 // Test cases
 //----------------------------------------------------------------------------
@@ -32,6 +41,7 @@ test(testTrue) {
     assertEqual(3, 3);
 }
 
+// Should test that both CAN0 port and CAN1 port is active
 test(canX_begin) {
     const uint32_t can0_begin = ACAN::can0.begin (settings);
     const uint32_t can1_begin = ACAN::can1.begin (settings);
@@ -39,38 +49,30 @@ test(canX_begin) {
     assertTrue(can1_begin);
 }
 
-/* Ophæv udkommentering hvis øvrige tests virker fint
-test(RFtoCan) {
-    uint32_t test_id = 1;
-    bus.RFtoCAN(0x10000A234);
-    assertEqual(frame.data[0], 0x4);
-    assertEqual(frame.data[1], 0x3);
-    assertEqual(frame.data[2], 0x2);
-    assertEqual(frame.data[3], 0xA);
-    assertEqual(frame.id, test_id);
+// Should test that the time stamp is correct
+testing(time_stamp) {
+    char tmp[200];
+    String time = String(snprintf(tmp, 200, "\"%02d/%02d/%04d %02d-%02d-%02d\",%d,%d,%d,%d",
+        day(), month(), year(), hour(), minute(), second(), CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64));
+    assertStringCaseEqual(time, CANmsg.toString());
 }
-*/
 
-/* Ophæv udkommentering hvis øvrige tests virker fint
-test(CANtoRF) {
-    uint32_t des_payload = 0x3F00FF000470005FAD;
-    frame.id = 0x3F;
-    frame.data[0] = 0xAD;
-    frame.data[1] = 0x5F;
-    frame.data[2] = 0x0;
-    frame.data[3] = 0x70;
-    frame.data[4] = 0x04;
-    frame.data[5] = 0x0;
-    frame.data[6] = 0xFF;
-    frame.data[7] = 0x0;
-
-    uint32_t payloadT = bus.CANtoRF();
-    assertEqual(payloadT, des_payload);
+// Should test that the radio transmits a message succesfully
+testing(radio_transmit) {
+    char *message = "Hello test";
+    RFtrans.transmit(*message, sizeof(message));
+    assertStringCaseEqual("Transmission successful! ",Serial.readString());
 }
-*/
 
+// Should test that the radio receives a message succesfully
+testing(radio_receive) {
+    RFtrans.receive();
+    assertStringCaseNotEqual("", Serial.readString());
+}
+
+// Should test that a test can fail
 test(testFail) {
-    // Test is supposed to fail
     assertTrue(false);
 }
 
