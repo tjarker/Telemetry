@@ -21,23 +21,27 @@ class StampedCANMessage {
         uint8_t mon;
         uint8_t y;
 
-    public: StampedCANMessage(CANMessage msg){
-        id = msg.id;
-        rtr = msg.rtr;
-        len = msg.len;
-        data64 = msg.data64;
+    public: StampedCANMessage(CANMessage *msg){
+        id = msg->id;
+        rtr = msg->rtr;
+        len = msg->len;
+        data64 = msg->data64;
         stamp();
+    }
+
+    public: StampedCANMessage(){
+        // nothing
     }
 
     public: ~StampedCANMessage(){
         // nothing
     }
 
-    public: void update(CANMessage msg){
-        id = msg.id;
-        rtr = msg.rtr;
-        len = msg.len;
-        data64 = msg.data64;
+    public: void update(CANMessage *msg){
+        id = msg->id;
+        rtr = msg->rtr;
+        len = msg->len;
+        data64 = msg->data64;
         stamp();
     }
         
