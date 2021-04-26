@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
 import telemetryui.components.{CanFrameForm, CanFrameLabel, SerialPortSelector}
+import telemetryui.serial.SerialWorker
 
 import java.awt.Dimension
 import javax.swing.UIManager
@@ -41,11 +42,20 @@ object TelemetryUI extends SimpleSwingApplication {
     centerOnScreen()
     peer.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE)
 
-    port = SerialPortSelector(canLbl.update)
+    port = SerialPortSelector()
+    port.setBaudRate(115200)
+    port.setNumDataBits(8)
+    port.setNumStopBits(1)
+    port.setParity(0)
+    port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0)
+    port.openPort()
+
+    val serialWorker = new SerialWorker(port,Seq(println,canLbl.update),Seq(),Seq(() => println("Error")))
+    serialWorker.start()
 
     override def closeOperation(): Unit = {
       println("Closing")
-      port.closePort()
+      serialWorker.quit()
       exit(0)
     }
 
