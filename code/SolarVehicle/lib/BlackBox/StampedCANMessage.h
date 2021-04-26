@@ -106,9 +106,9 @@ class StampedCANMessage {
         uint8_t rtr;
         uint8_t len;
         union {
-            uint64_t data64        ; // Caution: subject to endianness
+            uint64_t data64; // Caution: subject to endianness
             uint8_t  data   [8] = {0, 0, 0, 0, 0, 0, 0, 0} ;
-        }
+        };
         uint8_t s;
         uint8_t m;
         uint8_t h;
@@ -127,7 +127,7 @@ class StampedCANMessage {
         this->h = random(0,25);
         this->d = random(0,32);
         this->mon = random(0,13);
-        this->year = 21;
+        this->y = 21;
     }
 
     public: StampedCANMessage(uint16_t id, uint8_t len, uint64_t data){
