@@ -42,16 +42,16 @@ void RF24Transceiver::transmit(char &message, int size)
 
 // Second transmit() member function
 // Takes StampedCANMessage object as input and transmits it to RX node
-void RF24Transceiver::transmit(StampedCANMessage &message)
-{
-    m_radio->stopListening(); 
-    bool report = m_radio->write(&message, 32);                 // Message size is 32 bytes per default (null-terminated)
-    if (report){    // Checks if message was delivered
-        Serial.print(F("Transmission successful! "));           // message was delivered
-    } else {
-        Serial.println(F("Transmission failed or timed out"));  // message was not delivered
-    }
-}
+// void RF24Transceiver::transmit(StampedCANMessage &message)
+// {
+//     m_radio->stopListening(); 
+//     bool report = m_radio->write(&message, 32);                 // Message size is 32 bytes per default (null-terminated)
+//     if (report){    // Checks if message was delivered
+//         Serial.print(F("Transmission successful! "));           // message was delivered
+//     } else {
+//         Serial.println(F("Transmission failed or timed out"));  // message was not delivered
+//     }
+// }
 
 // First receive() member function
 // Takes no arguments, prints received message to serial
@@ -69,12 +69,12 @@ void RF24Transceiver::receive()
 
 // Second receive() member function
 // Takes StampedCANMessage object as input to load transmitted data into
-void RF24Transceiver::receive(StampedCANMessage &received)
-{
-    m_radio->startListening();                                  // Starts RX mode
-    uint8_t pipe; 
-    if (m_radio->available(&pipe)){
-        m_radio->read(&received, 32);                           // Receives 32 bytes on pipe
-        m_radio->writeAckPayload(1, &received, 32);             // Send acknowledge payload
-    }
-}
+// void RF24Transceiver::receive(StampedCANMessage &received)
+// {
+//     m_radio->startListening();                                  // Starts RX mode
+//     uint8_t pipe; 
+//     if (m_radio->available(&pipe)){
+//         m_radio->read(&received, 32);                           // Receives 32 bytes on pipe
+//         m_radio->writeAckPayload(1, &received, 32);             // Send acknowledge payload
+//     }
+// }

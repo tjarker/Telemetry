@@ -1,9 +1,11 @@
 #ifndef __LOGTYPE_H__
 #define __LOGTYPE_H__
 #include <Arduino.h>
+/* 
+    @TODO: Clean up this code using #IFDEFs!!!
+*/
 
-
-#ifdef TEENSY36
+#ifdef TEENSY36_BOARD
 
 #include <ACAN.h>
 #include <TimeLib.h>
@@ -73,7 +75,7 @@ class StampedCANMessage {
 
 #else
 
-#ifdef ARDUINOCODE
+#ifdef ARDUINO_BOARD
 
 class StampedCANMessage {
     public:

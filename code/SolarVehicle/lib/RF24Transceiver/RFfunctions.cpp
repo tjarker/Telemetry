@@ -1,6 +1,26 @@
-#include "RFfunctions.h"
+#include <Arduino.h>
+#include <SPI.h>
+#include "RF24.h"
+#include "StampedCANMessage.h"
 
-// init() member function
+#define COUNT 5     // Number of transmission retries
+#define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
+
+#ifdef TEENSY40_BOARD
+bool radioNumber = 0;
+#elif defined(ARDUINO_BOARD)
+bool radioNumber = 1;
+#endif
+
+RF24 radio(9, 10);  // CE and CSN pins
+static const byte address[][6] = {"00001", "00002"};    // TX/RX byte addresses
+
+struct PayloadStruct {
+  char message[7];          // only using 6 characters for TX & ACK payloads
+  uint8_t counter;
+};
+
+// RFinit() function
 // Takes no arguments.
 void RFinit()
 {
@@ -15,12 +35,12 @@ void RFinit()
     radio.startListening();                                     // Starts RX mode
 }
 
-// First transmit() member function
+// First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
 void RFtransmit()
 {
     radio.stopListening();                                      // Starts TX mode
-    char message[] = "Hello Teensy40, copy?";
+    StampedCANMessage message = StampedCANMessage();
     bool report = radio.write(&message, sizeof(message));       // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
         Serial.print(F("Transmission successful! "));           // message was delivered
@@ -29,16 +49,17 @@ void RFtransmit()
     }
 }
 
-// First receive() member function
+// First receive() function
 // Takes no arguments, prints received message to serial
 void RFreceive()
 {
-    radio.startListening();                                  // Starts RX mode
-    char message[32];                                        // Messages cannot be larger than 32 bytes (null-terminated)
+    radio.startListening();                                     // Starts RX mode
+    //char message[32];                                         // Messages cannot be larger than 32 bytes (null-terminated)
+    StampedCANMessage received; 
     uint8_t pipe; 
-    if (radio.available(&pipe)){                             // Check if transmitter is sending message
-        radio.read(&message, sizeof(message));               // Read message
-        Serial.println(message);                                // Print message
-        radio.writeAckPayload(1, &message, sizeof(message)); // Send acknowledge payload
+    if (radio.available(&pipe)){                                // Check if transmitter is sending message
+        radio.read(&received, sizeof(received));                // Read message
+        Serial.println(received.toString());                    // Print message
+        radio.writeAckPayload(1, &received, sizeof(received));  // Send acknowledge payload
     } 
 }

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <RF24.h>
-#include "StampedCANMessage.h"
+//#include "StampedCANMessage.h"
 
 #define COUNT 5     // Number of transmission retries
 #define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
@@ -22,7 +22,7 @@ public:
     RF24Transceiver(int CE_PIN, int CSN_PIN, bool radioNumber);
     void init();
     void transmit(char &message, int size);
-    void transmit(StampedCANMessage &message);  // Overloaded transmit() function
+    //void transmit(StampedCANMessage &message);  // Overloaded transmit() function
     void receive(); 
-    void receive(StampedCANMessage &message);   // Overloaded receive() function
+    //void receive(StampedCANMessage &message);   // Overloaded receive() function
 };
