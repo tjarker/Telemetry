@@ -1,13 +1,14 @@
 package telemetryui.serial
 
 import com.fazecast.jSerialComm.SerialPort
+import telemetryui.types.CMD.RECEIVED_CAN
 import telemetryui.types.CanFrame
-import trash.JsonTest.Command
+
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class SerialWorker(port: SerialPort,
                    canListener: Seq[CanFrame => Unit],
-                   cmdListener: Seq[Command => Unit],
+                   cmdListener: Seq[Int => Unit],
                    errListener: Seq[() => Unit]
                   ) extends Thread {
 
@@ -36,7 +37,11 @@ class SerialWorker(port: SerialPort,
       if(!queue.isEmpty){
         queue.poll().foreach { b: Byte =>
           assembler.add(b)
-          if(assembler.hasFrame) canListener.foreach(_(assembler.getFrame))
+          if(assembler.hasMessage) {
+            val msg = assembler.getMessage
+            cmdListener.foreach(_(msg.cmd))
+            if(msg.cmd == RECEIVED_CAN) canListener.foreach(_(msg.can))
+          }
           if(assembler.hadError) errListener.foreach(_())
         }
       }

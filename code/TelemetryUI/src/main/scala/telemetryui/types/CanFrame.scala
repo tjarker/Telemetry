@@ -8,13 +8,7 @@ case class CanFrame(id: BigInt, rtr: Boolean, len: Int, data: BigInt, stamp: Tim
   override def toString: String = s"($id: [$len]$data at $stamp)"
   def toByteArray : Array[Byte] = {
     id.toByteArray.padTo(2,0.toByte).reverse ++ Array((if(rtr)1 else 0).toByte) ++ Array(len.toByte) ++ data.toByteArray.reverse.padTo(8,0.toByte) ++
-      Array(stamp.second.toByte,stamp.minute.toByte,stamp.hour.toByte)
+      stamp.toByteArray
   }
 }
 
-object CanFrame {
-  def apply(json: String): CanFrame = {
-    implicit val formats = DefaultFormats
-    parse(json).extract[CanFrame]
-  }
-}

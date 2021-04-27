@@ -16,15 +16,9 @@
 - [Support Vehicle Unit](documentation/supportVehicleUnit.md)
 - [RF Transmission Protocol](documentation/transmissionProtocol.md)
 - [SCU Commands](documentation/scuCommands.md)
+- [Throughput analysis](documentation/throughputAnalysis.md)
 
 # Open Issue List
-- Which Frequencies are open for public use in Australia?
-- Do we need a new CAN library? The one linked to is for Teensy 4.0.
-- Do we want to use a real time OS? If so, there is no freeRTOS port for the Teensy 3.6. [ChibiOS](https://platformio.org/lib/show/2986/ChRt) seems like a nice alternative.
-- A protocol for wireless data transmission needs to be specified (see [RF Transmission Protocol](documentation/transmissionProtocol.md)). 
-  - Do the RF modules include some kind of error correction/detection by default? Or should we add our own (i.e. parity or CRC?)?
-  - Do we need to worry about security? Should we integrate some kin dof authentication method to secure communication between SV and SC? Exposing the CAN bus itself on an open to use frequency seems risky otherwise.
-  - How are messages framed/terminated? Fixed length, length specified in message header or something else?
 - How do we wish to implement the final Solar Car and Support Car modules? 
   - PCB design [(just to solder on Teensy)](https://oshpark.com/shared_projects/eowWCxeK)
   - Perfboard 

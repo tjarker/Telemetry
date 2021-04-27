@@ -1,12 +1,12 @@
 package telemetryui.serial
 
-import telemetryui.types.CanFrame
+import telemetryui.types.{CanFrame, TelemetryMessage}
 
-class JsonAssembler[T <: Any] {
+class JsonAssembler {
 
   private val charBuf = new StringBuilder
   private var openBrackets = 0
-  private var canFrame: CanFrame = null
+  private var telemetryMessage: TelemetryMessage = null
   private var error = false
   private var hasNewFrame = false
 
@@ -38,10 +38,11 @@ class JsonAssembler[T <: Any] {
       openBrackets = 0
 
       try {
-        canFrame = CanFrame(charBuf.toString)
+        telemetryMessage = TelemetryMessage(charBuf.toString)
         hasNewFrame = true
       } catch {
-        case e: org.json4s.MappingException => error = true
+        case e: org.json4s.MappingException =>
+          error = true
       }
 
       charBuf.clear()
@@ -51,11 +52,11 @@ class JsonAssembler[T <: Any] {
     }
   }
 
-  def hasFrame: Boolean = hasNewFrame
+  def hasMessage: Boolean = hasNewFrame
 
-  def getFrame: CanFrame = {
+  def getMessage: TelemetryMessage = {
     hasNewFrame = false
-    return canFrame
+    return telemetryMessage
   }
 
   def hadError: Boolean = {

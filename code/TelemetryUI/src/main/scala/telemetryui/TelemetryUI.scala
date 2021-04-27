@@ -5,6 +5,8 @@ import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
 import telemetryui.components.{CanFrameForm, CanFrameLabel, SerialPortSelector}
 import telemetryui.serial.SerialWorker
+import telemetryui.types.CMD.BROADCAST_CAN
+import telemetryui.types.TelemetryMessage
 
 import java.awt.Dimension
 import javax.swing.UIManager
@@ -19,7 +21,7 @@ object TelemetryUI extends SimpleSwingApplication {
 
   val canLbl = new CanFrameLabel("Last Received CAN Frame")
   val canForm = new CanFrameForm("Send CAN Frame", { canFrame =>
-    val outBytes = canFrame.toByteArray
+    val outBytes = TelemetryMessage(BROADCAST_CAN, canFrame).toByteArray
     println(outBytes.map(_.toString).mkString(", "))
     port.writeBytes(outBytes, outBytes.length)
   })
@@ -43,14 +45,14 @@ object TelemetryUI extends SimpleSwingApplication {
     peer.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE)
 
     port = SerialPortSelector()
-    port.setBaudRate(115200)
+    port.setBaudRate(921600)
     port.setNumDataBits(8)
     port.setNumStopBits(1)
     port.setParity(0)
     port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0)
     port.openPort()
 
-    val serialWorker = new SerialWorker(port,Seq(println,canLbl.update),Seq(),Seq(() => println("Error")))
+    val serialWorker = new SerialWorker(port,Seq(println,canLbl.update),Seq(println),Seq(() => println("Error")))
     serialWorker.start()
 
     override def closeOperation(): Unit = {
