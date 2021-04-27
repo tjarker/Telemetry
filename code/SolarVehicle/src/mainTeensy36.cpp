@@ -2,7 +2,7 @@
 #include <ACAN.h>
 #include "BlackBox.h"
 #include "RF24Transceiver.h"
-#include "StampedCANMessage.h"
+#include "TelemetryMessage.h"
 
 //-------------------------------------------------------------------------------------
 
@@ -15,13 +15,12 @@ void setup(){
   ACAN::can0.begin(settings);
 
   Serial.println("Starting bouncing messages!");
-  chBegin(chSetup);
 }
 
 void loop(){
 
   CANMessage frame;
-  StampedCANMessage msg;
+  TelemetryMessage msg;
 
   if (ACAN::can0.receive(frame)){
     Serial.println("Received!");

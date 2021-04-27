@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include "RF24.h"
-#include "StampedCANMessage.h"
+#include "TelemetryMessage.h"
 
 #define COUNT 5     // Number of transmission retries
 #define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
@@ -9,6 +9,8 @@
 #ifdef TEENSY40_BOARD
 bool radioNumber = 0;
 #elif defined(ARDUINO_BOARD)
+bool radioNumber = 1;
+#else
 bool radioNumber = 1;
 #endif
 
@@ -32,7 +34,7 @@ void RFinit()
 
 // First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
-void RFtransmit(StampedCANMessage msg, int size)
+void RFtransmit(TelemetryMessage msg, int size)
 {
     radio.stopListening();                                      // Starts TX mode
     bool report = radio.write(&msg, size);                      // Send message and wait for acknowledge
@@ -49,7 +51,7 @@ void RFreceive()
 {
     radio.startListening();                                     // Starts RX mode
     //char message[32];                                         // Messages cannot be larger than 32 bytes (null-terminated)
-    StampedCANMessage received;
+    TelemetryMessage received;
     uint8_t pipe; 
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(&received, sizeof(received));                // Read message

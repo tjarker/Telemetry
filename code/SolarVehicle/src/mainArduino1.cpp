@@ -8,7 +8,7 @@ void setup()
 
 void loop() 
 {
-  StampedCANMessage msg = StampedCANMessage();
+  TelemetryMessage msg = TelemetryMessage();
   RFtransmit(msg, sizeof(msg));
   delay(1000);
 }
