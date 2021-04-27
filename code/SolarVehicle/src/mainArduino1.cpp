@@ -8,9 +8,7 @@ void setup()
 
 void loop() 
 {
-  // char text[] = "Hello"; 
-  // RFtransmit((const void*)text, sizeof(text));
-  // PayloadStruct msg = {"Bueno!", 0};
-  RFtransmit();
+  StampedCANMessage msg = StampedCANMessage();
+  RFtransmit(msg, sizeof(msg));
   delay(1000);
 }

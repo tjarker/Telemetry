@@ -1,14 +1,14 @@
 #ifndef __LOGTYPE_H__
 #define __LOGTYPE_H__
+#endif
 #include <Arduino.h>
-/* 
-    @TODO: Clean up this code using #IFDEFs!!!
-*/
 
 #ifdef TEENSY36_BOARD
 
 #include <ACAN.h>
 #include <TimeLib.h>
+
+#endif
 
 class StampedCANMessage {
     public:
@@ -26,6 +26,8 @@ class StampedCANMessage {
         uint8_t mon;
         uint8_t y;
 
+    #ifdef TEENSY36_BOARD
+
     public: StampedCANMessage(CANMessage *msg){
         id = msg->id;
         rtr = msg->rtr;
@@ -33,30 +35,12 @@ class StampedCANMessage {
         data64 = msg->data64;
         stamp();
     }
-
-    public: StampedCANMessage(){
-        // nothing
-    }
-
-    public: ~StampedCANMessage(){
-        // nothing
-    }
-
     public: void update(CANMessage *msg){
         id = msg->id;
         rtr = msg->rtr;
         len = msg->len;
         data64 = msg->data64;
         stamp();
-    }
-        
-    public: const String toString(){
-        char tmp[200];
-        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx16 ",%d,%d,%" PRIx64 "",d,mon,y,h,m,s,id,rtr,len,data64);
-        return String(tmp);
-    }
-    public: uint32_t toString(char *buf){
-        return snprintf(buf,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIu16 ",%d,%d,%" PRIu64 "",d,mon,y,h,m,s,id,rtr,len,data64);
     }
 
     public: void stamp(){
@@ -68,55 +52,26 @@ class StampedCANMessage {
         y = year();
     }
 
-        static const String getHeader(){
-            return "\"time\",\"id\",\"rtr\",\"len\",\"data\"";
-        }
-};
+    public: StampedCANMessage(){
+        // nothing
+    }
 
-#else
+    public: ~StampedCANMessage(){
+        // nothing
+    }
 
-#ifdef ARDUINO_BOARD
-
-class StampedCANMessage {
-    public:
-        uint16_t id;
-        uint8_t rtr;
-        uint8_t len;
-        union {
-            uint64_t data64        ; // Caution: subject to endianness           
-            uint8_t  data   [8] = {0, 0, 0, 0, 0, 0, 0, 0} ;
-        };
-        uint8_t s;
-        uint8_t m;
-        uint8_t h;
-        uint8_t d;
-        uint8_t mon;
-        uint8_t y;
-
+        
     public: const String toString(){
         char tmp[200];
-        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%d,%d,%d,%llu",d,mon,y,h,m,s,id,rtr,len,data64);
+        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx16 ",%d,%d,%" PRIx64 "",d,mon,y,h,m,s,id,rtr,len,data64);
         return String(tmp);
     }
-};
 
-#else
+    public: uint32_t toString(char *buf){
+        return snprintf(buf,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIu16 ",%d,%d,%" PRIu64 "",d,mon,y,h,m,s,id,rtr,len,data64);
+    }
 
-class StampedCANMessage {
-    public:
-        uint16_t id;
-        uint8_t rtr;
-        uint8_t len;
-        union {
-            uint64_t data64; // Caution: subject to endianness
-            uint8_t  data   [8] = {0, 0, 0, 0, 0, 0, 0, 0} ;
-        };
-        uint8_t s;
-        uint8_t m;
-        uint8_t h;
-        uint8_t d;
-        uint8_t mon;
-        uint8_t y;
+    #else
 
     public: StampedCANMessage() {
         this->id = random(0,0x400);
@@ -131,7 +86,7 @@ class StampedCANMessage {
         this->mon = random(0,13);
         this->y = 21;
     }
-
+    
     public: StampedCANMessage(uint16_t id, uint8_t len, uint64_t data){
         this->id = id;
         this->len = len;
@@ -140,12 +95,13 @@ class StampedCANMessage {
 
     public: const String toString(){
         char tmp[200];
-        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIu16 ",%d,%d,%" PRIu64 "",d,mon,y,h,m,s,id,rtr,len,data64);
+        snprintf(tmp,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%d,%d,%d,%llu",d,mon,y,h,m,s,id,rtr,len,data64);
         return String(tmp);
     }
+
+    #endif
+
+    static const String getHeader(){
+        return "\"time\",\"id\",\"rtr\",\"len\",\"data\"";
+    }
 };
-
-#endif
-#endif
-
-#endif

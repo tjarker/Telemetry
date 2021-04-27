@@ -15,11 +15,6 @@ bool radioNumber = 1;
 RF24 radio(9, 10);  // CE and CSN pins
 static const byte address[][6] = {"00001", "00002"};    // TX/RX byte addresses
 
-struct PayloadStruct {
-  char message[7];          // only using 6 characters for TX & ACK payloads
-  uint8_t counter;
-};
-
 // RFinit() function
 // Takes no arguments.
 void RFinit()
@@ -37,11 +32,10 @@ void RFinit()
 
 // First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
-void RFtransmit()
+void RFtransmit(StampedCANMessage msg, int size)
 {
     radio.stopListening();                                      // Starts TX mode
-    StampedCANMessage message = StampedCANMessage();
-    bool report = radio.write(&message, sizeof(message));       // Send message and wait for acknowledge
+    bool report = radio.write(&msg, size);                      // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
         Serial.print(F("Transmission successful! "));           // message was delivered
     } else {
@@ -55,7 +49,7 @@ void RFreceive()
 {
     radio.startListening();                                     // Starts RX mode
     //char message[32];                                         // Messages cannot be larger than 32 bytes (null-terminated)
-    StampedCANMessage received; 
+    StampedCANMessage received;
     uint8_t pipe; 
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(&received, sizeof(received));                // Read message
