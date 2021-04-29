@@ -1,14 +1,12 @@
-#include "RF24Transceiver.h"
+#include "RFfunctions.cpp"
 
-RF24Transceiver radio(9, 10, 0); // CE pin, CSN pin, radioNumber (0 or 1)
-
-void setup() 
+void setup()
 {
   Serial.begin(9600);
-  radio.init();
+  RFinit();
 }
 
-void loop() 
+void loop()
 {
-  radio.receive();
+  RFreceive();
 }

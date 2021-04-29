@@ -1,48 +1,22 @@
 package telemetryui.serial
 
-import com.fazecast.jSerialComm.{SerialPort, SerialPortDataListener, SerialPortEvent}
-import org.json4s.DefaultFormats
-import org.json4s.jackson.JsonMethods.parse
-import telemetryui.types.CanFrame
-
-class SerialPortListener(port: SerialPort, listener: Seq[CanFrame => Unit]) extends SerialPortDataListener {
-
-  val str = new StringBuilder
-  implicit val formats = DefaultFormats
-
-  override def getListeningEvents: Int = {
-    return SerialPort.LISTENING_EVENT_DATA_AVAILABLE
-  }
-
-  override def serialEvent(event: SerialPortEvent): Unit = {
-    if(event.getEventType != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) return
+import com.fazecast.jSerialComm.{SerialPort, SerialPortEvent, SerialPortMessageListener}
 
 
-    val newData = new Array[Byte](port.bytesAvailable())
-    val numread = port.readBytes(newData,newData.length)
-    val newString = newData.map(_.toChar).mkString
-    println(s"Serial event: $newString")
-    for(ch <- newData.slice(0,numread)){
-      str.append(ch.toChar)
+import java.util.concurrent.ConcurrentLinkedQueue
 
-      if(str.toString.startsWith("<s>") && str.toString.endsWith("<e>")){
+class SerialPortListener(port: SerialPort, queue: ConcurrentLinkedQueue[Array[Byte]]) extends SerialPortMessageListener {
 
-        val json = str.toString.slice(3,str.size-3)
+  override def getMessageDelimiter: Array[Byte] = "\n".getBytes()
 
-        val canFrame = parse(json).extract[CanFrame]
+  override def delimiterIndicatesEndOfMessage(): Boolean = true
 
-        listener.foreach(_(canFrame))
+  override def getListeningEvents: Int = SerialPort.LISTENING_EVENT_DATA_AVAILABLE
 
-        str.clear()
-      }
-      if(str.size > 3 && !str.toString.startsWith("<s>")) {
-        println("did not start correctly")
-        str.clear()
-      }
-      if(str.toString.sliding(3).count(_ == "<s>")>1) {
-        println("multiple starts")
-        str.clear()
-      }
-    }
+  def serialEvent(event: SerialPortEvent): Unit = {
+    if (event.getEventType != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) return
+    val newData = new Array[Byte](port.bytesAvailable)
+    port.readBytes(newData, newData.length)
+    queue.add(newData)
   }
 }

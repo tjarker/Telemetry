@@ -1,17 +1,14 @@
-#define ARDUINOCODE
-#include "RF24Transceiver.h"
-
-RF24Transceiver radio(9, 10, 1); // CE pin, CSN pin, radioNumber (0 or 1)
+#include "RFfunctions.cpp"
 
 void setup() 
 {
-  Serial.begin(9600); 
-  radio.init();
+  Serial.begin(9600);
+  RFinit();
 }
 
 void loop() 
 {
-  char message[] = "Hello Solar Vehicle, copy?";
-  radio.transmit(*message, sizeof(message));
+  TelemetryMessage msg = TelemetryMessage();
+  RFtransmit(msg, sizeof(msg));
   delay(1000);
 }

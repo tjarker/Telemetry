@@ -1,12 +1,14 @@
 package telemetryui.components
 
-import telemetryui.types.CanFrame
+import telemetryui.types.{CanFrame, TimeStamp}
 
 import scala.swing.{Alignment, Button, GridBagPanel, Label, TextField}
 import scala.swing.Swing.{CompoundBorder, EmptyBorder, EtchedBorder, TitledBorder}
 import scala.swing.event.{ButtonClicked, FocusGained, KeyTyped}
 import scala.swing.event._
 import telemetryui.util.Timer
+
+import java.util.Date
 
 class CanFrameForm(title: String, sender: CanFrame => Unit) extends GridBagPanel {
   border = CompoundBorder(TitledBorder(EtchedBorder,title),EmptyBorder(5,5,5,5))
@@ -99,7 +101,7 @@ class CanFrameForm(title: String, sender: CanFrame => Unit) extends GridBagPanel
       if(idVal > Math.pow(2,12)-1) error.setError("id")
       else if(dataVal.toLong > Math.pow(2,64)) error.setError("data")
       else{
-        sender(CanFrame(idVal,msg.numBytes,dataVal))
+        sender(CanFrame(idVal,false,msg.numBytes,dataVal,TimeStamp(0,0,0)))
       }
       Timer(4000,false){error.clearError()}
   }
