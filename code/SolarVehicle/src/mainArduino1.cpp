@@ -8,7 +8,7 @@ void setup()
 
 void loop() 
 {
-  TelemetryMessage msg = TelemetryMessage();
-  RFtransmit(msg, sizeof(msg));
+  CanTelemetryMsg msg;
+  RFtransmit(msg.toMessage(), sizeof(msg));
   delay(1000);
 }

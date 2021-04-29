@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include "RF24.h"
-#include "TelemetryMessage.h"
+#include "TelemetryMessages.h"
 
 #define COUNT 5     // Number of transmission retries
 #define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
@@ -34,10 +34,10 @@ void RFinit()
 
 // First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
-void RFtransmit(TelemetryMessage msg, int size)
+void RFtransmit(BaseTelemetryMsg *msg, int size)
 {
     radio.stopListening();                                      // Starts TX mode
-    bool report = radio.write(&msg, size);                      // Send message and wait for acknowledge
+    bool report = radio.write(msg->toBytes(), size);                      // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
         Serial.print(F("Transmission successful! "));           // message was delivered
     } else {
@@ -51,7 +51,7 @@ void RFreceive()
 {
     radio.startListening();                                     // Starts RX mode
     //char message[32];                                         // Messages cannot be larger than 32 bytes (null-terminated)
-    TelemetryMessage received;
+    CanTelemetryMsg received;
     uint8_t pipe; 
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(&received, sizeof(received));                // Read message

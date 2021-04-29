@@ -1,6 +1,28 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 #include <Arduino.h>
+#include <ChRt.h>
+
+
+class MutexLocker{
+    private: bool killed = false;
+    private: mutex_t *mtx;
+    public: MutexLocker(mutex_t *mtx){
+        this->mtx = mtx;
+        chMtxLock(mtx);
+    }
+    public: ~MutexLocker(){
+        chMtxUnlock(mtx);
+    }
+    public: void kill(){
+        killed = true;
+    }
+    public: bool isKilled(){
+        return killed;
+    }
+};
+
+#define WITH_MTX(mtx) for(MutexLocker x(&mtx); !x.isKilled(); x.kill())
 
 class ExecutionTimeMeasurer{
     bool killed;

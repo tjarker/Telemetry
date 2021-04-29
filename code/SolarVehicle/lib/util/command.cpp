@@ -1,4 +1,6 @@
 #include "command.h"
+#include <SdFat.h>
+#include <TimeLib.h>
 #include "BlackBox.h"
 #include <ACAN.h>
 
