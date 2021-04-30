@@ -21,16 +21,7 @@ object SerialPortSelector {
     )
 
     if (s.isDefined && s.get.nonEmpty) {
-      val port = SerialPort.getCommPort(ports(possibilities.indexOf(s.get)).getSystemPortName)
-      port.setBaudRate(115200)
-      port.setNumDataBits(8)
-      port.setNumStopBits(1)
-      port.setParity(0)
-      port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0)
-      port.openPort()
-
-      port.addDataListener(new SerialPortListener(port, listener))
-      return port
+      return SerialPort.getCommPort(ports(possibilities.indexOf(s.get)).getSystemPortName)
     }
     else
       throw new SerialPortInvalidPortException()

@@ -16,9 +16,9 @@
 - [Support Vehicle Unit](documentation/supportVehicleUnit.md)
 - [RF Transmission Protocol](documentation/transmissionProtocol.md)
 - [SCU Commands](documentation/scuCommands.md)
+- [Throughput analysis](documentation/throughputAnalysis.md)
 
 # Open Issue List
-- Which Frequencies are open for public use in Australia?
 - How do we wish to implement the final Solar Car and Support Car modules? 
   - PCB design [(just to solder on Teensy)](https://oshpark.com/shared_projects/eowWCxeK)
   - Perfboard 
