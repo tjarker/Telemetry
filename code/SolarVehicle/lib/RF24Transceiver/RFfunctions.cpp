@@ -10,6 +10,8 @@
 bool radioNumber = 0;
 #elif defined(ARDUINO_BOARD)
 bool radioNumber = 1;
+#else
+bool radioNumber = 1; 
 #endif
 
 RF24 radio(9, 10);  // CE and CSN pins
@@ -55,5 +57,6 @@ void RFreceive()
         radio.read(&received, sizeof(received));                // Read message
         Serial.println(received.toString());                    // Print message
         radio.writeAckPayload(1, &received, sizeof(received));  // Send acknowledge payload
-    } 
+    }
+    //return received;  
 }

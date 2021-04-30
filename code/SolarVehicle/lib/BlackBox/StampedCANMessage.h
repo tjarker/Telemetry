@@ -26,7 +26,7 @@ class StampedCANMessage {
         uint8_t mon;
         uint8_t y;
 
-    #ifdef TEENSY36_BOARD
+    #ifdef TEENSY36_BOARD   // Only works for Teensy 3.6
 
     public: StampedCANMessage(CANMessage *msg){
         id = msg->id;
@@ -71,7 +71,7 @@ class StampedCANMessage {
         return snprintf(buf,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIu16 ",%d,%d,%" PRIu64 "",d,mon,y,h,m,s,id,rtr,len,data64);
     }
 
-    #else
+    #else   // Works for Teensy 4.0 and Arduino UNO
 
     public: StampedCANMessage() {
         this->id = random(0,0x400);
