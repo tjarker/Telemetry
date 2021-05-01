@@ -27,3 +27,4 @@ An introductory example using CAN to communicate data between two arduinos. http
 ## Data Communication between java and matlab
 - http://iheartmatlab.blogspot.com/2008/08/tcpip-socket-communications-in-matlab.html
 - http://iheartmatlab.blogspot.com/2009/09/tcpip-socket-communications-in-matlab.html
+- https://se.mathworks.com/matlabcentral/fileexchange/25249-tcp-ip-socket-communications-in-matlab-using-java-classes
