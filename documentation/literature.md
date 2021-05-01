@@ -22,3 +22,8 @@ Introduction to CAN FD and the importance of CAN FD. Not the CAN standard used i
 An introductory example using CAN to communicate data between two arduinos. https://circuitdigest.com/microcontroller-projects/arduino-can-tutorial-interfacing-mcp2515-can-bus-module-with-arduino
 
 ## [Markdown Tutorial](https://guides.github.com/features/mastering-markdown/)
+
+
+## Data Communication between java and matlab
+- http://iheartmatlab.blogspot.com/2008/08/tcpip-socket-communications-in-matlab.html
+- http://iheartmatlab.blogspot.com/2009/09/tcpip-socket-communications-in-matlab.html
