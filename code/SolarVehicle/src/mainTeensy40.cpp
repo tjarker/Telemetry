@@ -8,5 +8,6 @@ void setup()
 
 void loop()
 {
-  RFreceive();
+  BaseTelemetryMsg received; 
+  RFreceive(&received);
 }

@@ -23,7 +23,7 @@ void RFinit()
 {
     radio.begin();                                              
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level 
-    radio.setDataRate(RF24_250KBPS);                            // Set Data Rate
+    radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
     radio.enableDynamicPayloads();           
     radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
@@ -37,7 +37,7 @@ void RFinit()
 void RFtransmit(BaseTelemetryMsg *msg, int size)
 {
     radio.stopListening();                                      // Starts TX mode
-    bool report = radio.write(msg->toBytes(), size);                      // Send message and wait for acknowledge
+    bool report = radio.write(msg, size);                       // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
         Serial.print(F("Transmission successful! "));           // message was delivered
     } else {
@@ -47,16 +47,13 @@ void RFtransmit(BaseTelemetryMsg *msg, int size)
 
 // First receive() function
 // Takes no arguments, prints received message to serial
-void RFreceive()
+void RFreceive(BaseTelemetryMsg *received)
 {
     radio.startListening();                                     // Starts RX mode
-    //char message[32];                                         // Messages cannot be larger than 32 bytes (null-terminated)
-    CanTelemetryMsg received;
     uint8_t pipe; 
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
-        radio.read(&received, sizeof(received));                // Read message
-        Serial.println(received.toString());                    // Print message
-        radio.writeAckPayload(1, &received, sizeof(received));  // Send acknowledge payload
+        radio.read(received, 32);                               // Read message, cannot be larger than 32 bytes (null-terminated)
+        Serial.println(received->toString());                   // Print message
+        radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
     }
-    //return received;  
 }
