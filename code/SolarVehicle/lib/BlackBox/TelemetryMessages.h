@@ -34,13 +34,12 @@ class BaseTelemetryMsg {
   public: CMD cmd;
   public: uint8_t data[31];
 
-  public: const String toString(){
-    char tmp[200];
-    uint8_t curPos = snprintf(tmp,200,"%d:",cmd);
+  public: uint32_t toString(char *buf, uint32_t len){
+    uint32_t curPos = snprintf(buf,len,"%d:",cmd);
     for(uint8_t i = 0; i < 31; i++){
-      curPos += snprintf(&(tmp[curPos]),200-curPos," %x",data[i]);
+      curPos += snprintf(&(buf[curPos]),len-curPos," %x",data[i]);
     }
-    return String(tmp);
+    return curPos;
   }
 
   public: uint8_t* toBytes(){return (uint8_t*)this;}
@@ -117,20 +116,14 @@ class CanTelemetryMsg {
       this->h = random(0,25);
     }
 
-    public: const String toString(){
-        char tmp[200];
-        snprintf(tmp,200,"\"%02d-%02d-%02d\",%u,%u,%u,%llu",h,m,s,id,rtr,len,data64);
-        return String(tmp);
-    }
-
-    public: const String toString(uint8_t base){
-        char tmp[200];
+    public: uint32_t toString(char *buf, uint32_t len, uint8_t base){
+        uint32_t strLength;
         if(base == 16){
-          snprintf(tmp,200,"\"%02d-%02d-%02d\",%X,%X,%X,%llX",h,m,s,id,rtr,len,data64);
+          strLength = snprintf(buf,len,"\"%02d-%02d-%02d\",%X,%X,%X,%llX",h,m,s,id,rtr,this->len,data64);
         } else {
-          snprintf(tmp,200,"\"%02d-%02d-%02d\",%d,%d,%d,%lld",h,m,s,id,rtr,len,data64);
+          strLength = snprintf(buf,len,"\"%02d-%02d-%02d\",%d,%d,%d,%lld",h,m,s,id,rtr,this->len,data64);
         }
-        return String(tmp);
+        return strLength;
     }
 
     public: uint32_t toString(char *buf, uint32_t len){
