@@ -115,8 +115,8 @@ class BlackBox: public SdFs
     }
 
     public: void addNewLogStr(CanTelemetryMsg *log){
-    
-        MEASURE_EXEC_TIME("Printing to buffer"){sdBuffer.println(log->toString());}
+        char str[64];
+        MEASURE_EXEC_TIME("Printing to buffer"){sdBuffer.println(log->toString(str,sizeof(str)));}
         if(sdBuffer.bytesUsed() >= 800){
             MEASURE_EXEC_TIME("Write to SD"){sdBuffer.writeOut(sdBuffer.bytesUsed());}
         }

@@ -2,12 +2,20 @@
 #include <ACAN.h>
 #include <ChRt.h>
 #include "BlackBox.h"
-#include "RF24Transceiver.h"
+#include "RFfunctions.cpp"
 #include "TelemetryMessages.h"
 
 
+// Size of fifo in records.
+const size_t FIFO_SIZE = 32;
 
+// Count of data records in fifo.
+SEMAPHORE_DECL(fifoData, 0);
 
+// Count of free buffers in fifo.
+SEMAPHORE_DECL(fifoSpace, FIFO_SIZE);
+
+CanTelemetryMsg CanMsgFifo[FIFO_SIZE];
 
 class ThreadState {
   public:
@@ -26,49 +34,71 @@ MUTEX_DECL(serialMtx);
 MUTEX_DECL(bbMtx);
 MUTEX_DECL(rfMTX);
 
-BSEMAPHORE_DECL(runCanWorker,1);
 
+THD_WORKING_AREA(waCanReceiver,256);
+THD_FUNCTION(canReceiverThd, arg){
+  CANMessage frame;
+  CanTelemetryMsg *msg;
+
+  uint32_t count = 0;
+  size_t fifoHead = 0;
+
+  WITH_MTX(serialMtx){Serial.println("Starting Receiver...");}
+
+  while(globalState.isLogging){
+    
+    WITH_MTX(serialMtx){Serial.println("Hello");}
+
+    msg = &CanMsgFifo[fifoHead];
+
+    msg->cmd = RECEIVED_CAN;
+    msg->data64 = count++;
+    msg->id = 0x10A;
+
+    //CanMsgFifo[fifoHead].update(&frame);
+    chSemSignal(&fifoData);
+
+    // Advance FIFO index.
+    fifoHead = fifoHead < (FIFO_SIZE - 1) ? fifoHead + 1 : 0;
+    chThdSleepMilliseconds(1000);
+  }
+}
+
+BSEMAPHORE_DECL(runCanWorker,1);
 
 THD_WORKING_AREA(waCanWorker,512);
 THD_FUNCTION(canWorkerFunc, arg){
   ThreadState *state = (ThreadState*)arg;
 
-  CANMessage frame;
-  CanTelemetryMsg msg;
-  msg.cmd = RECEIVED_CAN;
+  //CanTelemetryMsg *msg;
 
-  while(!state->terminate){
+  size_t fifoTail = 0;
 
-    if(!globalState.isLogging){
-      chBSemWait(&runCanWorker);
+  WITH_MTX(serialMtx){Serial.println("Starting listener...");}
+
+  while(globalState.isLogging){
+   
+    chSemWait(&fifoData);
+
+    CanTelemetryMsg *msg = &CanMsgFifo[fifoTail];
+
+
+    if(Serial){
+      WITH_MTX(serialMtx){
+        char str[64];
+        msg->toString(str,64);
+        Serial.println(str);
+      }
     }
-
     
-    if(ACAN::can0.receive(frame)){
+    chSysLock();
+    RFtransmit((BaseTelemetryMsg*)msg,32);
+    chSysUnlock();
 
-      msg.update(&frame);
-
-      if(Serial){ // print debug info if a serial listener is attached
-        WITH_MTX(serialMtx){
-          Serial.println(msg.toString(HEX));
-        }
-      }
-      
-      if(globalState.isLogging){ // save CAN message to black box
-        WITH_MTX(bbMtx){
-          //bb.addNewLogStr(&msg);
-        }
-      }
-         
-      if(globalState.isTransmittingRT){  // send real time CAN bus data via RF
-        WITH_MTX(rfMTX){
-          //msg.toMessage()->toBytes()
-        }
-      }
-      
-    }
-
-    chThdSleepMicroseconds(100);
+    chSemSignal(&fifoSpace);
+    // Advance FIFO index.
+    fifoTail = fifoTail < (FIFO_SIZE - 1) ? fifoTail + 1 : 0;
+        
   }
 
   
@@ -79,19 +109,27 @@ ThreadState canWorkerState;
 void chSetup(){
   chSysInit();
   
-  chThdCreateStatic(waCanWorker, sizeof(waCanWorker), NORMALPRIO, canWorkerFunc, &canWorkerState);
-
+  chThdCreateStatic(waCanWorker, sizeof(waCanWorker), NORMALPRIO+1, canWorkerFunc, &canWorkerState);
+  chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO+2, canReceiverThd, NULL);
 }
+
+CANMessage frame;
+CanTelemetryMsg msg;
 
 void setup(){
   Serial.begin(9600);
   while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
   pinMode(LED_BUILTIN,OUTPUT);
 
-  ACANSettings settings(125 * 1000);
-  ACAN::can0.begin(settings);
+  //ACANSettings settings(125 * 1000);
+  //if(ACAN::can0.begin(settings)){Serial.println("CAN setup failed!");}
+  RFinit();
 
   Serial.println("Starting...");
+
+  /*for(uint32_t i = 0; i < FIFO_SIZE; i++){
+    CanMsgFifo[i].cmd = RECEIVED_CAN;
+  }*/
 
   chBegin(chSetup);
 
@@ -100,6 +138,7 @@ void setup(){
 
 
 void loop(){
+  
 
   if(Serial.available()){
     uint8_t read = Serial.read();

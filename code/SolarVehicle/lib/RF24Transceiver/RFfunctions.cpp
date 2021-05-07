@@ -1,10 +1,11 @@
 #include <Arduino.h>
 #include <SPI.h>
-#include "RF24.h"
+#include <RF24.h>
+#include <nRF24L01.h>
 #include "TelemetryMessages.h"
 
 #define COUNT 5     // Number of transmission retries
-#define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
+#define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us) 
 
 #ifdef TEENSY40_BOARD
 bool radioNumber = 0;
@@ -14,7 +15,7 @@ bool radioNumber = 1;
 bool radioNumber = 1;
 #endif
 
-RF24 radio(9, 10);  // CE and CSN pins
+RF24 radio(9, 10);                                      // CE and CSN pins
 static const byte address[][6] = {"00001", "00002"};    // TX/RX byte addresses
 
 // RFinit() function
@@ -25,6 +26,7 @@ void RFinit()
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level 
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
     radio.enableDynamicPayloads();           
+    radio.setAutoAck(true);
     radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
     radio.openWritingPipe(address[!radioNumber]);
@@ -37,9 +39,17 @@ void RFinit()
 void RFtransmit(BaseTelemetryMsg *msg, int size)
 {
     radio.stopListening();                                      // Starts TX mode
-    bool report = radio.write(msg, size);                       // Send message and wait for acknowledge
+    bool report = radio.write(msg, size);                       // Send message and wait for acknowledge 
     if (report){    // Checks if message was delivered
         Serial.print(F("Transmission successful! "));           // message was delivered
+        if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
+            radio.read(msg, size);                              // Loads ACK packet into msg
+            Serial.print(F("Acknowledge received: "));
+            char str[64];
+            msg->toString(str,sizeof(str));
+            Serial.print(str);                      // Prints ACK packet
+        }
+        Serial.println();
     } else {
         Serial.println(F("Transmission failed or timed out"));  // message was not delivered
     }
@@ -53,7 +63,9 @@ void RFreceive(BaseTelemetryMsg *received)
     uint8_t pipe; 
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(received, 32);                               // Read message, cannot be larger than 32 bytes (null-terminated)
-        Serial.println(received->toString());                   // Print message
+        char tmp[64];
+        received->toString(tmp, sizeof(tmp));
+        Serial.println(tmp);   // Print message
         radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
     }
 }
