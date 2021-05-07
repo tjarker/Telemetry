@@ -39,18 +39,11 @@ void RFinit()
 void RFtransmit(BaseTelemetryMsg *msg, int size)
 {
     radio.stopListening();                                      // Starts TX mode
-    unsigned long start_timer = micros();
     bool report = radio.write(msg, size);                       // Send message and wait for acknowledge 
     if (report){    // Checks if message was delivered
-        radio.startListening();
-        while(!radio.available()){
-            unsigned long start_timeout = millis();
-            if (millis() - start_timeout > 200){ break; }
-        }
-        unsigned long end_timer = micros();
         Serial.print(F("Transmission successful! "));           // message was delivered
         if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
-            radio.read(&msg, size);                             // Loads ACK packet into msg
+            radio.read(msg, size);                              // Loads ACK packet into msg
             Serial.print(F("Acknowledge received: "));
             Serial.print(msg->toString());                      // Prints ACK packet
         }
@@ -68,7 +61,8 @@ void RFreceive(BaseTelemetryMsg *received)
     uint8_t pipe; 
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(received, 32);                               // Read message, cannot be larger than 32 bytes (null-terminated)
-        Serial.println(received->toString());                   // Print message
+        char tmp[64];
+        Serial.println(received->toString(tmp, sizeof(tmp)));   // Print message
         radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
     }
 }
