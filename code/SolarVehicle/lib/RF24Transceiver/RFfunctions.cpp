@@ -64,7 +64,8 @@ void RFreceive(BaseTelemetryMsg *received)
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(received, 32);                               // Read message, cannot be larger than 32 bytes (null-terminated)
         char tmp[64];
-        Serial.println(received->toString(tmp, sizeof(tmp)));   // Print message
+        received->toString(tmp, sizeof(tmp));
+        Serial.println(tmp);   // Print message
         radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
     }
 }
