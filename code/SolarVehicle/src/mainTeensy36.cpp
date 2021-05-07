@@ -106,33 +106,11 @@ THD_FUNCTION(canWorkerFunc, arg){
 
 ThreadState canWorkerState;
 
-
-THD_WORKING_AREA(waTest,256);
-THD_FUNCTION(testerFun,arg){
-  uint32_t count = 0;
-  while(true){
-    BaseTelemetryMsg base;
-    CanTelemetryMsg *bla = (CanTelemetryMsg*)&base;
-    bla->cmd = RECEIVED_CAN;
-    bla->data64 = count++;
-    bla->id = 0x10A;
-    chSysLock();
-    MEASURE_EXEC_TIME("Sending RF"){
-      RFtransmit(bla->toMessage(), 32);
-    }
-    chSysUnlock();
-    Serial.println(base.toString());
-    chThdSleepMilliseconds(1000);
-  }
-    
-}
-
 void chSetup(){
   chSysInit();
   
   chThdCreateStatic(waCanWorker, sizeof(waCanWorker), NORMALPRIO+1, canWorkerFunc, &canWorkerState);
   chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO+2, canReceiverThd, NULL);
-  //chThdCreateStatic(waTest,sizeof(waTest),NORMALPRIO + 1,testerFun,NULL);
 }
 
 CANMessage frame;
