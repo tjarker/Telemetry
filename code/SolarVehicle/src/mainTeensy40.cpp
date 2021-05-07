@@ -1,4 +1,4 @@
-
+/*
 #include "ChRt.h"
 #include "RFfunctions.cpp"
 
@@ -63,7 +63,7 @@ void setup()
 }
 
 void loop(){}
-
+*/
 #include "RFfunctions.cpp"
 
 void setup()
@@ -77,4 +77,15 @@ void loop()
 {
   BaseTelemetryMsg received; 
   RFreceive(&received);
+  char tmp[64];
+  switch (received.cmd){
+
+    case RECEIVED_CAN: 
+      ((CanTelemetryMsg *) &received)->toString(tmp, sizeof(tmp)); 
+      Serial.println(tmp);
+      break; 
+
+    default:
+      break;
+  }
 }
