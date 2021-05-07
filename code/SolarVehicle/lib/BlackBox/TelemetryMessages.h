@@ -160,16 +160,8 @@ class CanTelemetryMsg {
     #else
 
 
-    public: const String toJSON(){
-      if(this->cmd == CMD::RECEIVED_CAN){
-        char tmp[200];
-        snprintf(tmp,200,"{\"cmd\":%d,\"can\":{\"id\":%d,\"rtr\":%s,\"len\":%d,\"data\":%llu,\"stamp\":{\"hour\":%d,\"minute\":%d,\"second\":%d}}}\n",cmd,id,rtr ? "true" : "false",len,data64,h,m,s);
-        return String(tmp);
-      } else {
-        char tmp[50];
-        snprintf(tmp,50,"{\"cmd\":%d,\"can\":null",cmd);
-        return String(tmp);
-      }
+    public: const String toJSON(char *buf, uint32_t len){
+      return snprintf(buf,len,"{\"cmd\":%d,\"can\":{\"id\":%d,\"rtr\":%s,\"len\":%d,\"data\":%llu,\"stamp\":{\"hour\":%d,\"minute\":%d,\"second\":%d}}}\n",cmd,id,rtr ? "true" : "false",this->len,data64,h,m,s);
     }
     
 
