@@ -45,7 +45,9 @@ void RFtransmit(BaseTelemetryMsg *msg, int size)
         if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
             radio.read(msg, size);                              // Loads ACK packet into msg
             Serial.print(F("Acknowledge received: "));
-            Serial.print(msg->toString());                      // Prints ACK packet
+            char str[64];
+            msg->toString(str,sizeof(str));
+            Serial.print(str);                      // Prints ACK packet
         }
         Serial.println();
     } else {
