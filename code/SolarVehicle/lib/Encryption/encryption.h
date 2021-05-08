@@ -1,11 +1,12 @@
-/** Encryption using RSA algorithm
- *
- *  For more information, see http://www.trytoprogram.com/cpp-examples/cplusplus-program-encrypt-decrypt-string/
+/** 
+ * Encryption and decryption of char array message using the RSA algorithm.
+ * Two prime numbers must be chosen, one for the public key and one for the private key.
+ * For more information, see http://www.trytoprogram.com/cpp-examples/cplusplus-program-encrypt-decrypt-string/
 */
 
 
-#ifndef __BLACKBOX_H__
-#define __BLACKBOX_H__
+#ifndef __ENCRYPTION_H__
+#define __ENCRYPTION_H__
 
 #include <stdlib.h>
 #include <math.h>
@@ -16,26 +17,33 @@ using namespace std;
 
 class security {
     public:
-        int pub_key = 7;                            // Public key
-        int prv_key = 13;                           // Private key
-        int t = (7 - 1)*(13 - 1);                   // Totient function
-        int n = pub_key * prv_key;                  // Modulus of prime numbers
+        int pub_key = 7;                                       // Public key
+        int prv_key = 13;                                      // Private key
+
+        int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
+        int n = pub_key * prv_key;                             // Modulus of prime numbers
         int i, flag;
         long int e[200], d[200], temp[200], j;
         char en[200], m[200];
 
     /**
      * @brief Function to check for prime number
+     * @param Integer under test
     */
     private: int prime(int pr){
         j = sqrt(pr);
         for (int l = 2; l <= j; l++){
             if (pr % l == 0){
-                return 0; // false
+                return 0;
             }
         }
-        return 1; // true
+        return 1;
     }
+
+    /**
+     * @brief Returns first possible integer ratio for totient function and parameter integer
+     * @param Integer for which the corresponding modulus with the totient function isn't 0
+    */
     private: long int cd(long int a){
         long int k = 1;
         while (1){
@@ -54,11 +62,10 @@ class security {
             int k = 0;
             for (i = 2; i < t; i++){
                 if (t % i == 0){
-                    continue; //Eksekveres 3 gange
+                    continue;
                 }
                 flag = prime(i);
                 if (flag == 1 && i != pub_key && i != prv_key){
-                flag = prime(i);
                     e[k] = i;
                     flag = cd(e[k]);
                     if (flag > 0){
@@ -72,6 +79,10 @@ class security {
             }
         }
 
+        /**
+         * @brief Encrypts input message
+         * @param Message as char pointer array
+        */
         char* encrypt(char *message){
             long int pt, ct, key = e[0], k, len;
             i = 0;
@@ -85,45 +96,35 @@ class security {
                     k = k * pt;
                     k = k % n;
                 }
-                temp[i] = k;
+                temp[i] = k;                       // Array used for encryption and decryption
                 ct = k + 96;
-                en[i] = ct;
+                message[i] = ct;                   // Encrypted message
                 i++;
             }
-            en[i] = -1;
-            // Encrypted message
-            for (i = 0; en[i] != -1; i++){
-                message[i] = en[i];
-            }
+
             return message;
         }
 
+        /**
+         * @brief Decrypts input message
+         * @param Message as char pointer array
+        */
         char* decrypt(char* message){
-            long int pt, ct, key = d[0], k;
+            long int pt, ct, key = d[0], k, len;
             i = 0;
-            while(message[i] != -1){
-                Serial.print(String("Debug"));
-                Serial.println(message[i]);
-                Serial.println(temp[i]);
-                ct = temp[i];
+            len = strlen(message);
+            while(i != len){
+                ct = temp[i];                      // Array used for encryption and decryption
                 k = 1;
                 for (j = 0; j < key; j++){
                     k = k * ct;
                     k = k % n;
                 }
                 pt = k + 96;
-                Serial.println(pt);
-                message[i] = pt;
+                message[i] = pt;                   // Decrypted message
                 i++;
             }
-            m[i] = -1;
-            // Decrypted message
-            for (i = 0; m[i] != -1; i++){
-                message[i] = m[i];
-                Serial.print(String("Debug"));
-                Serial.print(m[i]);
-            }
-            Serial.println();
+
             return message;
         }
 };
