@@ -10,10 +10,8 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
 #include <stdio.h>
 #include <Arduino.h>
-using namespace std;
 
 class security {
     public:
@@ -83,10 +81,9 @@ class security {
          * @brief Encrypts input message
          * @param Message as char pointer array
         */
-        char* encrypt(char *message){
-            long int pt, ct, key = e[0], k, len;
+        char* encrypt(char *message, long int len){
+            long int pt, ct, key = e[0], k;
             i = 0;
-            len = strlen(message);
 
             while(i != len){
                 pt = message[i];
@@ -109,10 +106,9 @@ class security {
          * @brief Decrypts input message
          * @param Message as char pointer array
         */
-        char* decrypt(char* message){
-            long int pt, ct, key = d[0], k, len;
+        char* decrypt(char* message, long int len){
+            long int pt, ct, key = d[0], k;
             i = 0;
-            len = strlen(message);
             while(i != len){
                 ct = temp[i];                      // Array used for encryption and decryption
                 k = 1;
