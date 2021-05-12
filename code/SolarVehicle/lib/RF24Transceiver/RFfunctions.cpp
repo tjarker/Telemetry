@@ -57,7 +57,7 @@ void RFtransmit(BaseTelemetryMsg *msg, int size)
 
 // First receive() function
 // Takes no arguments, prints received message to serial
-void RFreceive(BaseTelemetryMsg *received)
+bool RFreceive(BaseTelemetryMsg *received)
 {
     radio.startListening();                                     // Starts RX mode
     uint8_t pipe; 
