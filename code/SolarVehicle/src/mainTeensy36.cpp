@@ -4,18 +4,10 @@
 #include "BlackBox.h"
 #include "RFfunctions.cpp"
 #include "TelemetryMessages.h"
+#include "util/Fifo.h"
 
 
-// Size of fifo in records.
-const size_t FIFO_SIZE = 32;
-
-// Count of data records in fifo.
-SEMAPHORE_DECL(fifoData, 0);
-
-// Count of free buffers in fifo.
-SEMAPHORE_DECL(fifoSpace, FIFO_SIZE);
-
-CanTelemetryMsg CanMsgFifo[FIFO_SIZE];
+Fifo<CanTelemetryMsg> canFifo(32);
 
 class ThreadState {
   public:
