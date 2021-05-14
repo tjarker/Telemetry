@@ -5,7 +5,7 @@
 #include "TelemetryMessages.h"
 
 #define COUNT 5     // Number of transmission retries
-#define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us) 
+#define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
 
 #ifdef TEENSY40_BOARD
 bool radioNumber = 0;
@@ -22,10 +22,10 @@ static const byte address[][6] = {"00001", "00002"};    // TX/RX byte addresses
 // Takes no arguments.
 void RFinit()
 {
-    radio.begin();                                              
-    radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level 
+    radio.begin();
+    radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
-    radio.enableDynamicPayloads();           
+    radio.enableDynamicPayloads();
     radio.setAutoAck(true);
     radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
@@ -36,10 +36,10 @@ void RFinit()
 
 // First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
-bool RFtransmit(BaseTelemetryMsg *msg, int size)
+void RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
 {
     radio.stopListening();                                      // Starts TX mode
-    bool report = radio.write(msg, size);                       // Send message and wait for acknowledge 
+    bool report = radio.write(msg, size);                       // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
         Serial.print(F("Transmission successful! "));           // message was delivered
         if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
@@ -62,7 +62,7 @@ bool RFtransmit(BaseTelemetryMsg *msg, int size)
 bool RFreceive(BaseTelemetryMsg *received)
 {
     radio.startListening();                                     // Starts RX mode
-    uint8_t pipe; 
+    uint8_t pipe;
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(received, 32);                               // Read message, cannot be larger than 32 bytes (null-terminated)
         if (received->cmd == RECEIVED_CAN){
@@ -73,5 +73,5 @@ bool RFreceive(BaseTelemetryMsg *received)
         radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
         return true;
     }
-    return false; 
+    return false;
 }

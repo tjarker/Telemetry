@@ -18,7 +18,7 @@ typedef enum CMD: uint8_t {
   FILE_STREAM_START = 0x04,
   FILE_STREAM_STOP = 0x05,
   FILE_STREAM_DATA = 0x06
-};
+} cmd_t;
 
 
 
@@ -28,10 +28,10 @@ typedef enum CMD: uint8_t {
 
 
 
-// base class for 
+
 class BaseTelemetryMsg {
 
-  public: CMD cmd;
+  public: cmd_t cmd;
   public: uint8_t data[31];
 
   public: uint32_t toString(char *buf, uint32_t len){
@@ -53,7 +53,7 @@ class BaseTelemetryMsg {
 
 
 class FileStreamMsg {
-  public: CMD cmd;
+  public: cmd_t cmd;
   public: char str[31];
 
   public: const String toString(){
@@ -72,7 +72,7 @@ class FileStreamMsg {
 
 class CanTelemetryMsg {
     public:
-      CMD cmd;          // offset = 0x00:      opcode of the message
+      cmd_t cmd;          // offset = 0x00:      opcode of the message
       // data payload
       uint16_t id;      // offset = 0x01-0x02: identifier accompanying the CAN frame
       uint8_t rtr;      // offset = 0x03:      indicator of whether the frame is requesting data from another device
