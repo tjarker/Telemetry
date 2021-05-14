@@ -36,7 +36,7 @@ void RFinit()
 
 // First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
-void RFtransmit(BaseTelemetryMsg *msg, int size)
+bool RFtransmit(BaseTelemetryMsg *msg, int size)
 {
     radio.stopListening();                                      // Starts TX mode
     bool report = radio.write(msg, size);                       // Send message and wait for acknowledge 
@@ -47,11 +47,13 @@ void RFtransmit(BaseTelemetryMsg *msg, int size)
             Serial.print(F("Acknowledge received: "));
             char str[64];
             msg->toString(str,sizeof(str));
-            Serial.print(str);                      // Prints ACK packet
+            Serial.print(str);                                  // Prints ACK packet
         }
         Serial.println();
+        return true;
     } else {
         Serial.println(F("Transmission failed or timed out"));  // message was not delivered
+        return false;
     }
 }
 
@@ -69,5 +71,7 @@ bool RFreceive(BaseTelemetryMsg *received)
             Serial.println(tmp);                                // Print message
         }
         radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
+        return true;
     }
+    return false; 
 }
