@@ -14,7 +14,7 @@
 
 - [Solar Car Unit](documentation/SolarCarUnit.md)
 - [Support Vehicle Unit](documentation/supportVehicleUnit.md)
-- [RF Transmission Protocol](documentation/transmissionProtocol.md)
+- [Message Protocols](documentation/messageProtocol.md)
 - [SCU Commands](documentation/scuCommands.md)
 - [Throughput analysis](documentation/throughputAnalysis.md)
 

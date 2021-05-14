@@ -10,7 +10,7 @@
 
 #endif
 
-enum CMD: uint8_t {
+typedef enum CMD: uint8_t {
   RECEIVED_CAN = 0x00, 
   BROADCAST_CAN = 0x01,
   START_LOGGING = 0x02, 
