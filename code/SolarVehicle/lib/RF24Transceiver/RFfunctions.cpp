@@ -36,7 +36,7 @@ void RFinit()
 
 // First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
-void RFtransmit(BaseTelemetryMsg *msg, int size)
+void RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
 {
     radio.stopListening();                                      // Starts TX mode
     bool report = radio.write(msg, size);                       // Send message and wait for acknowledge 

@@ -4,7 +4,7 @@
 #include "BlackBox.h"
 #include "RFfunctions.cpp"
 #include "TelemetryMessages.h"
-#include "util/Fifo.h"
+#include "Fifo.h"
 
 
 Fifo<CanTelemetryMsg> canFifo(32);
@@ -14,6 +14,19 @@ class ThreadState {
     uint8_t isRunning = true;
     uint8_t terminate = false;
     uint8_t pause = false;
+    thread_reference_t trp = NULL;
+
+  public: void suspend(){
+    chSysLock();
+    chThdSuspendS(&trp);
+    chSysUnlock();
+  }
+  public: void wakeUp(msg_t msg){
+    chSysLock();
+    chThdResumeI(&trp,msg);
+    pause = false;
+    chSysUnlock();
+  }
 };
 
 class GlobalState {
@@ -29,50 +42,57 @@ MUTEX_DECL(rfMTX);
 
 THD_WORKING_AREA(waCanReceiver,256);
 THD_FUNCTION(canReceiverThd, arg){
+
+  ThreadState *state = (ThreadState*) arg;
+
   CANMessage frame;
   CanTelemetryMsg *msg;
 
   uint32_t count = 0;
-  size_t fifoHead = 0;
+  uint32_t fifoHead = 0;
 
   WITH_MTX(serialMtx){Serial.println("Starting Receiver...");}
 
-  while(globalState.isLogging){
-    
-    WITH_MTX(serialMtx){Serial.println("Hello");}
+  while(!state->terminate){
 
-    msg = &CanMsgFifo[fifoHead];
+    if(state->pause){
+      state->suspend();
+    }
+
+    msg = canFifo.get(fifoHead);
 
     msg->cmd = RECEIVED_CAN;
     msg->data64 = count++;
     msg->id = 0x10A;
 
-    //CanMsgFifo[fifoHead].update(&frame);
-    chSemSignal(&fifoData);
+    canFifo.signalWrite();
+    canFifo.advance(&fifoHead);
 
-    // Advance FIFO index.
-    fifoHead = fifoHead < (FIFO_SIZE - 1) ? fifoHead + 1 : 0;
     chThdSleepMilliseconds(1000);
   }
 }
 
-BSEMAPHORE_DECL(runCanWorker,1);
+
 
 THD_WORKING_AREA(waCanWorker,512);
 THD_FUNCTION(canWorkerFunc, arg){
   ThreadState *state = (ThreadState*)arg;
 
-  //CanTelemetryMsg *msg;
+  CanTelemetryMsg *msg;
 
-  size_t fifoTail = 0;
+  uint32_t fifoTail = 0;
 
   WITH_MTX(serialMtx){Serial.println("Starting listener...");}
 
-  while(globalState.isLogging){
+  while(!state->terminate){
    
-    chSemWait(&fifoData);
+    canFifo.waitForData();
 
-    CanTelemetryMsg *msg = &CanMsgFifo[fifoTail];
+    if(state->pause){
+      state->suspend();
+    }
+
+    msg = canFifo.get(fifoTail);
 
 
     if(Serial){
@@ -87,9 +107,8 @@ THD_FUNCTION(canWorkerFunc, arg){
     RFtransmit((BaseTelemetryMsg*)msg,32);
     chSysUnlock();
 
-    chSemSignal(&fifoSpace);
-    // Advance FIFO index.
-    fifoTail = fifoTail < (FIFO_SIZE - 1) ? fifoTail + 1 : 0;
+    canFifo.signalRead();
+    canFifo.advance(&fifoTail);
         
   }
 
@@ -97,12 +116,13 @@ THD_FUNCTION(canWorkerFunc, arg){
 }
 
 ThreadState canWorkerState;
+ThreadState canReceiverState;
 
 void chSetup(){
   chSysInit();
   
   chThdCreateStatic(waCanWorker, sizeof(waCanWorker), NORMALPRIO+1, canWorkerFunc, &canWorkerState);
-  chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO+2, canReceiverThd, NULL);
+  chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO+2, canReceiverThd, &canReceiverState);
 }
 
 CANMessage frame;
@@ -117,11 +137,9 @@ void setup(){
   //if(ACAN::can0.begin(settings)){Serial.println("CAN setup failed!");}
   RFinit();
 
-  Serial.println("Starting...");
+  Serial.println("Starting...");  
 
-  /*for(uint32_t i = 0; i < FIFO_SIZE; i++){
-    CanMsgFifo[i].cmd = RECEIVED_CAN;
-  }*/
+  canFifo.clear();
 
   chBegin(chSetup);
 
@@ -146,13 +164,12 @@ void loop(){
         while(true){}
         break;
       case 'p':
-        if(globalState.isLogging){
+        if(!canWorkerState.pause){
           Serial.println("Pausing...");
-          globalState.isLogging = false;
+          canWorkerState.pause = true;
         } else {
           Serial.println("Resuming...");
-          chBSemSignal(&runCanWorker);
-          globalState.isLogging = true;
+          canWorkerState.wakeUp(NULL);
         }
         break;
       default:
