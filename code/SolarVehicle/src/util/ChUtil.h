@@ -1,5 +1,7 @@
+#ifndef __CH_UTIL__
+#define __CH_UTIL__
 #include "ChRt.h"
-#include "TelemetryMessages.h"
+#include "communication/TelemetryMessages.h"
 
 // fifoBuffer class declaration
 class fifoBuffer 
@@ -61,3 +63,5 @@ void fifoBuffer::fifoMoveTail()
 {
     _fifoTail = _fifoTail < (_fifoSize - 1) ? _fifoTail + 1 : 0; 
 }
+
+#endif

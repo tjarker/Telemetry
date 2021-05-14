@@ -1,5 +1,5 @@
-#include "ChUtil.h"
-#include "RFfunctions.cpp"
+#include "util/ChUtil.h"
+#include "rf/RFfunctions.h"
 
 // Declare fifoBuffer for RXthread and TXthread 
 fifoBuffer RFoutbox, RFinbox;

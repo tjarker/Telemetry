@@ -6,8 +6,8 @@
 #include <RingBuf.h>
 #include <Arduino.h>
 #include <TimeLib.h>
-#include "util.h"
-#include "TelemetryMessages.h"
+#include "util/util.h"
+#include "communication/TelemetryMessages.h"
 
 
 #define SD_CONFIG  SdioConfig(FIFO_SDIO)

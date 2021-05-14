@@ -1,8 +1,10 @@
+#ifndef __RF_FUNCTIONS__
+#define __RF_FUNCTIONS__
 #include <Arduino.h>
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
-#include "TelemetryMessages.h"
+#include "communication/TelemetryMessages.h"
 
 #define COUNT 5     // Number of transmission retries
 #define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
@@ -28,7 +30,7 @@ void RFinit()
     radio.enableDynamicPayloads();
     radio.setAutoAck(true);
     radio.enableAckPayload();
-    radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
+    //radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
     radio.openWritingPipe(address[!radioNumber]);
     radio.openReadingPipe(1, address[radioNumber]);
     radio.startListening();                                     // Starts RX mode
@@ -36,7 +38,7 @@ void RFinit()
 
 // First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
-void RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
+bool RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
 {
     radio.stopListening();                                      // Starts TX mode
     bool report = radio.write(msg, size);                       // Send message and wait for acknowledge
@@ -75,3 +77,6 @@ bool RFreceive(BaseTelemetryMsg *received)
     }
     return false;
 }
+
+
+#endif
