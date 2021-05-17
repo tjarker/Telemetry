@@ -8,6 +8,7 @@ class Fifo {
     private: 
         semaphore_t spaceSem, dataSem;
         T *fifo;
+        size_t _fifoHead, _fifoTail;  
         uint32_t size;
 
     public: Fifo(uint32_t size){
@@ -15,6 +16,8 @@ class Fifo {
         spaceSem    = _SEMAPHORE_DATA(spaceSem,(cnt_t)size);
         dataSem     = _SEMAPHORE_DATA(dataSem,0);
         fifo        = new T[size];
+        _fifoHead   = 0;
+        _fifoTail   = 0;
     }
 
     public: ~Fifo(){
@@ -33,8 +36,8 @@ class Fifo {
         chSemWait(&dataSem);
     }
 
-    public: void advance(uint32_t *index){
-        *index = *index < (size - 1) ? *index + 1 : 0; 
+    public: uint32_t advance(uint32_t *index){
+        return *index < (size - 1) ? *index + 1 : 0;  
     }
 
     public: void signalRead(){
@@ -53,6 +56,34 @@ class Fifo {
         memset(fifo,0,size*sizeof(T));
     }
 
+    // Returns a pointer to element at fifoEnd index
+    public: T *fifoHead(){
+        return &fifo[_fifoHead];    
+    }
+
+    // Returns a pointer to element at fifoTail index
+    public: T *fifoTail(){
+        return &fifo[_fifoTail];
+    }
+
+    // Increments fifoHead pointer
+    public: void fifoMoveHead(){
+        advance(&_fifoHead); 
+    }
+
+    // Increments fifoTail pointer
+    public: void fifoMoveTail(){
+        advance(&_fifoTail);
+    }
+
+    // Used to check whether fifo is full
+    public: bool fifoFull(){
+        return advance(&_fifoTail) == _fifoHead;
+    }
+
+    public: bool fifoEmpty(){
+        return _fifoTail == _fifoHead; 
+    }
 };
 
 #endif
