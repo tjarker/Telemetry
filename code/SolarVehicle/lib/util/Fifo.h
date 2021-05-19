@@ -1,8 +1,11 @@
 #ifndef __FIFO_H__
 #define __FIFO_H__
 
-#include<ChRt.h>
+#include <ChRt.h>
 
+/**
+ * A Fifo with built in semaphores
+ */
 template<typename T>
 class Fifo {
     private: 
@@ -24,34 +27,47 @@ class Fifo {
         delete [] fifo;
     }
 
+    // returns a pointer to the element at the given position in the fifo
     public: T *get(uint32_t index){
         return &fifo[index];
     }
 
+    // puts the caller thread to sleep until free fifo slots are present
     public: void waitForSpace(){
         chSemWait(&spaceSem);
     }
 
+    // puts the caller thread to sleep until new data is present
     public: void waitForData(){
         chSemWait(&dataSem);
     }
 
-    public: uint32_t advance(uint32_t *index){
-        return *index < (size - 1) ? *index + 1 : 0;  
+    // returns a pointer index to the next fifo slot
+    public: uint32_t advance(uint32_t index){
+        return index < (size - 1) ? index + 1 : 0;  
     }
 
+    // advances the index pointer to the next fifo slot
+    public: void advance(uint32_t *index){
+        *index = *index < (size - 1) ? *index + 1 : 0;
+    }
+
+    // signals that an element has been read and that the slot is free for new data
     public: void signalRead(){
         chSemSignal(&spaceSem);
     }
 
+    // signals that new data is present
     public: void signalWrite(){
         chSemSignal(&dataSem);
     }
     
+    // returns the size of the fifo
     public: uint32_t getSize(){
         return size;
     }
 
+    // set all fifo entries to 0
     public: void clear(){
         memset(fifo,0,size*sizeof(T));
     }
@@ -68,17 +84,17 @@ class Fifo {
 
     // Increments fifoHead pointer
     public: void fifoMoveHead(){
-        advance(&_fifoHead); 
+        advance(_fifoHead); 
     }
 
     // Increments fifoTail pointer
     public: void fifoMoveTail(){
-        advance(&_fifoTail);
+        advance(_fifoTail);
     }
 
     // Used to check whether fifo is full
     public: bool fifoFull(){
-        return advance(&_fifoTail) == _fifoHead;
+        return advance(_fifoTail) == _fifoHead;
     }
 
     public: bool fifoEmpty(){

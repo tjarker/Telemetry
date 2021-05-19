@@ -1,7 +1,7 @@
 #ifndef __CH_UTIL__
 #define __CH_UTIL__
 #include "ChRt.h"
-#include "communication/TelemetryMessages.h"
+#include "TelemetryMessages.h"
 
 // fifoBuffer class declaration
 class fifoBuffer 
