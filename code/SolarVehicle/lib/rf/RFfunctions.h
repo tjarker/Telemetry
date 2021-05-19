@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
-#include "communication/TelemetryMessages.h"
+#include "TelemetryMessages.h"
 
 #define COUNT 5     // Number of transmission retries
 #define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
