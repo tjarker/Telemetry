@@ -1,17 +1,33 @@
+/**
+ * This file contains the main function for the solar car unit.
+ * 
+ * It sets up three worker threads:
+ *  - the CAN receiver worker, responsible for putting newly received messages in a FIFO
+ *  - the blackbox worker, responsible for adding messages from the FIFO to the logs
+ *  - the radio worker, responsible for streaming messages from the FIFO to the support vehicle
+ * 
+ * The main thread is responsible for listing for commands from the support vehicle and executing them.
+ * 
+ */
+
 #include <Arduino.h>
 #include <ACAN.h>
 #include <ChRt.h>
-#include "blackbox/BlackBox.h"
-#include "rf/RFfunctions.h"
-#include "communication/TelemetryMessages.h"
-#include "util/Fifo.h"
-#include "util/ThreadState.h"
+
+#include "BlackBox.h"
+#include "RFfunctions.h"
+#include "TelemetryMessages.h"
+#include "Fifo.h"
+#include "ThreadState.h"
+
 #include "solar-car/blackBoxThd.h"
 #include "solar-car/CanReceiverThd.h"
 #include "solar-car/Mutexes.h"
 #include "solar-car/RfThd.h"
 
-
+/**
+ * Singleton containing global state variables
+ */
 class GlobalState {
   public:
     uint8_t isLogging = true;
@@ -26,25 +42,36 @@ ThreadState rfWorkerState;
 
 void chSetup();
 void setup(){
+
+  // initialize serial port
   Serial.begin(9600);
   while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
+
+  // setup built in LED
   pinMode(LED_BUILTIN,OUTPUT);
 
+  Serial.println("Initializing...");
+
+  // setup CAN bus
   //ACANSettings settings(125 * 1000);
   //if(ACAN::can0.begin(settings)){Serial.println("CAN setup failed!");}
+
+  // setup radio module
   RFinit();
 
-  Serial.println("Starting...");  
-
   canFifo.clear();
+
+  Serial.println("Starting...");  
 
   chBegin(chSetup);
 
 }
 
 void chSetup(){
+
   chSysInit();
   
+  // create the three worker threads
   BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &canFifo, .state = &blackBoxWorkerState, .bb = &bb};
   chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO+1, canWorkerFunc, &blackBoxWorkerBundle);
   rfWorkerBundle rfWorkerBundle = {.fifo = &canFifo, .state = &rfWorkerState};
@@ -54,7 +81,6 @@ void chSetup(){
 }
 
 void loop(){
-  
 
   if(Serial.available()){
     uint8_t read = Serial.read();
@@ -64,15 +90,11 @@ void loop(){
         blackBoxWorkerState.terminate = true;
         canReceiverState.terminate = true;
         rfWorkerState.terminate = true;
-        //bb.endLogFile();
-        //bb.printLogFiles();
-        //bb.printLastLog();
-        //bb.~BlackBox();
-
         while(true){}
         break;
+
       case 'p':
-        if(!blackBoxWorkerState.pause){
+        if(!canReceiverState.pause){
           Serial.println("Pausing...");
           canReceiverState.pause = true;
         } else {
@@ -83,58 +105,6 @@ void loop(){
       default:
         break;
     }
-    
   }
-
-/*
-  if(radio.available()){
-    BaseTelemetryMsg msg;
-    radio.receive(&msg);
-    switch(msg.cmd){
-      case BROADCAST_CAN:
-        CanTelemetryMsg *can = (CanTelemetryMsg*)&msg;
-        WITH_MTX(serialMtx){Serial.println(can->toString());}
-        break;
-      // ....
-    }
-  }
-*/
-
+  
 }
-
-
-/*
-msg.cmd = STOP_LOGGING;
-  msg.id = 0x74F;
-  msg.rtr = true;
-  msg.data64 = 0xAABBCCDDEEFFLLU;
-  msg.len = 8;
-  msg.s = 2;
-  msg.m = 3;
-  msg.h = 4;
-
-  uint8_t *msgBytes = msg.toMessage()->toBytes();
-  for(uint8_t i = 0; i < 32; i++){
-    Serial.print(msgBytes[i],HEX);
-    Serial.print(" ");
-  }
-  Serial.println();
-
-
-  BaseTelemetryMsg *base = (BaseTelemetryMsg*)msgBytes;
-  Serial.println(base->cmd,HEX);
-  for(uint8_t i = 0; i < 31; i++){
-    Serial.print(base->data[i],HEX);
-    Serial.print(" ");
-  }
-  Serial.println();
-
-  FileStreamMsg fsm;
-  fsm.cmd = FILE_STREAM_DATA;
-  snprintf(fsm.str, 31, "Hello World!");
-
-  Serial.println(fsm.toString());
-
-  base = fsm.toMessage();
-  Serial.println(base->toString());
-*/

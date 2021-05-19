@@ -1,19 +1,31 @@
+/**
+ * This file contains the function for the thread responsible for streaming CAN
+ * messages to the support vehicle.
+ */
+
 #ifndef __RF_THD_H__
 #define __RF_THD_H__
 
 #include <ChRt.h>
-#include "util/ThreadState.h"
-#include "solar-car/Mutexes.h"
-#include "blackbox/BlackBox.h"
-#include "util/Fifo.h"
-#include "rf/RFfunctions.h"
 
+#include "ThreadState.h"
+#include "BlackBox.h"
+#include "Fifo.h"
+#include "RFfunctions.h"
+
+#include "solar-car/Mutexes.h"
+
+/**
+ * A bundle used for passsing all relevant resources to the radio thread
+ */
 struct rfWorkerBundle{
     Fifo<CanTelemetryMsg> *fifo;
     ThreadState *state;
 };
 
+// the working area for the thread is 512 bytes
 THD_WORKING_AREA(waRfWorker,512);
+
 THD_FUNCTION(rfWorker, arg){
 
   rfWorkerBundle *bundle = (rfWorkerBundle*) arg;
@@ -36,6 +48,8 @@ THD_FUNCTION(rfWorker, arg){
 
     msg = fifo->get(fifoTail);
 
+    Serial.println("hello");
+
     WITH_MTX(serialMtx){
       Serial.print("rf worker msg nr. ");
       Serial.println((uint32_t)msg->data64);
@@ -50,7 +64,6 @@ THD_FUNCTION(rfWorker, arg){
     fifo->advance(&fifoTail);
         
   }
-
   
 }
 
