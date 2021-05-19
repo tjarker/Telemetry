@@ -2,7 +2,7 @@
 #include "rf/RFfunctions.h"
 
 // Declare fifoBuffer for RXthread and TXthread 
-fifoBuffer RFoutbox, RFinbox;
+Fifo<CanTelemetryMsg> RFinbox(32), RFoutbox(32);
 
 // 512 byte working stack for RXthread
 THD_WORKING_AREA(waRXthread, 512); 
@@ -14,11 +14,11 @@ THD_FUNCTION(RXthread, arg)
   while (true){
     uint8_t pipe; 
     if (radio.available(&pipe)){
-      radio.read(RFoutbox.fifoTail(), 32);
+      radio.read(RFoutbox.fifoTail(), 32);                // Always write data to fifoTail
       Serial.println("Message received");
       radio.writeAckPayload(1, RFoutbox.fifoTail(), 32);      
-      RFoutbox.fifoMoveTail();
-      chSemSignal(&RFoutbox.fifoData);
+      RFoutbox.fifoMoveTail();                            // Increment fifoTail index
+      RFoutbox.signalWrite();                             // Signal data write
     } else {
       Serial.println("No message received");
     }
@@ -33,21 +33,21 @@ THD_FUNCTION(TXthread, arg)
   (void)arg; 
   radio.stopListening();
   while (true){
-    bool report = radio.write(RFinbox.fifoHead(), 32);
-    if (report){
-      Serial.print(F("Transmission successful! "));
-      if (radio.isAckPayloadAvailable()){
+    bool report = radio.write(RFinbox.fifoHead(), 32);    // Always read data to fifoHead
+    if (report){                                          // Message transmission success
+      Serial.print(F("Transmission successful! "));       
+      if (radio.isAckPayloadAvailable()){                 // Get ack payload if available
         radio.read(RFinbox.fifoHead(), 32); 
         Serial.print(F("Acknowledge received: "));
         char str[64];
-        RFinbox.fifoHead()->toString(str,sizeof(str));
-        Serial.print(str);
-      }
+        RFinbox.fifoTail()->toString(str,sizeof(str));    
+        Serial.print(str);                                // Print ack payload
+      } 
       Serial.println(); 
-      RFinbox.fifoMoveTail();
-      chSemSignal(&RFinbox.fifoSpace);     
-    } else {
-      Serial.println(F("Transmission failed or timed out"));  // message was not delivered
+      RFinbox.fifoMoveHead();                             // Increment fifoHead index
+      RFinbox.signalRead();                               // Signal data read
+    } else {                                              // Message transmission failed
+      Serial.println(F("Transmission failed or timed out"));  
     }
   }
 }
