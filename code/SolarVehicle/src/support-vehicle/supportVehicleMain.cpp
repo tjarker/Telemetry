@@ -1,6 +1,5 @@
-//#include "ChUtil.h"
 #include "Fifo.h"
-#include "RFfunctions.cpp"
+#include "RFfunctions.h"
 
 // Declare fifoBuffer for RXthread and TXthread 
 Fifo<CanTelemetryMsg> RFinbox(32), RFoutbox(32);
