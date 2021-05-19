@@ -25,6 +25,11 @@
   - Stripboard 
   - Custom
 
+# Setup
+```shell
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
+```
+
 # Meeting Notes
 
 <table>
