@@ -3,6 +3,31 @@
 #include <Arduino.h>
 #include <ChRt.h>
 
+class ThreadState {
+  public:
+    uint8_t isRunning = true;
+    uint8_t terminate = false;
+    uint8_t pause = false;
+    thread_reference_t trp = NULL;
+
+  public: void suspend(){
+    chSysLock();
+    chThdSuspendS(&trp);
+    chSysUnlock();
+  }
+  public: void wakeUp(msg_t msg){
+    chSysLock();
+    chThdResumeI(&trp,msg);
+    pause = false;
+    chSysUnlock();
+  }
+};
+
+class GlobalState {
+  public:
+    uint8_t isLogging = true;
+    uint8_t isTransmittingRT = true;
+} globalState;
 
 class MutexLocker{
     private: bool killed = false;
