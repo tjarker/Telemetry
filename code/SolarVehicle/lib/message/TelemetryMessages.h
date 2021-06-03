@@ -142,7 +142,7 @@ class CanTelemetryMsg {
         return "\"time\",\"id\",\"rtr\",\"len\",\"data\"";
     }
 
-    #ifdef TEENSY36_BOARD
+    #ifdef CAN_ADD_TIME_STAMPS
 
     public: CanTelemetryMsg(CANMessage *msg){
         id = msg->id;
@@ -165,9 +165,9 @@ class CanTelemetryMsg {
         h = hour();
     }
 
-    #else
+    #endif
 
-
+    #ifdef CAN_SERIALIZE_TO_JSON
     public: const String toJSON(char *buf, uint32_t len){
       return snprintf(buf,len,"{\"cmd\":%d,\"can\":{\"id\":%d,\"rtr\":%s,\"len\":%d,\"data\":%llu,\"stamp\":{\"hour\":%d,\"minute\":%d,\"second\":%d}}}\n",cmd,id,rtr ? "true" : "false",this->len,data64,h,m,s);
     }
