@@ -25,10 +25,23 @@
   - Stripboard 
   - Custom
 
-# Setup
-```shell
-curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
-```
+# TODO
+- revisit problem description (include sending data to matlab?)
+- TelemetryUI:
+  - implement command buttons (e.g. start/stop logging)
+- File transfer from SCU to SVU?
+- solder on perfboard
+- when should we meet with martin and christian
+- implement log file switching (open a new log file, when another is filled (?)) in SCU
+- final paper
+  - decide general structure (sections)
+- poster
+- stitch some holes in the meeting notes
+- command system
+- documentation
+  - throughput analysis
+  - message protocol
+
 
 # Meeting Notes
 
