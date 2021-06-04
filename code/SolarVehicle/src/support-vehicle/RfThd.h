@@ -7,12 +7,10 @@
 #define __RF_THD_H__
 
 #include <ChRt.h>
-
 #include "ThreadState.h"
 #include "Fifo.h"
 #include "RFfunctions.h"
-
-#include "solar-car/Mutexes.h"
+#include "support-vehicle/Mutexes.h"
 
 /**
  * A bundle used for passsing all relevant resources to the radio thread
@@ -23,19 +21,19 @@ struct rfWorkerBundle{
 };
 
 // the working area for the thread is 512 bytes
-THD_WORKING_AREA(waRfWorker,512);
+THD_WORKING_AREA(waRXthread,512);
 
-THD_FUNCTION(rfWorker, arg){
+THD_FUNCTION(RXthread, arg){
 
   rfWorkerBundle *bundle = (rfWorkerBundle*) arg;
   ThreadState *state = bundle->state;
   Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
 
-  CanTelemetryMsg *msg;
+  //CanTelemetryMsg *msg;
 
   uint32_t fifoTail = 0;
 
-  WITH_MTX(serialMtx){Serial.println("Starting RF Transmitting thread...");}
+  //WITH_MTX(serialMtx){Serial.println("Starting RF Transmitting thread...");}
 
   while(!state->terminate){
    
@@ -45,14 +43,45 @@ THD_FUNCTION(rfWorker, arg){
       state->suspend();
     }
 
-    msg = fifo->get(fifoTail);
+    //msg = fifo->fifoHead();
 
     Serial.println("hello");
-
-    WITH_MTX(serialMtx){
-      Serial.print("rf worker msg nr. ");
-      Serial.println((uint32_t)msg->data64);
+    
+    WITH_MTX(rfMTX){
+      chSysLock();
+      RFreceive(fifo->fifoHead(),32);
+      chSysUnlock();
     }
+    
+    fifo->fifoMoveHead();
+        
+  }
+  
+}
+// the working area for the thread is 512 bytes
+THD_WORKING_AREA(waTXthread,512);
+
+THD_FUNCTION(TXthread, arg){
+
+  rfWorkerBundle *bundle = (rfWorkerBundle*) arg;
+  ThreadState *state = bundle->state;
+  Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
+
+  CanTelemetryMsg *msg;
+
+  uint32_t fifoHead = 0;
+
+  while(!state->terminate){
+   
+    fifo->waitForData();
+
+    if(state->pause){
+      state->suspend();
+    }
+
+    msg = fifo->get(fifoHead);
+
+    Serial.println("hello");
     
     WITH_MTX(rfMTX){
       chSysLock();
@@ -60,10 +89,9 @@ THD_FUNCTION(rfWorker, arg){
       chSysUnlock();
     }
     
-    fifo->advance(&fifoTail);
+    fifo->advance(&fifoHead);
         
   }
   
 }
-
 #endif

@@ -97,6 +97,7 @@ class Fifo {
         return advance(_fifoTail) == _fifoHead;
     }
 
+    // Used to check whether fifo is empty
     public: bool fifoEmpty(){
         return _fifoTail == _fifoHead; 
     }
