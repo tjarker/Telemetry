@@ -53,4 +53,40 @@ As Tjark has a soldering station, he will take care of soldering the components,
 
 More specifically, Steffan will look into RF, Tjark into SD storage and Victor at CANbus conncection.
 
+\section{17-03}
+The components for our project arrives.
+
+\section{19-03}
+Our group is granted access to the login for the ecocar wiki page, https://dtucar.com/wiki/index.php?title=Main_Page
+
+\section{22-03}
+The first successful transmission of a signal between the two antennas, not as part of the final setup
+
+\section{25-03}
+The first code for use with CAN data is uploaded. Simple "HELLO" was printed at each attempt to transmit. Since antennas was not connected, nothing would happen, but nonetheless the code worked as expected.
+
+\section{26-03}
+Source filter to manage what files would be compiled to which boards, blackbox code is made.
+
+\section{07-04}
+The first physical meeting at DTU campus. Test transmission between the two Teensy modules with connected antennas successful. Attempt to create a test environment in PlatformIO's integrated Test environment unsuccessful. Issue created at Github, github.com/platformio/platformio-docs/issues/190. User GUI for computer in support car created in Maven project. After working on the project at building 324, we had a look around at the DTU ecocar workshop.
+
+\section{16-04}
+Test environment implemented in seperate source folder using AUnit library, this environment tests successfully.
+
+\section{23-04}
+Trouble with transmission and receiving between the two units, code revisited. Protocol for commands through the GUI implemented.
+
+\section{30-04}
+Test file almost finished for files in project
+
+\section{07-05}
+We've discussed earlier that data encryption during transmission would be a useful feature to have during the actual competition, and we therefore decided to make an encryption class that encrypts data. The main part of the class is done, but there are some trouble with the pointers. We've also worked on FIFO buffers for the module.
+
+\section{08-05}
+The encryption class is done :)
+
+\section{14-05}
+We've met briefly over Discord to discuss the plan going forward in the three week period. This will revolve around the entire process of sending, as in, should the logging to blackbox and transmission of data be on the same thread, should the support vehicle be able to request log files, in contrast to making log files itself, in case of transmission disruption etc. We believe we are nearing a point where we have made all the small pieces that must now work together.
+
 \end{document}

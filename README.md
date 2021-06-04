@@ -18,17 +18,38 @@
 - [SCU Commands](documentation/scuCommands.md)
 - [Throughput analysis](documentation/throughputAnalysis.md)
 
-# Open Issue List
-- How do we wish to implement the final Solar Car and Support Car modules? 
-  - PCB design [(just to solder on Teensy)](https://oshpark.com/shared_projects/eowWCxeK)
-  - Perfboard 
-  - Stripboard 
-  - Custom
 
-# Setup
-```shell
-curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
-```
+# TODO
+
+## Implementation and Test
+- TelemetryUI: implement command buttons (e.g. start/stop logging)
+- File transfer from SCU to SVU?
+- fix uno CAN generator
+- solder on perfboard
+- Test RF modules over long distance >100 m (basic range test) [monday]
+- implement log file switching (open a new log file, when another is filled (?)) in SCU (4GiB-1 is theoretical limit)
+- command system
+
+## Organization
+- ask other groups about their CAN bus usage (how many messages per sec?)
+- should we make the repository public? -> bitbucket
+- when should we meet with Martin and Christian -> Martin next week, Christian possibly next monday
+- write out to other groups for a big test setup in the end
+
+## Documentation
+- revisit problem description (include sending data to matlab?)
+- stitch some holes in the meeting notes
+- throughput analysis
+- message protocol
+
+## Hand-ins
+- Final paper, due 21/06/21
+- Poster, due 23/06/21
+- Process description (Individual), due 21/06/21
+- wiki ? -> upload paper
+
+
+
 
 # Meeting Notes
 
