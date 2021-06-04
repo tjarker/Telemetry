@@ -7,6 +7,7 @@ import telemetryui.components.{CanFrameForm, CanFrameLabel, SerialPortSelector}
 import telemetryui.serial.SerialWorker
 import telemetryui.types.CMD.BROADCAST_CAN
 import telemetryui.types.TelemetryMessage
+import telemetryui.udp.UdpServer
 
 import java.awt.Dimension
 import javax.swing.UIManager
@@ -52,11 +53,14 @@ object TelemetryUI extends SimpleSwingApplication {
     port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0)
     port.openPort()
 
-    val serialWorker = new SerialWorker(port,Seq(println,canLbl.update),Seq(println),Seq(() => println("Error")))
-    serialWorker.start()
+    val udpServer = new UdpServer
 
+    val serialWorker = new SerialWorker(port,Seq(println,canLbl.update,udpServer.broadcastCanMessage),Seq(println),Seq(() => println("Error")))
+    serialWorker.start()
+    udpServer.start()
     override def closeOperation(): Unit = {
       println("Closing")
+      udpServer.close()
       serialWorker.quit()
       exit(0)
     }
