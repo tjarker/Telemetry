@@ -18,19 +18,13 @@
 - [SCU Commands](documentation/scuCommands.md)
 - [Throughput analysis](documentation/throughputAnalysis.md)
 
-# Open Issue List
-- How do we wish to implement the final Solar Car and Support Car modules? 
-  - PCB design [(just to solder on Teensy)](https://oshpark.com/shared_projects/eowWCxeK)
-  - Perfboard 
-  - Stripboard 
-  - Custom
 
 # TODO
 
 ## Implementation and Test
 - TelemetryUI:
   - implement command buttons (e.g. start/stop logging)
-- <span style>File transfer from SCU to SVU?
+- File transfer from SCU to SVU?
 - fix uno CAN generator
 - solder on perfboard
 - Test RF modules over long distance >100 m (basic range test) [monday]
