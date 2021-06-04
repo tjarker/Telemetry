@@ -11,12 +11,13 @@
 #include "Fifo.h"
 #include "RFfunctions.h"
 #include "support-vehicle/Mutexes.h"
+#include "MutexLocker.h"
 
 /**
  * A bundle used for passsing all relevant resources to the radio thread
  */
 struct rfWorkerBundle{
-    Fifo<CanTelemetryMsg> *fifo;
+    Fifo<BaseTelemetryMsg> *fifo;
     ThreadState *state;
 };
 
@@ -27,7 +28,7 @@ THD_FUNCTION(RXthread, arg){
 
   rfWorkerBundle *bundle = (rfWorkerBundle*) arg;
   ThreadState *state = bundle->state;
-  Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
+  Fifo<BaseTelemetryMsg> *fifo = bundle->fifo;
 
   //CanTelemetryMsg *msg;
 
@@ -49,7 +50,7 @@ THD_FUNCTION(RXthread, arg){
     
     WITH_MTX(rfMTX){
       chSysLock();
-      RFreceive(fifo->fifoHead(),32);
+      RFreceive(fifo->fifoHead());
       chSysUnlock();
     }
     
@@ -65,9 +66,9 @@ THD_FUNCTION(TXthread, arg){
 
   rfWorkerBundle *bundle = (rfWorkerBundle*) arg;
   ThreadState *state = bundle->state;
-  Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
+  Fifo<BaseTelemetryMsg> *fifo = bundle->fifo;
 
-  CanTelemetryMsg *msg;
+  BaseTelemetryMsg *msg;
 
   uint32_t fifoHead = 0;
 
@@ -85,7 +86,7 @@ THD_FUNCTION(TXthread, arg){
     
     WITH_MTX(rfMTX){
       chSysLock();
-      RFtransmit((BaseTelemetryMsg*)msg,32);
+      RFtransmit(msg,32);
       chSysUnlock();
     }
     

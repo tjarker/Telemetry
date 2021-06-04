@@ -15,7 +15,7 @@
 #include "TelemetryMessages.h"
 #include "support-vehicle/RfThd.h"
 
-Fifo<CanTelemetryMsg> RFoutbox(32), RFinbox(32); 
+Fifo<BaseTelemetryMsg> RFoutbox(32), RFinbox(32); 
 ThreadState RXthreadState, TXthreadState; 
 
 void chSetup(){
