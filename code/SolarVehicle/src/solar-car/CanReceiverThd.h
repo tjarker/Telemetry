@@ -35,7 +35,7 @@ THD_FUNCTION(canReceiverThd, arg){
   CanTelemetryMsg *msg;
 
   uint32_t count = 0;
-  uint32_t fifoHead = 0;
+  uint32_t fifoWriteIndex = 0;
 
   WITH_MTX(serialMtx){Serial.println("Starting CAN receiver thread...");}
 
@@ -45,16 +45,17 @@ THD_FUNCTION(canReceiverThd, arg){
       state->suspend();
     }
 
-    msg = fifo->get(fifoHead);
+    msg = fifo->get(fifoWriteIndex);
 
     msg->cmd = RECEIVED_CAN;
     msg->data64 = count++;
     msg->id = 0x10A;
 
+    //WITH_MTX(serialMtx){Serial.println("Rx pushed to FIFO...");}
     fifo->signalWrite();
-    fifo->advance(&fifoHead);
+    fifo->advance(&fifoWriteIndex);
 
-    chThdSleepMilliseconds(500);
+    chThdSleepMilliseconds(5);
   }
 }
 

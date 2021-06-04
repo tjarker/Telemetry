@@ -24,7 +24,7 @@ struct rfWorkerBundle{
 };
 
 // the working area for the thread is 512 bytes
-THD_WORKING_AREA(waRfWorker,512);
+THD_WORKING_AREA(waRfWorker,1024);
 
 THD_FUNCTION(rfWorker, arg){
 
@@ -34,7 +34,7 @@ THD_FUNCTION(rfWorker, arg){
 
   CanTelemetryMsg *msg;
 
-  uint32_t fifoTail = 0;
+  uint32_t fifoReadIndex = 0;
 
   WITH_MTX(serialMtx){Serial.println("Starting RF Transmitting thread...");}
 
@@ -46,7 +46,7 @@ THD_FUNCTION(rfWorker, arg){
       state->suspend();
     }
 
-    msg = fifo->get(fifoTail);
+    msg = fifo->get(fifoReadIndex);
 
     Serial.println("hello");
 
@@ -57,11 +57,12 @@ THD_FUNCTION(rfWorker, arg){
     
     WITH_MTX(rfMTX){
       chSysLock();
-      RFtransmit((BaseTelemetryMsg*)msg,32);
+      Serial.println("Calling rftransmit");
+      MEASURE("RF"){RFtransmit((BaseTelemetryMsg*)msg,32);}
       chSysUnlock();
     }
     
-    fifo->advance(&fifoTail);
+    fifo->advance(&fifoReadIndex);
         
   }
   

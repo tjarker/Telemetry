@@ -84,12 +84,12 @@ class Fifo {
 
     // Increments fifoHead pointer
     public: void fifoMoveHead(){
-        advance(_fifoHead); 
+        _fifoHead = advance(_fifoHead); 
     }
 
     // Increments fifoTail pointer
     public: void fifoMoveTail(){
-        advance(_fifoTail);
+        _fifoTail = advance(_fifoTail);
     }
 
     // Used to check whether fifo is full

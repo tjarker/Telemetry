@@ -24,7 +24,9 @@ static const byte address[][6] = {"00001", "00002"};    // TX/RX byte addresses
 // Takes no arguments.
 void RFinit()
 {
-    radio.begin();
+    if(!radio.begin()){
+        Serial.println("Radio not working!");
+    }
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
     radio.enableDynamicPayloads();
