@@ -1,3 +1,5 @@
+#ifndef __CH_UTIL__
+#define __CH_UTIL__
 #include "ChRt.h"
 #include "TelemetryMessages.h"
 
@@ -61,3 +63,5 @@ void fifoBuffer::fifoMoveTail()
 {
     _fifoTail = _fifoTail < (_fifoSize - 1) ? _fifoTail + 1 : 0; 
 }
+
+#endif

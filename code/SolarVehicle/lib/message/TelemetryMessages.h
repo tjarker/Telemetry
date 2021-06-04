@@ -1,3 +1,17 @@
+/**
+ * This file contains all the message types used in the telemetry system.
+ * 
+ * All messages have a length of 32 bytes where the first byte is encoding the
+ * type of the message.
+ * 
+ * All messages can be casted to the BaseTelemetryMsg which treats the data
+ * payload as raw bytes.
+ * 
+ * Message types are:
+ *  - CanTelemetryMsg:  Contains a CAN frame and a time stamp
+ *  - FileStreamMsg:    Can be used to stream characters from a file
+ */
+
 #ifndef __TELEMETRYMESSAGES_H__
 #define __TELEMETRYMESSAGES_H__
 
@@ -10,6 +24,9 @@
 
 #endif
 
+/**
+ * This type is used for indentifying message types
+ */
 typedef enum CMD: uint8_t {
   RECEIVED_CAN = 0x00, 
   BROADCAST_CAN = 0x01,
@@ -20,15 +37,9 @@ typedef enum CMD: uint8_t {
   FILE_STREAM_DATA = 0x06
 } cmd_t;
 
-
-
-
-
-
-
-
-
-
+/**
+ * The base type for all messages treating the payload data as raw bytes
+ */
 class BaseTelemetryMsg {
 
   public: cmd_t cmd;
@@ -47,11 +58,9 @@ class BaseTelemetryMsg {
 
 }__attribute__((packed));
 
-
-
-
-
-
+/**
+ * A message type used to stream characters from a file
+ */
 class FileStreamMsg {
   public: cmd_t cmd;
   public: char str[31];
@@ -66,13 +75,12 @@ class FileStreamMsg {
 
 }__attribute__((packed));
 
-
-
-
-
+/**
+ * A message type used to send a CAN frame and a associated time stamp
+ */
 class CanTelemetryMsg {
     public:
-      cmd_t cmd;          // offset = 0x00:      opcode of the message
+      cmd_t cmd;        // offset = 0x00:      type of the message
       // data payload
       uint16_t id;      // offset = 0x01-0x02: identifier accompanying the CAN frame
       uint8_t rtr;      // offset = 0x03:      indicator of whether the frame is requesting data from another device

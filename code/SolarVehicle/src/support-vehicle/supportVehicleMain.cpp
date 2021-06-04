@@ -1,6 +1,10 @@
 #include "Fifo.h"
+<<<<<<< HEAD:code/SolarVehicle/src/mainTeensy40.cpp
 #include "util.h"
 #include "RFfunctions.cpp"
+=======
+#include "RFfunctions.h"
+>>>>>>> 375268759b6cf456ffd2f2b1200d62b716760b62:code/SolarVehicle/src/support-vehicle/supportVehicleMain.cpp
 
 // Initialize state machine for RXthread and TXthread
 ThreadState radioReceiverThreadState, radioTransmitterThreadState, serialReceiverThreadState, serialTransmitterThreadState; 
