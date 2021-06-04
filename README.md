@@ -22,8 +22,7 @@
 # TODO
 
 ## Implementation and Test
-- TelemetryUI:
-  - implement command buttons (e.g. start/stop logging)
+- TelemetryUI: implement command buttons (e.g. start/stop logging)
 - File transfer from SCU to SVU?
 - fix uno CAN generator
 - solder on perfboard
