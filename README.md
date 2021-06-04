@@ -26,22 +26,28 @@
   - Custom
 
 # TODO
-- should we make the repository public?
+- should we make the repository public? -> bitbucket
+- wiki ? -> upload paper
 - revisit problem description (include sending data to matlab?)
 - TelemetryUI:
   - implement command buttons (e.g. start/stop logging)
 - File transfer from SCU to SVU?
+- fix uno CAN generator
 - solder on perfboard
+- Test RF modules over long distance >100 m (basic range test) [monday]
 - when should we meet with martin and christian
-- implement log file switching (open a new log file, when another is filled (?)) in SCU
-- final paper
-  - decide general structure (sections)
-- poster
+- implement log file switching (open a new log file, when another is filled (?)) in SCU (4GiB-1 is theoretical limit)
+- Hand-ins: 
+    - Final paper, due 21/06/21
+    - Poster, due 23/06/21
+    - Process description (Individual), due 21/06/21
 - stitch some holes in the meeting notes
 - command system
 - documentation
   - throughput analysis
   - message protocol
+- write out to other groups for a big test setup in the end
+- ask other groups about their CAN bus usage (how many messages per sec?)
 
 
 # Meeting Notes
