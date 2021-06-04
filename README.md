@@ -26,6 +26,7 @@
   - Custom
 
 # TODO
+- should we make the repository public?
 - revisit problem description (include sending data to matlab?)
 - TelemetryUI:
   - implement command buttons (e.g. start/stop logging)
