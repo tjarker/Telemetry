@@ -22,3 +22,4 @@ The custom data structure is also send out via radio to the support vehicle. Pus
 
 After this operation the system is ready to receive the next CAN frame. In total ??? us have been spend leading to a potential processing throughput of ??? frame/s. This is ??? than the CAN bus can feed and the system has on average ??? us idle time where system configuration and other side tasks can be conducted.
 
+- rfTransmit: 1.54 ms

@@ -35,31 +35,33 @@ THD_FUNCTION(canWorkerFunc, arg){
 
   CanTelemetryMsg *msg;
 
-  uint32_t fifoTail = 0;
+  uint32_t fifoReadIndex = 0;
 
   WITH_MTX(serialMtx){Serial.println("Starting listener...");}
 
   while(!state->terminate){
-   
+
+    Serial.println("BB waiting for data...");
     fifo->waitForData();
 
     if(state->pause){
       state->suspend();
     }
 
-    msg = fifo->get(fifoTail);
+    msg = fifo->get(fifoReadIndex);
 
 
     if(Serial){
       WITH_MTX(serialMtx){
         char str[64];
         msg->toString(str,64);
+        Serial.print("BB: ");
         Serial.println(str);
       }
     }
 
     fifo->signalRead();
-    fifo->advance(&fifoTail);
+    fifo->advance(&fifoReadIndex);
         
   }
 
