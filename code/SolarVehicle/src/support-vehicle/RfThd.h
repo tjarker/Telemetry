@@ -21,6 +21,7 @@ THD_FUNCTION(radioReceiverThread, arg){
   threadBundle *radioReceiverBundle = (threadBundle*) arg;
   ThreadState *radioReceiverState = radioReceiverBundle->state;
   Fifo<BaseTelemetryMsg> *radioReceiverFifo = radioReceiverBundle->fifo;
+  chThdSleepMilliseconds(100); 
   while(!radioReceiverState->terminate){
     Serial.println("radioReceiverThread");
     //radioReceiverFifo->waitForSpace();
@@ -33,7 +34,6 @@ THD_FUNCTION(radioReceiverThread, arg){
       radioReceiverFifo->moveTail();
       radioReceiverFifo->signalData();
     }  
-    chThdSleepMilliseconds(1000);
   }
   
 }
