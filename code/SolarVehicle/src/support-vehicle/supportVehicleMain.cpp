@@ -1,43 +1,33 @@
-/**
- * This file contains the main function for the solar car unit.
- * 
- * It sets up three worker threads:
- *  - the CAN receiver worker, responsible for putting newly received messages in a FIFO
- *  - the blackbox worker, responsible for adding messages from the FIFO to the logs
- *  - the radio worker, responsible for streaming messages from the FIFO to the support vehicle
- * 
- * The main thread is responsible for listing for commands from the support vehicle and executing them.
- * 
- **/
-
 #include <Arduino.h>
 #include <SPI.h>
-#include "RFfunctions.h"
-#include "TelemetryMessages.h"
 #include "support-vehicle/RfThd.h"
 
 Fifo<BaseTelemetryMsg> RFoutbox(32), RFinbox(32); 
-ThreadState RXthreadState, TXthreadState; 
+ThreadState radioReceiverState, radioTransmitterState, serialReceiverState, serialTransmitterState; 
 
 void chSetup()
 {
   chSysInit();
-  rfWorkerBundle TXworkerBundle = {.fifo = &RFinbox, .state = &TXthreadState};
-  chThdCreateStatic(waTXthread,sizeof(waTXthread), NORMALPRIO + 2, TXthread, &TXworkerBundle);
-  rfWorkerBundle RXworkerBundle = {.fifo = &RFoutbox, .state = &RXthreadState};
-  chThdCreateStatic(waRXthread,sizeof(waRXthread), NORMALPRIO + 1, RXthread, &RXworkerBundle);
-  rfWorkerBundle serialWorkerBundle[2] = { TXworkerBundle, RXworkerBundle }; 
-  chThdCreateStatic(waSerialThread, sizeof(waSerialThread), NORMALPRIO, serialThread, &serialWorkerBundle); 
+  threadBundle radioReceiverBundle = {.fifo = &RFinbox, .state = &radioReceiverState};
+  chThdCreateStatic(waRadioReceiverThread, sizeof(waRadioReceiverThread), NORMALPRIO + 1, radioReceiverThread, &radioReceiverBundle);
+  threadBundle radioTransmitterBundle = {.fifo = &RFoutbox, .state = &radioTransmitterState};
+  chThdCreateStatic(waRadioTransmitterThread, sizeof(waRadioTransmitterThread), NORMALPRIO + 2, radioTransmitterThread, &radioTransmitterBundle);
+  threadBundle serialReceiverBundle = {.fifo = &RFoutbox, .state = &serialReceiverState};
+  chThdCreateStatic(waSerialReceiverThread, sizeof(waSerialReceiverThread), NORMALPRIO + 1, serialReceiverThread, &serialReceiverBundle);
+  threadBundle serialTransmitterBundle = {.fifo = &RFinbox, .state = &serialTransmitterState};
+  chThdCreateStatic(waSerialTransmitterThread, sizeof(waSerialTransmitterThread), NORMALPRIO + 2, serialTransmitterThread, &serialTransmitterBundle); 
 }
 
 void setup()
 {
   Serial.begin(9600); // initialize serial port
   RFinit(); 
+  RFoutbox.clear();
+  RFinbox.clear();
   chBegin(chSetup);
 }
 
 void loop()
 {
-
+  /* Not used */
 }

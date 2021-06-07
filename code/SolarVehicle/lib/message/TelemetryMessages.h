@@ -55,6 +55,12 @@ class BaseTelemetryMsg {
 
   public: uint8_t* toBytes(){return (uint8_t*)this;}
 
+  public: void randomize(){
+      this->cmd = (cmd_t) random(0, 0x99);   
+      for (int i = 0; i < 31; i++){
+        this->data[i] = random(0,0x99); 
+      }  
+  }
 
 }__attribute__((packed));
 
@@ -109,7 +115,6 @@ class CanTelemetryMsg {
     }
 
     public: BaseTelemetryMsg* toMessage(){return (BaseTelemetryMsg*)this;}
-
     
 
     public: void randomize(){

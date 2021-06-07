@@ -2,7 +2,6 @@
 #define __FIFO_H__
 
 #include <ChRt.h>
-
 /**
  * A Fifo with built in semaphores
  */
@@ -11,16 +10,16 @@ class Fifo {
     private: 
         semaphore_t spaceSem, dataSem;
         T *fifo;
-        size_t _fifoHead, _fifoTail;  
+        size_t _head, _tail;  
         uint32_t size;
 
     public: Fifo(uint32_t size){
         this->size  = size;
+        this->_head   = 0;
+        this->_tail   = 0;
         spaceSem    = _SEMAPHORE_DATA(spaceSem,(cnt_t)size);
         dataSem     = _SEMAPHORE_DATA(dataSem,0);
         fifo        = new T[size];
-        _fifoHead   = 0;
-        _fifoTail   = 0;
     }
 
     public: ~Fifo(){
@@ -71,35 +70,43 @@ class Fifo {
     public: void clear(){
         memset(fifo,0,size*sizeof(T));
     }
-
-    // Returns a pointer to element at fifoHead index
-    public: T *fifoHead(){
-        return &fifo[_fifoHead];    
+    
+    // Prints the contents of the fifo buffer for debugging
+    public: void printContents(){
+        for (int i = 0; i < size; i++){
+            Serial.print(i + " : " + fifo[i]);
+        }
+        Serial.println();
     }
 
-    // Returns a pointer to element at fifoTail index
-    public: T *fifoTail(){
-        return &fifo[_fifoTail];
+    // Returns a pointer to element at head index
+    public: T *head(){
+        return &fifo[_head];    
+    }
+
+    // Returns a pointer to element at tail index
+    public: T *tail(){
+        return &fifo[_tail];
     }
 
     // Increments fifoHead pointer
-    public: void fifoMoveHead(){
-        _fifoHead = advance(_fifoHead); 
+    public: void moveHead(){
+        _head = advance(_head); 
     }
 
-    // Increments fifoTail pointer
-    public: void fifoMoveTail(){
-        _fifoTail = advance(_fifoTail);
+    // Increments tail pointer
+    public: void moveTail(){
+        _tail = advance(_tail);
     }
 
     // Used to check whether fifo is full
-    public: bool fifoFull(){
-        return advance(_fifoTail) == _fifoHead;
+    public: bool full(){
+        return advance(_tail) == _head;
     }
 
     // Used to check whether fifo is empty
-    public: bool fifoEmpty(){
-        return _fifoTail == _fifoHead; 
+    public: bool empty(){
+        return _tail == _head; 
     }
 };
 

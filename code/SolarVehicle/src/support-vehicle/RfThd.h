@@ -1,87 +1,129 @@
-/**
- * This file contains the function for the thread responsible for streaming CAN
- * messages to the support vehicle.
- */
-
 #ifndef __RF_THD_H__
 #define __RF_THD_H__
 
 #include <ChRt.h>
 #include "ThreadState.h"
-#include "Fifo.h"
 #include "RFfunctions.h"
-#include "support-vehicle/Mutexes.h"
-#include "MutexLocker.h"
-/**
- * A bundle used for passsing all relevant resources to the radio thread
- */
-struct rfWorkerBundle{
+#include "Fifo.h"
+
+// A bundle used for passsing all relevant resources to each thread
+struct threadBundle
+{
     Fifo<BaseTelemetryMsg> *fifo;
     ThreadState *state;
 };
 
-// the working area for the thread is 1024 bytes
-THD_WORKING_AREA(waRXthread,1024);
+// the working area for the radioReceiverThread is 1024 bytes
+THD_WORKING_AREA(waRadioReceiverThread,1024);
 
-THD_FUNCTION(RXthread, arg){
+THD_FUNCTION(radioReceiverThread, arg){
 
-  rfWorkerBundle *bundle = (rfWorkerBundle*) arg;
-  ThreadState *state = bundle->state;
-  Fifo<BaseTelemetryMsg> *fifo = bundle->fifo;
+  threadBundle *radioReceiverBundle = (threadBundle*) arg;
+  ThreadState *radioReceiverState = radioReceiverBundle->state;
+  Fifo<BaseTelemetryMsg> *radioReceiverFifo = radioReceiverBundle->fifo;
+  while(!radioReceiverState->terminate){
+    Serial.println("radioReceiverThread");
+    //radioReceiverFifo->waitForSpace();
 
-  while(!state->terminate){
-    fifo->waitForSpace();
-
-    if(state->pause){
-      state->suspend();
+    if(radioReceiverState->pause){
+      radioReceiverState->suspend();
     }
 
-    if(RFreceive(fifo->fifoHead())){
-      fifo->fifoMoveTail();
-      fifo->signalData();
+    if(RFreceive(radioReceiverFifo->head())){
+      radioReceiverFifo->moveTail();
+      radioReceiverFifo->signalData();
     }  
-
-  }
-  
-}
-// the working area for the thread is 1024 bytes
-THD_WORKING_AREA(waTXthread, 1024);
-
-THD_FUNCTION(TXthread, arg){
-
-  rfWorkerBundle *bundle = (rfWorkerBundle*) arg;
-  ThreadState *state = bundle->state;
-  Fifo<BaseTelemetryMsg> *fifo = bundle->fifo;
-
-  CanTelemetryMsg msg; 
-
-  while(!state->terminate){
-    fifo->waitForData();
-
-    if(state->pause){
-      state->suspend();
-    }
-
-    msg.randomize(); 
-    
-    if (RFtransmit(msg.toMessage(), 32)){
-      fifo->fifoMoveHead();
-      fifo->signalSpace();
-    }
+    chThdSleepMilliseconds(1000);
   }
   
 }
 
-THD_WORKING_AREA(waSerialThread, 1024);
+// the working area for the radioTransmitterThread is 1024 bytes
+THD_WORKING_AREA(waRadioTransmitterThread, 1024);
 
-THD_FUNCTION(serialThread, arg)
+THD_FUNCTION(radioTransmitterThread, arg)
 {
-  rfWorkerBundle *bundle1 = (rfWorkerBundle*) (*(rfWorkerBundle**)arg), *bundle2 = (rfWorkerBundle*) (*(rfWorkerBundle**)arg + 1);
-  ThreadState *state1 = bundle1->state, *state2 = bundle2->state; 
-  Fifo<BaseTelemetryMsg> *fifo1 = bundle1->fifo, *fifo2 = bundle2->fifo; 
+  threadBundle *radioTransmitterBundle = (threadBundle*) arg;
+  ThreadState *radioTransmitterState = radioTransmitterBundle->state;
+  Fifo<BaseTelemetryMsg> *radioTransmitterFifo = radioTransmitterBundle->fifo;
+  while(!radioTransmitterState->terminate){
+    Serial.println("radioTransmitterThread");
+    //radioTransmitterFifo->waitForData();
 
-  while (!state1->terminate && !state2->terminate){
-    /* */
+    if(radioTransmitterState->pause){
+      radioTransmitterState->suspend();
+    }
+    
+    if (RFtransmit(radioTransmitterFifo->head(), 32)){
+      radioTransmitterFifo->moveHead(); 
+      radioTransmitterFifo->signalSpace();
+    }
+    chThdSleepMilliseconds(1000);
+
+  }
+  
+}
+
+// the working area for the serialReceiverThread is 1024 bytes
+THD_WORKING_AREA(waSerialReceiverThread, 1024);
+
+THD_FUNCTION(serialReceiverThread, arg)
+{
+  threadBundle *serialReceiverBundle = (threadBundle*) arg; 
+  ThreadState *serialReceiverState = serialReceiverBundle->state; 
+  Fifo<BaseTelemetryMsg> *serialReceiverFifo = serialReceiverBundle->fifo;
+
+  while (!serialReceiverState->terminate) {
+    Serial.println("serialReceiverThread");
+    //serialReceiverFifo->waitForData();
+
+    if (serialReceiverState->pause) {
+      serialReceiverState->suspend();
+    }
+
+    if (!serialReceiverFifo->empty()){
+      BaseTelemetryMsg *msg = serialReceiverFifo->head();
+      char str[128];
+      Serial.println(msg->toString(str, sizeof(str)));
+      // print to JSON file
+      serialReceiverFifo->moveHead();
+      serialReceiverFifo->signalSpace(); 
+    }
+    chThdSleepMilliseconds(1000);
+
+  } 
+}
+
+// the working area for the serialTransmitterThread is 1024 bytes
+THD_WORKING_AREA(waSerialTransmitterThread, 1024);
+
+THD_FUNCTION(serialTransmitterThread, arg)
+{
+  threadBundle *serialTransmitterBundle = (threadBundle*) arg;
+  ThreadState *serialTransmitterState = serialTransmitterBundle->state; 
+  Fifo<BaseTelemetryMsg> *serialTransmitterFifo = serialTransmitterBundle->fifo; 
+  
+  BaseTelemetryMsg *msg; 
+
+  while (!serialTransmitterState->terminate){
+    //serialTransmitterFifo->waitForSpace();
+    Serial.println("serialTransmitterThread");
+    if (serialTransmitterState->pause) {
+      serialTransmitterState->suspend();
+    }
+
+    msg->randomize(); 
+
+    if (!serialTransmitterFifo->full()){
+      if (Serial.available()){
+        msg = serialTransmitterFifo->tail(); 
+        //Serial.readBytes((char *)msg, 32);
+        serialTransmitterFifo->moveTail();
+        serialTransmitterFifo->signalData();
+      }
+    }
+    chThdSleepMilliseconds(1000);
   }
 }
+
 #endif

@@ -23,14 +23,6 @@ bool radioNumber = 1;
 
 RF24 radio(CE_PIN, CSN_PIN);                            // CE and CSN pins
 static const byte address[][6] = {"00001", "00002"};    // TX/RX byte addresses
-bool mode; 
-
-void RFinterrupt()
-{
-    bool tx, fail, rx;
-    radio.whatHappened(tx, fail, rx); 
-
-}
 
 // RFinit() function
 // Takes no arguments.
@@ -43,9 +35,9 @@ void RFinit()
     radio.setAutoAck(true);
     radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
-    pinMode(IRQ_PIN, INPUT);
-    attachInterrupt(digitalPinToInterrupt(IRQ_PIN), RFinterrupt, FALLING); 
-    radio.maskIRQ(1, 1, 0);
+    //pinMode(IRQ_PIN, INPUT);
+    //attachInterrupt(digitalPinToInterrupt(IRQ_PIN), RFinterrupt, FALLING); 
+    //radio.maskIRQ(1, 1, 0);
     radio.openWritingPipe(address[!radioNumber]);
     radio.openReadingPipe(1, address[radioNumber]);
     radio.startListening();                                     // Starts RX mode
@@ -55,7 +47,6 @@ void RFinit()
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
 bool RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
 {
-    mode = 1; 
     radio.stopListening();                                      // Starts TX mode
     bool report = radio.write(msg, size);                       // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
@@ -79,14 +70,13 @@ bool RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
 // Takes no arguments, prints received message to serial
 bool RFreceive(BaseTelemetryMsg *received)
 {
-    mode = 0;
     radio.startListening();                                     // Starts RX mode
     uint8_t pipe;
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(received, 32);                               // Read message, cannot be larger than 32 bytes (null-terminated)
-        char str[64]; 
+        /*char str[64]; 
         received->toString(str, sizeof(str));
-        Serial.println(str); 
+        Serial.println(str); */
         radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
         return true;
     }
