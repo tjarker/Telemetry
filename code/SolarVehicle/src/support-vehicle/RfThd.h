@@ -12,7 +12,6 @@
 #include "RFfunctions.h"
 #include "support-vehicle/Mutexes.h"
 #include "MutexLocker.h"
-
 /**
  * A bundle used for passsing all relevant resources to the radio thread
  */
@@ -21,8 +20,8 @@ struct rfWorkerBundle{
     ThreadState *state;
 };
 
-// the working area for the thread is 512 bytes
-THD_WORKING_AREA(waRXthread,512);
+// the working area for the thread is 1024 bytes
+THD_WORKING_AREA(waRXthread,1024);
 
 THD_FUNCTION(RXthread, arg){
 
@@ -30,37 +29,23 @@ THD_FUNCTION(RXthread, arg){
   ThreadState *state = bundle->state;
   Fifo<BaseTelemetryMsg> *fifo = bundle->fifo;
 
-  //CanTelemetryMsg *msg;
-
-  uint32_t fifoTail = 0;
-
-  //WITH_MTX(serialMtx){Serial.println("Starting RF Transmitting thread...");}
-
   while(!state->terminate){
-   
-    fifo->waitForData();
+    fifo->waitForSpace();
 
     if(state->pause){
       state->suspend();
     }
 
-    //msg = fifo->fifoHead();
+    if(RFreceive(fifo->fifoHead())){
+      fifo->fifoMoveTail();
+      fifo->signalData();
+    }  
 
-    Serial.println("hello");
-    
-    WITH_MTX(rfMTX){
-      chSysLock();
-      RFreceive(fifo->fifoHead());
-      chSysUnlock();
-    }
-    
-    fifo->fifoMoveHead();
-        
   }
   
 }
-// the working area for the thread is 512 bytes
-THD_WORKING_AREA(waTXthread,512);
+// the working area for the thread is 1024 bytes
+THD_WORKING_AREA(waTXthread, 1024);
 
 THD_FUNCTION(TXthread, arg){
 
@@ -68,31 +53,35 @@ THD_FUNCTION(TXthread, arg){
   ThreadState *state = bundle->state;
   Fifo<BaseTelemetryMsg> *fifo = bundle->fifo;
 
-  BaseTelemetryMsg *msg;
-
-  uint32_t fifoHead = 0;
+  CanTelemetryMsg msg; 
 
   while(!state->terminate){
-   
     fifo->waitForData();
 
     if(state->pause){
       state->suspend();
     }
 
-    msg = fifo->get(fifoHead);
-
-    Serial.println("hello");
+    msg.randomize(); 
     
-    WITH_MTX(rfMTX){
-      chSysLock();
-      RFtransmit(msg,32);
-      chSysUnlock();
+    if (RFtransmit(msg.toMessage(), 32)){
+      fifo->fifoMoveHead();
+      fifo->signalSpace();
     }
-    
-    fifo->advance(&fifoHead);
-        
   }
   
+}
+
+THD_WORKING_AREA(waSerialThread, 1024);
+
+THD_FUNCTION(serialThread, arg)
+{
+  rfWorkerBundle *bundle1 = (rfWorkerBundle*) (*(rfWorkerBundle**)arg), *bundle2 = (rfWorkerBundle*) (*(rfWorkerBundle**)arg + 1);
+  ThreadState *state1 = bundle1->state, *state2 = bundle2->state; 
+  Fifo<BaseTelemetryMsg> *fifo1 = bundle1->fifo, *fifo2 = bundle2->fifo; 
+
+  while (!state1->terminate && !state2->terminate){
+    /* */
+  }
 }
 #endif

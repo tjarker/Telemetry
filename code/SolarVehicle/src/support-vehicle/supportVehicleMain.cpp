@@ -8,9 +8,10 @@
  * 
  * The main thread is responsible for listing for commands from the support vehicle and executing them.
  * 
- */
+ **/
 
 #include <Arduino.h>
+#include <SPI.h>
 #include "RFfunctions.h"
 #include "TelemetryMessages.h"
 #include "support-vehicle/RfThd.h"
@@ -18,22 +19,25 @@
 Fifo<BaseTelemetryMsg> RFoutbox(32), RFinbox(32); 
 ThreadState RXthreadState, TXthreadState; 
 
-void chSetup(){
-
+void chSetup()
+{
   chSysInit();
+  rfWorkerBundle TXworkerBundle = {.fifo = &RFinbox, .state = &TXthreadState};
+  chThdCreateStatic(waTXthread,sizeof(waTXthread), NORMALPRIO + 2, TXthread, &TXworkerBundle);
   rfWorkerBundle RXworkerBundle = {.fifo = &RFoutbox, .state = &RXthreadState};
   chThdCreateStatic(waRXthread,sizeof(waRXthread), NORMALPRIO + 1, RXthread, &RXworkerBundle);
-  rfWorkerBundle TXworkerBundle = {.fifo = &RFinbox, .state = &TXthreadState};
-  chThdCreateStatic(waRXthread,sizeof(waTXthread), NORMALPRIO + 1, TXthread, &TXworkerBundle);
+  rfWorkerBundle serialWorkerBundle[2] = { TXworkerBundle, RXworkerBundle }; 
+  chThdCreateStatic(waSerialThread, sizeof(waSerialThread), NORMALPRIO, serialThread, &serialWorkerBundle); 
 }
 
 void setup()
 {
   Serial.begin(9600); // initialize serial port
   RFinit(); 
+  chBegin(chSetup);
 }
 
 void loop()
 {
-  
+
 }
