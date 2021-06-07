@@ -55,7 +55,7 @@ THD_FUNCTION(canReceiverThd, arg){
     fifo->signalWrite();
     fifo->advance(&fifoWriteIndex);
 
-    chThdSleepMilliseconds(5);
+    chThdSleepMilliseconds(1000);
   }
 }
 
