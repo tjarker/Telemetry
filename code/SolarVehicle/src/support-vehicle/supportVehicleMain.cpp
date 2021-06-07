@@ -24,16 +24,18 @@ void chSetup(){
   rfWorkerBundle RXworkerBundle = {.fifo = &RFoutbox, .state = &RXthreadState};
   chThdCreateStatic(waRXthread,sizeof(waRXthread), NORMALPRIO + 1, RXthread, &RXworkerBundle);
   rfWorkerBundle TXworkerBundle = {.fifo = &RFinbox, .state = &TXthreadState};
-  chThdCreateStatic(waRXthread,sizeof(waTXthread), NORMALPRIO + 1, TXthread, &TXworkerBundle);
+  chThdCreateStatic(waTXthread,sizeof(waTXthread), NORMALPRIO + 2, TXthread, &TXworkerBundle);
 }
 
 void setup()
 {
   Serial.begin(9600); // initialize serial port
   RFinit(); 
+  //chBegin(chSetup);
 }
 
 void loop()
 {
-  
+  BaseTelemetryMsg received; 
+  RFreceive(&received); 
 }
