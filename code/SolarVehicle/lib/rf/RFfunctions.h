@@ -6,6 +6,10 @@
 #include <nRF24L01.h>
 #include "TelemetryMessages.h"
 
+#define IRQ_PIN 2 
+#define CE_PIN 9
+#define CSN_PIN 10
+
 #define COUNT 5     // Number of transmission retries
 #define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
 
@@ -17,22 +21,31 @@ bool radioNumber = 1;
 bool radioNumber = 1;
 #endif
 
-RF24 radio(9, 10);                                      // CE and CSN pins
+RF24 radio(CE_PIN, CSN_PIN);                            // CE and CSN pins
 static const byte address[][6] = {"00001", "00002"};    // TX/RX byte addresses
+bool mode; 
+
+void RFinterrupt()
+{
+    bool tx, fail, rx;
+    radio.whatHappened(tx, fail, rx); 
+
+}
 
 // RFinit() function
 // Takes no arguments.
 void RFinit()
 {
-    if(!radio.begin()){
-        Serial.println("Radio not working!");
-    }
+    if(!radio.begin()){Serial.println("Radio not working!");}
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
     radio.enableDynamicPayloads();
     radio.setAutoAck(true);
     radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
+    pinMode(IRQ_PIN, INPUT);
+    attachInterrupt(digitalPinToInterrupt(IRQ_PIN), RFinterrupt, FALLING); 
+    radio.maskIRQ(1, 1, 0);
     radio.openWritingPipe(address[!radioNumber]);
     radio.openReadingPipe(1, address[radioNumber]);
     radio.startListening();                                     // Starts RX mode
@@ -42,6 +55,7 @@ void RFinit()
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
 bool RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
 {
+    mode = 1; 
     radio.stopListening();                                      // Starts TX mode
     bool report = radio.write(msg, size);                       // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
@@ -65,6 +79,7 @@ bool RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
 // Takes no arguments, prints received message to serial
 bool RFreceive(BaseTelemetryMsg *received)
 {
+    mode = 0;
     radio.startListening();                                     // Starts RX mode
     uint8_t pipe;
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
@@ -72,17 +87,10 @@ bool RFreceive(BaseTelemetryMsg *received)
         char str[64]; 
         received->toString(str, sizeof(str));
         Serial.println(str); 
-        /*
-        if (received->cmd == RECEIVED_CAN){
-            char tmp[64];
-            ((CanTelemetryMsg *)received)->toString(tmp, sizeof(tmp));
-            Serial.println(tmp);                                // Print message
-        }*/
         radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
         return true;
     }
     return false;
 }
-
 
 #endif

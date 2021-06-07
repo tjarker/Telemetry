@@ -29,32 +29,23 @@ THD_FUNCTION(RXthread, arg){
   ThreadState *state = bundle->state;
   Fifo<BaseTelemetryMsg> *fifo = bundle->fifo;
 
-  //CanTelemetryMsg *msg;
-
-  //uint32_t fifoTail = 0;
-
-  //WITH_MTX(serialMtx){Serial.println("Starting RF Transmitting thread...");}
-
   while(!state->terminate){
-    //Serial.println("RXthread");
-    //fifo->waitForData();
+    fifo->waitForSpace();
 
     if(state->pause){
       state->suspend();
     }
 
-    //msg = fifo->fifoHead();
+    if(RFreceive(fifo->fifoHead())){
+      fifo->fifoMoveTail();
+      fifo->signalData();
+    }  
 
-    //Serial.println("hello");
-      bool receive = RFreceive(fifo->fifoHead());
-      if(receive){
-        fifo->fifoMoveTail();
-      }  
   }
   
 }
 // the working area for the thread is 1024 bytes
-THD_WORKING_AREA(waTXthread,1024);
+THD_WORKING_AREA(waTXthread, 1024);
 
 THD_FUNCTION(TXthread, arg){
 
@@ -62,9 +53,7 @@ THD_FUNCTION(TXthread, arg){
   ThreadState *state = bundle->state;
   Fifo<BaseTelemetryMsg> *fifo = bundle->fifo;
 
-  BaseTelemetryMsg *msg;
-
-  uint32_t fifoHead = 0;
+  CanTelemetryMsg msg; 
 
   while(!state->terminate){
     fifo->waitForData();
@@ -73,19 +62,26 @@ THD_FUNCTION(TXthread, arg){
       state->suspend();
     }
 
-    msg = fifo->get(fifoHead);
-
-    //Serial.println("good bye");
+    msg.randomize(); 
     
-    WITH_MTX(rfMTX){
-      chSysLock();
-      RFtransmit(msg,32);
-      chSysUnlock();
+    if (RFtransmit(msg.toMessage(), 32)){
+      fifo->fifoMoveHead();
+      fifo->signalSpace();
     }
-    
-    fifo->advance(&fifoHead);
-        
   }
   
+}
+
+THD_WORKING_AREA(waSerialThread, 1024);
+
+THD_FUNCTION(serialThread, arg)
+{
+  rfWorkerBundle *bundle1 = (rfWorkerBundle*) (*(rfWorkerBundle**)arg), *bundle2 = (rfWorkerBundle*) (*(rfWorkerBundle**)arg + 1);
+  ThreadState *state1 = bundle1->state, *state2 = bundle2->state; 
+  Fifo<BaseTelemetryMsg> *fifo1 = bundle1->fifo, *fifo2 = bundle2->fifo; 
+
+  while (!state1->terminate && !state2->terminate){
+    /* */
+  }
 }
 #endif

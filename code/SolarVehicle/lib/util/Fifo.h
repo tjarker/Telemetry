@@ -53,12 +53,12 @@ class Fifo {
     }
 
     // signals that an element has been read and that the slot is free for new data
-    public: void signalRead(){
+    public: void signalSpace(){
         chSemSignal(&spaceSem);
     }
 
     // signals that new data is present
-    public: void signalWrite(){
+    public: void signalData(){
         chSemSignal(&dataSem);
     }
     
@@ -72,7 +72,7 @@ class Fifo {
         memset(fifo,0,size*sizeof(T));
     }
 
-    // Returns a pointer to element at fifoEnd index
+    // Returns a pointer to element at fifoHead index
     public: T *fifoHead(){
         return &fifo[_fifoHead];    
     }
