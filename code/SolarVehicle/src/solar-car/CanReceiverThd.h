@@ -23,7 +23,7 @@ struct CanReceiverBundle{
 };
 
 // the working area for the thread is 256 bytes
-THD_WORKING_AREA(waCanReceiver,256);
+THD_WORKING_AREA(waCanReceiver,1024);
 
 THD_FUNCTION(canReceiverThd, arg){
 
@@ -34,7 +34,6 @@ THD_FUNCTION(canReceiverThd, arg){
   CANMessage frame;
   CanTelemetryMsg *msg;
 
-  uint32_t count = 0;
   uint32_t fifoWriteIndex = 0;
 
   WITH_MTX(serialMtx){Serial.println("Starting CAN receiver thread...");}
@@ -45,17 +44,19 @@ THD_FUNCTION(canReceiverThd, arg){
       state->suspend();
     }
 
-    msg = fifo->get(fifoWriteIndex);
 
-    msg->cmd = RECEIVED_CAN;
-    msg->data64 = count++;
-    msg->id = 0x10A;
+    if(ACAN::can0.receive(frame)){
+      chSysLock();
+      msg = fifo->get(fifoWriteIndex);
+      msg->update(&frame);
+      fifo->signalWrite();
+      fifo->advance(&fifoWriteIndex);
+      Serial.print("Received CAN [");Serial.print(fifoWriteIndex);Serial.println("]");
+      chSysUnlock();
+    }
 
-    //WITH_MTX(serialMtx){Serial.println("Rx pushed to FIFO...");}
-    fifo->signalWrite();
-    fifo->advance(&fifoWriteIndex);
+    chThdYield();
 
-    chThdSleepMilliseconds(1000);
   }
 }
 

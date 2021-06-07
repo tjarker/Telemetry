@@ -152,11 +152,13 @@ class CanTelemetryMsg {
         stamp();
     }
     public: void update(CANMessage *msg){
-        id = msg->id;
-        rtr = msg->rtr;
-        len = msg->len;
-        data64 = msg->data64;
+        chSysLock();
+        this->id = msg->id;
+        this->rtr = msg->rtr;
+        this->len = msg->len;
+        this->data64 = msg->data64;
         stamp();
+        chSysUnlock();
     }
 
     public: void stamp(){

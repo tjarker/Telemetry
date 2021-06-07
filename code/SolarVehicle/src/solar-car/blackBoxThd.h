@@ -24,7 +24,7 @@ struct BlackboxWorkerBundle{
 };
 
 // the working area for the thread is 512 bytes
-THD_WORKING_AREA(blackBoxWorker,512);
+THD_WORKING_AREA(blackBoxWorker,1024);
 
 THD_FUNCTION(canWorkerFunc, arg){
 

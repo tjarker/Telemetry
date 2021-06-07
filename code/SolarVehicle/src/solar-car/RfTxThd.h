@@ -3,21 +3,23 @@
  * messages to the support vehicle.
  */
 
-#ifndef __RF_THD_H__
-#define __RF_THD_H__
+#ifndef __RF_TX_THD_H__
+#define __RF_TX_THD_H__
 
 #include <ChRt.h>
 
 #include "ThreadState.h"
 #include "Fifo.h"
 #include "RFfunctions.h"
+#include "MutexLocker.h"
+#include "Measure.h"
 
 #include "solar-car/Mutexes.h"
 
 /**
  * A bundle used for passsing all relevant resources to the radio thread
  */
-struct rfWorkerBundle{
+struct rfTxWorkerBundle{
     Fifo<CanTelemetryMsg> *fifo;
     ThreadState *state;
 };
@@ -27,7 +29,7 @@ THD_WORKING_AREA(waRfWorker,1024);
 
 THD_FUNCTION(rfWorker, arg){
 
-  rfWorkerBundle *bundle = (rfWorkerBundle*) arg;
+  rfTxWorkerBundle *bundle = (rfTxWorkerBundle*) arg;
   ThreadState *state = bundle->state;
   Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
 
@@ -46,20 +48,11 @@ THD_FUNCTION(rfWorker, arg){
     }
 
     msg = fifo->get(fifoReadIndex);
-
-    Serial.println("hello");
-
-    WITH_MTX(serialMtx){
-      Serial.print("rf worker msg nr. ");
-      Serial.println((uint32_t)msg->data64);
-    }
     
-    WITH_MTX(rfMTX){
-      chSysLock();
-      Serial.println("Calling rftransmit");
-      MEASURE("RF"){RFtransmit((BaseTelemetryMsg*)msg,32);}
-      chSysUnlock();
-    }
+    chSysLock();
+    Serial.println("Calling rftransmit");
+    MEASURE("RF"){RFtransmit((BaseTelemetryMsg*)msg,32);}
+    chSysUnlock();
     
     fifo->advance(&fifoReadIndex);
         

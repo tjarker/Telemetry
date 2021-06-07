@@ -35,6 +35,7 @@ void RFinit()
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
     radio.openWritingPipe(address[!radioNumber]);
     radio.openReadingPipe(1, address[radioNumber]);
+    //radio.maskIRQ(1,1,0);
     radio.startListening();                                     // Starts RX mode
 }
 
@@ -69,9 +70,6 @@ bool RFreceive(BaseTelemetryMsg *received)
     uint8_t pipe;
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(received, 32);                               // Read message, cannot be larger than 32 bytes (null-terminated)
-        char str[64]; 
-        received->toString(str, sizeof(str));
-        Serial.println(str); 
         /*
         if (received->cmd == RECEIVED_CAN){
             char tmp[64];

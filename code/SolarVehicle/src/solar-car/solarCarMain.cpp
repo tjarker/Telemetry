@@ -23,18 +23,11 @@
 #include "solar-car/blackBoxThd.h"
 #include "solar-car/CanReceiverThd.h"
 #include "solar-car/Mutexes.h"
-#include "solar-car/RfThd.h"
+#include "solar-car/RfTxThd.h"
+#include "solar-car/SystemThd.h"
 
-/**
- * Singleton containing global state variables
- */
-class GlobalState {
-  public:
-    uint8_t isLogging = true;
-    uint8_t isTransmittingRT = true;
-} globalState;
 
-Fifo<CanTelemetryMsg> canFifo(32);
+Fifo<CanTelemetryMsg> canFifo(64);
 BlackBox bb;
 ThreadState blackBoxWorkerState;
 ThreadState canReceiverState;
@@ -53,18 +46,19 @@ void setup(){
   Serial.println("Initializing...");
 
   // setup CAN bus
-  //ACANSettings settings(125 * 1000);
-  //if(ACAN::can0.begin(settings)){Serial.println("CAN setup failed!");}
+  ACANSettings settings(125 * 1000);
+  if(ACAN::can0.begin(settings) != 0){Serial.println("CAN setup failed!");}
 
   // setup radio module
   RFinit();
 
+  bb.init();
+
   canFifo.clear();
 
-  Serial.println("Starting...");  
+  Serial.println("Starting...");
 
   chBegin(chSetup);
-
 }
 
 void chSetup(){
@@ -73,38 +67,14 @@ void chSetup(){
   
   // create the three worker threads
   BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &canFifo, .state = &blackBoxWorkerState, .bb = &bb};
-  chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO+1, canWorkerFunc, &blackBoxWorkerBundle);
-  rfWorkerBundle rfWorkerBundle = {.fifo = &canFifo, .state = &rfWorkerState};
-  chThdCreateStatic(waRfWorker,sizeof(waRfWorker),NORMALPRIO + 1, rfWorker, &rfWorkerBundle);
+  chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO + 3, canWorkerFunc, &blackBoxWorkerBundle);
+  rfTxWorkerBundle rfWorkerBundle = {.fifo = &canFifo, .state = &rfWorkerState};
+  chThdCreateStatic(waRfWorker,sizeof(waRfWorker),NORMALPRIO + 2, rfWorker, &rfWorkerBundle);
+  systemThdBundle systemThdBundle = {.canReceiverState = &canReceiverState, .blackBoxWorkerState = &blackBoxWorkerState, .rfWorkerState = &rfWorkerState};
+  chThdCreateStatic(waSystemThd, sizeof(waSystemThd), NORMALPRIO + 1, systemThd, &systemThdBundle);
   CanReceiverBundle canReceiverBundle = {.fifo = &canFifo, .state = &canReceiverState};
-  chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO+2, canReceiverThd, &canReceiverBundle);
-}
-
-void loop(){
-
-  if(Serial.available()){
-    uint8_t read = Serial.read();
-    switch (read){
-      case 13:
-        Serial.println("\n\nStopping...");
-        blackBoxWorkerState.terminate = true;
-        canReceiverState.terminate = true;
-        rfWorkerState.terminate = true;
-        while(true){}
-        break;
-
-      case 'p':
-        if(!canReceiverState.pause){
-          Serial.println("Pausing...");
-          canReceiverState.pause = true;
-        } else {
-          Serial.println("Resuming...");
-          canReceiverState.wakeUp();
-        }
-        break;
-      default:
-        break;
-    }
-  }
+  chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO + 1, canReceiverThd, &canReceiverBundle);
   
 }
+void loop(){}
+
