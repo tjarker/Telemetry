@@ -44,9 +44,18 @@ THD_FUNCTION(systemThd, arg){
   while(true){
    
     if(RFreceive(&msg)){
-      char str[64];
+      uint32_t count = 0;
+      for(uint32_t i = 0; i < 32; i++) {
+        count += ((uint8_t*)&msg)[i];
+      }
+      if(!count) {
+        RFinit();
+        Serial.println("Restarted Radio...........................");
+      } else {
+        char str[64];
       msg.toString(str,64);
       Serial.print("RF received: ");Serial.println(str);
+      }
     }
 
     if(Serial.available()){
@@ -60,12 +69,30 @@ THD_FUNCTION(systemThd, arg){
           while(true){}
           break;
 
-        case 'p':
+        case 'b':
+          if(!blackBoxWorkerState->pause){
+            Serial.println("Pausing BlackBox Thread...");
+            blackBoxWorkerState->pause = true;
+          } else {
+            Serial.println("Resuming BlackBox Thread...");
+            blackBoxWorkerState->wakeUp();
+          }
+          break;
+        case 'r':
+          if(!rfWorkerState->pause){
+            Serial.println("Pausing RF Tx Thread...");
+            rfWorkerState->pause = true;
+          } else {
+            Serial.println("Resuming RF Tx Thread...");
+            rfWorkerState->wakeUp();
+          }
+          break;
+        case 'c':
           if(!canReceiverState->pause){
-            Serial.println("Pausing...");
+            Serial.println("Pausing CAN receiver Thread...");
             canReceiverState->pause = true;
           } else {
-            Serial.println("Resuming...");
+            Serial.println("Resuming CAN receiver Thread...");
             canReceiverState->wakeUp();
           }
           break;

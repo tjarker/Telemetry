@@ -13,6 +13,7 @@
 #include "RFfunctions.h"
 #include "MutexLocker.h"
 #include "Measure.h"
+#include "encryption.h"
 
 #include "solar-car/Mutexes.h"
 
@@ -34,6 +35,7 @@ THD_FUNCTION(rfWorker, arg){
   Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
 
   CanTelemetryMsg *msg;
+  security sec;
 
   uint32_t fifoReadIndex = 0;
 
@@ -51,7 +53,14 @@ THD_FUNCTION(rfWorker, arg){
     
     chSysLock();
     Serial.println("Calling rftransmit");
-    RFtransmit((BaseTelemetryMsg*)msg,32);
+    char bytes[32];
+    memcpy(bytes,msg,32);
+    sec.encrypt(bytes,32);
+    Serial.print("Encrypted Message is: ");
+    for(uint32_t i = 0; i < 32; i++) {
+      Serial.print(bytes[i]);
+    }
+    RFtransmit((BaseTelemetryMsg*)bytes,32);
     chSysUnlock();
     
     fifo->advance(&fifoReadIndex);
