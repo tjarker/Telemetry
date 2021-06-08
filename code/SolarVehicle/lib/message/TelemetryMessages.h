@@ -16,6 +16,7 @@
 #define __TELEMETRYMESSAGES_H__
 
 #include <Arduino.h>
+#include <ChRt.h>
 
 #ifdef TEENSY36_BOARD
 
