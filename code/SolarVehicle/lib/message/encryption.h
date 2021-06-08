@@ -21,8 +21,8 @@ class security {
         int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
         int n = pub_key * prv_key;                             // Modulus of prime numbers
         int i, flag;
-        long int e[200], d[200], temp[200], j;
-        char en[200], m[200];
+        long int e[400], d[400], temp[400], j;
+        char en[400], m[400];
 
     /**
      * @brief Function to check for prime number
