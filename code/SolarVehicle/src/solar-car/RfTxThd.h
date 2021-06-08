@@ -47,7 +47,7 @@ THD_FUNCTION(rfWorker, arg){
   while(!state->terminate){
    
     Serial.println("RFTxThd:\tWaiting for data");
-    fifo->waitForData();
+    fifo->waitForData(readerId);
 
     if(state->pause){
       state->suspend();
