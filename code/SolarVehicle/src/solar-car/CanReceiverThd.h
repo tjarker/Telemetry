@@ -49,7 +49,7 @@ THD_FUNCTION(canReceiverThd, arg){
       chSysLock();
       msg = fifo->get(fifoWriteIndex);
       msg->update(&frame);
-      fifo->signalWrite();
+      fifo->signalData();
       fifo->advance(&fifoWriteIndex);
       Serial.print("Received CAN [");Serial.print(fifoWriteIndex);Serial.println("]");
       chSysUnlock();

@@ -60,7 +60,7 @@ THD_FUNCTION(canWorkerFunc, arg){
       }
     }
 
-    fifo->signalRead();
+    fifo->signalSpace();
     fifo->advance(&fifoReadIndex);
         
   }

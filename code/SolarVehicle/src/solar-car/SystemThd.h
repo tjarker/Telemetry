@@ -46,7 +46,7 @@ THD_FUNCTION(systemThd, arg){
     if(RFreceive(&msg)){
       char str[64];
       msg.toString(str,64);
-      Serial.println(str);
+      Serial.print("RF received: ");Serial.println(str);
     }
 
     if(Serial.available()){

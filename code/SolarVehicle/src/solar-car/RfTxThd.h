@@ -51,7 +51,7 @@ THD_FUNCTION(rfWorker, arg){
     
     chSysLock();
     Serial.println("Calling rftransmit");
-    MEASURE("RF"){RFtransmit((BaseTelemetryMsg*)msg,32);}
+    RFtransmit((BaseTelemetryMsg*)msg,32);
     chSysUnlock();
     
     fifo->advance(&fifoReadIndex);
