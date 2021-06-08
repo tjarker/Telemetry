@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <Arduino.h>
 
-class security {
+class Security {
     public:
         int pub_key = 7;                                       // Public key
         int prv_key = 13;                                      // Private key

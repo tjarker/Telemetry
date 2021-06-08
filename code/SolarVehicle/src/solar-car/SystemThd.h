@@ -13,6 +13,7 @@
 #include "RFfunctions.h"
 #include "MutexLocker.h"
 #include "Measure.h"
+#include "encryption.h"
 
 #include "solar-car/Mutexes.h"
 
@@ -23,6 +24,7 @@ struct systemThdBundle{
     ThreadState *canReceiverState;
     ThreadState *blackBoxWorkerState;
     ThreadState *rfWorkerState;
+    Security *sec;
 };
 
 // the working area for the thread is 1024 bytes
@@ -100,6 +102,8 @@ THD_FUNCTION(systemThd, arg){
           break;
       }
     }
+
+    chThdYield();
         
   }
   
