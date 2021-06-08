@@ -20,7 +20,7 @@ void chSetup()
 
 void setup()
 {
-  Serial.begin(9600); // initialize serial port
+  Serial.begin(921600); // initialize serial port
   RFinit(); 
   RFoutbox.clear();
   RFinbox.clear();
