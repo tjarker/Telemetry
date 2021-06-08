@@ -18,6 +18,7 @@
 #include "RFfunctions.h"
 #include "TelemetryMessages.h"
 #include "Fifo.h"
+#include "MultiReaderFifo.h"
 #include "ThreadState.h"
 
 #include "solar-car/blackBoxThd.h"
@@ -27,11 +28,17 @@
 #include "solar-car/SystemThd.h"
 
 
-Fifo<CanTelemetryMsg> canFifo(64);
+#ifdef CH_CFG_TIME_QUANTUM
+#undef CH_CFG_TIME_QUANTUM
+#define CH_CFG_TIME_QUANTUM 0
+#endif
+
+MultiReaderFifo<CanTelemetryMsg> canFifo(64,2);
 BlackBox bb;
 ThreadState blackBoxWorkerState;
 ThreadState canReceiverState;
 ThreadState rfWorkerState;
+Security security;
 
 void chSetup();
 void setup(){
@@ -54,6 +61,8 @@ void setup(){
 
   bb.init();
 
+  security.encryption_key();
+
   canFifo.clear();
 
   Serial.println("Starting...");
@@ -68,13 +77,13 @@ void chSetup(){
   // create the three worker threads
   BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &canFifo, .state = &blackBoxWorkerState, .bb = &bb};
   chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO + 3, canWorkerFunc, &blackBoxWorkerBundle);
-  rfTxWorkerBundle rfWorkerBundle = {.fifo = &canFifo, .state = &rfWorkerState};
+  rfTxWorkerBundle rfWorkerBundle = {.fifo = &canFifo, .state = &rfWorkerState, .sec = &security};
   chThdCreateStatic(waRfWorker,sizeof(waRfWorker),NORMALPRIO + 2, rfWorker, &rfWorkerBundle);
-  systemThdBundle systemThdBundle = {.canReceiverState = &canReceiverState, .blackBoxWorkerState = &blackBoxWorkerState, .rfWorkerState = &rfWorkerState};
+  systemThdBundle systemThdBundle = {.canReceiverState = &canReceiverState, .blackBoxWorkerState = &blackBoxWorkerState, .rfWorkerState = &rfWorkerState, .sec = &security};
   chThdCreateStatic(waSystemThd, sizeof(waSystemThd), NORMALPRIO + 1, systemThd, &systemThdBundle);
   CanReceiverBundle canReceiverBundle = {.fifo = &canFifo, .state = &canReceiverState};
   chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO + 1, canReceiverThd, &canReceiverBundle);
   
 }
-void loop(){}
+void loop(){Serial.println("loop!!!!!!!!!!!!!!!!!!!!!!!");}
 

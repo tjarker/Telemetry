@@ -9,7 +9,7 @@
 
 #include "ThreadState.h"
 #include "BlackBox.h"
-#include "Fifo.h"
+#include "MultiReaderFifo.h"
 #include "MutexLocker.h"
 
 #include "solar-car/Mutexes.h"
@@ -18,7 +18,7 @@
  * A bundle used for passsing all relevant resources to the radio thread
  */
 struct BlackboxWorkerBundle{
-    Fifo<CanTelemetryMsg> *fifo;
+    MultiReaderFifo<CanTelemetryMsg> *fifo;
     ThreadState *state;
     BlackBox *bb;
 };
@@ -30,12 +30,12 @@ THD_FUNCTION(canWorkerFunc, arg){
 
   BlackboxWorkerBundle *bundle = (BlackboxWorkerBundle*) arg;
   ThreadState *state = bundle->state;
-  Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
+  MultiReaderFifo<CanTelemetryMsg> *fifo = bundle->fifo;
   BlackBox *bb = bundle->bb;
 
   CanTelemetryMsg *msg;
 
-  uint32_t fifoReadIndex = 0;
+  uint8_t readerId = 0;
 
   WITH_MTX(serialMtx){Serial.println("Starting listener...");}
 
@@ -43,12 +43,13 @@ THD_FUNCTION(canWorkerFunc, arg){
 
     Serial.println("BB waiting for data...");
     fifo->waitForData();
+    Serial.println("BB got data");
 
     if(state->pause){
       state->suspend();
     }
 
-    msg = fifo->get(fifoReadIndex);
+    msg = fifo->head(readerId);
 
 
     if(Serial){
@@ -61,7 +62,7 @@ THD_FUNCTION(canWorkerFunc, arg){
     }
 
     fifo->signalSpace();
-    fifo->advance(&fifoReadIndex);
+    fifo->moveHead(readerId);
         
   }
 
