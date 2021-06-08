@@ -37,13 +37,12 @@ THD_FUNCTION(canWorkerFunc, arg){
 
   uint8_t readerId = 0;
 
-  WITH_MTX(serialMtx){Serial.println("Starting listener...");}
+  WITH_MTX(serialMtx){Serial.println("BBThd:\t\tStarting");}
 
   while(!state->terminate){
 
-    Serial.println("BB waiting for data...");
+    Serial.println("BBThd:\t\tWaiting for data");
     fifo->waitForData();
-    Serial.println("BB got data");
 
     if(state->pause){
       state->suspend();
@@ -56,7 +55,7 @@ THD_FUNCTION(canWorkerFunc, arg){
       WITH_MTX(serialMtx){
         char str[64];
         msg->toString(str,64);
-        Serial.print("BB: ");
+        Serial.print("BBThd:\t\t");
         Serial.println(str);
       }
     }

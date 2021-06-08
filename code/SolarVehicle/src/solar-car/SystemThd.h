@@ -39,7 +39,7 @@ THD_FUNCTION(systemThd, arg){
 
   BaseTelemetryMsg msg;
 
-  Serial.println("Starting System Thread...");
+  Serial.println("SystemThd:\tStarting");
 
   chThdSleepMicroseconds(100); // release in order to allow creation of other threads
 
@@ -52,11 +52,10 @@ THD_FUNCTION(systemThd, arg){
       }
       if(!count) {
         RFinit();
-        Serial.println("Restarted Radio...........................");
       } else {
         char str[64];
       msg.toString(str,64);
-      Serial.print("RF received: ");Serial.println(str);
+      Serial.print("SystemThd:\tReceived Rf: ");Serial.println(str);
       }
     }
 
@@ -64,7 +63,7 @@ THD_FUNCTION(systemThd, arg){
       uint8_t read = Serial.read();
       switch (read){
         case 13:
-          Serial.println("\n\nStopping...");
+          Serial.println("SystemThd:\tStopping");
           blackBoxWorkerState->terminate = true;
           canReceiverState->terminate = true;
           rfWorkerState->terminate = true;
@@ -73,28 +72,28 @@ THD_FUNCTION(systemThd, arg){
 
         case 'b':
           if(!blackBoxWorkerState->pause){
-            Serial.println("Pausing BlackBox Thread...");
+            Serial.println("SystemThd:\tPausing BlackBox Thread");
             blackBoxWorkerState->pause = true;
           } else {
-            Serial.println("Resuming BlackBox Thread...");
+            Serial.println("SystemThd:\tResuming BlackBox Thread");
             blackBoxWorkerState->wakeUp();
           }
           break;
         case 'r':
           if(!rfWorkerState->pause){
-            Serial.println("Pausing RF Tx Thread...");
+            Serial.println("SystemThd:\tPausing RF Tx Thread");
             rfWorkerState->pause = true;
           } else {
-            Serial.println("Resuming RF Tx Thread...");
+            Serial.println("SystemThd:\tResuming RF Tx Thread");
             rfWorkerState->wakeUp();
           }
           break;
         case 'c':
           if(!canReceiverState->pause){
-            Serial.println("Pausing CAN receiver Thread...");
+            Serial.println("SystemThd:\tPausing CAN receiver Thread");
             canReceiverState->pause = true;
           } else {
-            Serial.println("Resuming CAN receiver Thread...");
+            Serial.println("SystemThd:\tResuming CAN receiver Thread");
             canReceiverState->wakeUp();
           }
           break;

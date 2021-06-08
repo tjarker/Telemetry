@@ -17,6 +17,7 @@
 
 #include "solar-car/Mutexes.h"
 
+
 /**
  * A bundle used for passsing all relevant resources to the radio thread
  */
@@ -41,13 +42,12 @@ THD_FUNCTION(rfWorker, arg){
 
   uint8_t readerId = 1;
 
-  WITH_MTX(serialMtx){Serial.println("Starting RF Transmitting thread...");}
+  WITH_MTX(serialMtx){Serial.println("RfTxThd: Starting");}
 
   while(!state->terminate){
    
-    Serial.println("RX Tx waiting for data");
+    Serial.println("RFTxThd:\tWaiting for data");
     fifo->waitForData();
-    Serial.println("RF Tx got data");
 
     if(state->pause){
       state->suspend();
@@ -56,27 +56,30 @@ THD_FUNCTION(rfWorker, arg){
     msg = fifo->head(readerId);
     
     chSysLock();
-    Serial.println("Calling rftransmit");
     char bytes[32];
     memcpy(bytes,msg,32);
-    Serial.print("Pre-Encrypted Message is: ");
-    for(uint32_t i = 0; i < 32; i++) {
-      Serial.print((uint8_t)bytes[i]);Serial.print(" ");
+    WITH_MTX(serialMtx){
+      Serial.print("RfTxThd:\t");
+      for(uint32_t i = 0; i < 32; i++) {
+        Serial.print((uint8_t)bytes[i],HEX);Serial.print(" ");
+      }
+      Serial.println();
+      Serial.print("RfTxThd:\t");
+      sec->encrypt(bytes,32);
+      for(uint32_t i = 0; i < 32; i++) {
+        Serial.print((uint8_t)bytes[i],HEX);Serial.print(" ");
+      }
+      Serial.println();
+      Serial.print("RfTxThd:\t");
+      sec->decrypt(bytes,32);
+      for(uint32_t i = 0; i < 32; i++) {
+        Serial.print((uint8_t)bytes[i],HEX);Serial.print(" ");
+      }
+      Serial.println();
     }
-    Serial.println();
-    sec->encrypt(bytes,32);
-    Serial.print("Encrypted Message is: ");
-    for(uint32_t i = 0; i < 32; i++) {
-      Serial.print((uint8_t)bytes[i]);Serial.print(" ");
+    WITH_MTX(rfMTX){
+      RFtransmit((BaseTelemetryMsg*)bytes,32);
     }
-    Serial.println();
-    sec->decrypt(bytes,32);
-    Serial.print("Decrypted Message is: ");
-    for(uint32_t i = 0; i < 32; i++) {
-      Serial.print((uint8_t)bytes[i]);Serial.print(" ");
-    }
-    Serial.println();
-    RFtransmit((BaseTelemetryMsg*)bytes,32);
     chSysUnlock();
     
     fifo->moveHead(readerId);

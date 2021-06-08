@@ -34,7 +34,7 @@ THD_FUNCTION(canReceiverThd, arg){
   CANMessage frame;
   CanTelemetryMsg *msg;
 
-  WITH_MTX(serialMtx){Serial.println("Starting CAN receiver thread...");}
+  WITH_MTX(serialMtx){Serial.println("CanReceiverThd:\tStarting");}
 
   while(!state->terminate){
 
@@ -44,15 +44,10 @@ THD_FUNCTION(canReceiverThd, arg){
 
     if(ACAN::can0.receive(frame)){
       chSysLock();
-      Serial.println("Can Receiver Thread 3");
       msg = fifo->tail();
-      Serial.println("Can Receiver Thread 4");
       msg->update(&frame);
-      Serial.println("Can Receiver Thread 5");
       fifo->signalData();
-      Serial.println("Can Receiver Thread 6");
       fifo->moveTail();
-      Serial.println("Can Receiver Thread 7");
       chSysUnlock();
     }
 

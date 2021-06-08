@@ -2,33 +2,33 @@
 #include <SPI.h>
 #include "support-vehicle/RfThd.h"
 
-Fifo<BaseTelemetryMsg> RFoutbox(32), RFinbox(32); 
-ThreadState radioReceiverState, radioTransmitterState, serialReceiverState, serialTransmitterState; 
-
+// ChibiOS setup function
+// Initializes all 4 threads with a working area, priority level, thread function and initial argument. 
 void chSetup()
 {
-  chSysInit();
-  threadBundle radioReceiverBundle = {.fifo = &RFinbox, .state = &radioReceiverState};
-  chThdCreateStatic(waRadioReceiverThread, sizeof(waRadioReceiverThread), NORMALPRIO + 1, radioReceiverThread, &radioReceiverBundle);
-  threadBundle radioTransmitterBundle = {.fifo = &RFoutbox, .state = &radioTransmitterState};
+  chSysInit();  // Initializes ChibiOS system
+  // Thread arguments are passed as bundles consisting of pointers to a FIFO buffer and the appropriate thread state. 
+  threadBundle radioTransmitterBundle = {.fifo = &RFinbox, .state = &radioTransmitterState};
   chThdCreateStatic(waRadioTransmitterThread, sizeof(waRadioTransmitterThread), NORMALPRIO + 2, radioTransmitterThread, &radioTransmitterBundle);
-  threadBundle serialReceiverBundle = {.fifo = &RFoutbox, .state = &serialReceiverState};
+  threadBundle serialTransmitterBundle = {.fifo = &RFoutbox, .state = &serialTransmitterState};
+  chThdCreateStatic(waSerialTransmitterThread, sizeof(waSerialTransmitterThread), NORMALPRIO + 2, serialTransmitterThread, &serialTransmitterBundle);
+  threadBundle radioReceiverBundle = {.fifo = &RFoutbox, .state = &radioReceiverState};
+  chThdCreateStatic(waRadioReceiverThread, sizeof(waRadioReceiverThread), NORMALPRIO + 1, radioReceiverThread, &radioReceiverBundle);
+  threadBundle serialReceiverBundle = {.fifo = &RFinbox, .state = &serialReceiverState};
   chThdCreateStatic(waSerialReceiverThread, sizeof(waSerialReceiverThread), NORMALPRIO + 1, serialReceiverThread, &serialReceiverBundle);
-  threadBundle serialTransmitterBundle = {.fifo = &RFinbox, .state = &serialTransmitterState};
-  chThdCreateStatic(waSerialTransmitterThread, sizeof(waSerialTransmitterThread), NORMALPRIO + 2, serialTransmitterThread, &serialTransmitterBundle); 
 }
 
 void setup()
 {
-  Serial.begin(9600); // initialize serial port
+  Serial.begin(921600); // initialize serial port
   RFinit(); 
   RFoutbox.clear();
   RFinbox.clear();
-  chBegin(chSetup);
+  chBegin(chSetup);   // Initialize and start all 4 threads
+  while (true){}
 }
 
 void loop()
-{
-  
+{ 
   /* Not used */
 }

@@ -42,9 +42,9 @@ Security security;
 
 void chSetup();
 void setup(){
-
+  
   // initialize serial port
-  Serial.begin(9600);
+  Serial.begin(921600);
   while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
 
   // setup built in LED
