@@ -1,5 +1,5 @@
 [back to README](../../README.md)
-# Meeting Friday 26.02.2021 ROAST
+# Meeting Friday 09.04.2021 ROAST
 
 ## Where: Online
 
@@ -9,6 +9,9 @@
  - Victor
  - Martin Schoeberl
 ## Agenda:
-
+- Discuss implementation of RTOS. 
+- Group presentation on Monday 03.05.2021
 
 ## TODO: 
+- Research ChibiOS strengths and weaknesses. 
+- Find out how to schedule tasks on microcontroller. 

@@ -20,9 +20,8 @@ void chSetup()
 
 void setup()
 {
-  Serial.begin(9600); // Initialize serial port
-  while (!Serial){}
-  RFinit();           // Initialize nRF24L01 module
+  Serial.begin(921600); // initialize serial port
+  RFinit(); 
   RFoutbox.clear();
   RFinbox.clear();
   chBegin(chSetup);   // Initialize and start all 4 threads

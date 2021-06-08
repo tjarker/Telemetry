@@ -13,6 +13,7 @@
 #include "RFfunctions.h"
 #include "MutexLocker.h"
 #include "Measure.h"
+#include "encryption.h"
 
 #include "solar-car/Mutexes.h"
 
@@ -23,6 +24,7 @@ struct systemThdBundle{
     ThreadState *canReceiverState;
     ThreadState *blackBoxWorkerState;
     ThreadState *rfWorkerState;
+    Security *sec;
 };
 
 // the working area for the thread is 1024 bytes
@@ -37,35 +39,61 @@ THD_FUNCTION(systemThd, arg){
 
   BaseTelemetryMsg msg;
 
-  Serial.println("Starting System Thread...");
+  Serial.println("SystemThd:\tStarting");
 
   chThdSleepMicroseconds(100); // release in order to allow creation of other threads
 
   while(true){
    
     if(RFreceive(&msg)){
-      char str[64];
+      uint32_t count = 0;
+      for(uint32_t i = 0; i < 32; i++) {
+        count += ((uint8_t*)&msg)[i];
+      }
+      if(!count) {
+        RFinit();
+      } else {
+        char str[64];
       msg.toString(str,64);
-      Serial.println(str);
+      Serial.print("SystemThd:\tReceived Rf: ");Serial.println(str);
+      }
     }
 
     if(Serial.available()){
       uint8_t read = Serial.read();
       switch (read){
         case 13:
-          Serial.println("\n\nStopping...");
+          Serial.println("SystemThd:\tStopping");
           blackBoxWorkerState->terminate = true;
           canReceiverState->terminate = true;
           rfWorkerState->terminate = true;
           while(true){}
           break;
 
-        case 'p':
+        case 'b':
+          if(!blackBoxWorkerState->pause){
+            Serial.println("SystemThd:\tPausing BlackBox Thread");
+            blackBoxWorkerState->pause = true;
+          } else {
+            Serial.println("SystemThd:\tResuming BlackBox Thread");
+            blackBoxWorkerState->wakeUp();
+          }
+          break;
+        case 'r':
+          if(!rfWorkerState->pause){
+            Serial.println("SystemThd:\tPausing RF Tx Thread");
+            rfWorkerState->pause = true;
+          } else {
+            Serial.println("SystemThd:\tResuming RF Tx Thread");
+            rfWorkerState->wakeUp();
+          }
+          break;
+        case 'c':
           if(!canReceiverState->pause){
-            Serial.println("Pausing...");
+            Serial.println("SystemThd:\tPausing CAN receiver Thread");
             canReceiverState->pause = true;
           } else {
-            Serial.println("Resuming...");
+            Serial.println("SystemThd:\tResuming CAN receiver Thread");
             canReceiverState->wakeUp();
           }
           break;
@@ -73,6 +101,8 @@ THD_FUNCTION(systemThd, arg){
           break;
       }
     }
+
+    chThdYield();
         
   }
   

@@ -7,7 +7,7 @@
 
 #include <ChRt.h>
 
-#include "Fifo.h"
+#include "MultiReaderFifo.h"
 #include "ThreadState.h"
 #include "MutexLocker.h"
 #include "TelemetryMessages.h"
@@ -18,7 +18,7 @@
  * A bundle used for passsing all relevant resources to the thread
  */
 struct CanReceiverBundle{
-    Fifo<CanTelemetryMsg> *fifo;
+    MultiReaderFifo<CanTelemetryMsg> *fifo;
     ThreadState *state;
 };
 
@@ -29,14 +29,12 @@ THD_FUNCTION(canReceiverThd, arg){
 
   CanReceiverBundle *bundle = (CanReceiverBundle*) arg;
   ThreadState *state = bundle->state;
-  Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
+  MultiReaderFifo<CanTelemetryMsg> *fifo = bundle->fifo;
 
   CANMessage frame;
   CanTelemetryMsg *msg;
 
-  uint32_t fifoWriteIndex = 0;
-
-  WITH_MTX(serialMtx){Serial.println("Starting CAN receiver thread...");}
+  WITH_MTX(serialMtx){Serial.println("CanReceiverThd:\tStarting");}
 
   while(!state->terminate){
 
@@ -44,14 +42,12 @@ THD_FUNCTION(canReceiverThd, arg){
       state->suspend();
     }
 
-
     if(ACAN::can0.receive(frame)){
       chSysLock();
-      msg = fifo->get(fifoWriteIndex);
+      msg = fifo->tail();
       msg->update(&frame);
-      fifo->signalWrite();
-      fifo->advance(&fifoWriteIndex);
-      Serial.print("Received CAN [");Serial.print(fifoWriteIndex);Serial.println("]");
+      fifo->signalData();
+      fifo->moveTail();
       chSysUnlock();
     }
 
