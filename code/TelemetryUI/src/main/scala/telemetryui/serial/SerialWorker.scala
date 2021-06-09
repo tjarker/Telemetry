@@ -2,7 +2,7 @@ package telemetryui.serial
 
 import com.fazecast.jSerialComm.SerialPort
 import telemetryui.types.CMD.RECEIVED_CAN
-import telemetryui.types.CanFrame
+import telemetryui.types.{CanFrame, TelemetryMessage}
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -46,6 +46,13 @@ class SerialWorker(port: SerialPort,
         }
       }
 
+    }
+  }
+
+  def send(msg: TelemetryMessage): Unit = {
+    synchronized{
+      val bytes = msg.toByteArray
+      port.writeBytes(bytes,bytes.length)
     }
   }
 }
