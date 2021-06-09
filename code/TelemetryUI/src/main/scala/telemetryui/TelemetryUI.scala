@@ -81,14 +81,15 @@ object TelemetryUI extends SimpleSwingApplication {
       }
       def close(): Unit = running = false
     }
-    testData.start()
+    //testData.start()
 
     override def closeOperation(): Unit = {
       synchronized(println("Closing"))
       testData.close()
       udpServer.close()
       serialWorker.get.quit()
-      exit(0)
+      TelemetryUI.quit()
+      //exit(0)
     }
 
   }

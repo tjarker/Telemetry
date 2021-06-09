@@ -20,11 +20,18 @@ int main(){
     randomSeed(analogRead(0));
 
     while(true){
-        sendRandomMessage();
-        digitalWriteFast(LED_BUILTIN,HIGH);
-        delay(100);
-        digitalWriteFast(LED_BUILTIN,LOW);
-        delay(900);
+        //sendRandomMessage();
+        if(Serial.available()){
+            Serial.readBytes((char*)&msg,32);
+            msg.cmd = 0;
+            char str[256];
+            msg.toJSON(str,256);
+            Serial.println(str);
+            digitalWriteFast(LED_BUILTIN,HIGH);
+            delay(100);
+            digitalWriteFast(LED_BUILTIN,LOW);
+            delay(900);
+        }
     }
 
     return 0;
