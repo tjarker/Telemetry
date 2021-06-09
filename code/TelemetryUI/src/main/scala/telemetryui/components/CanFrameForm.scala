@@ -101,7 +101,7 @@ class CanFrameForm(title: String, sender: CanFrame => Unit) extends GridBagPanel
       if(idVal > Math.pow(2,12)-1) error.setError("id")
       else if(dataVal.toLong > Math.pow(2,64)) error.setError("data")
       else{
-        sender(CanFrame(idVal,false,msg.numBytes,dataVal,TimeStamp(0,0,0)))
+        sender(CanFrame(idVal,false,msg.numBytes,dataVal,TimeStamp()))
       }
       Timer(4000,false){error.clearError()}
   }

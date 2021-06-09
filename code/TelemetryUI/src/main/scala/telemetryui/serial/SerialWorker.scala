@@ -52,7 +52,8 @@ class SerialWorker(port: SerialPort,
   def send(msg: TelemetryMessage): Unit = {
     synchronized{
       val bytes = msg.toByteArray
-      port.writeBytes(bytes,bytes.length)
+      val out = port.getOutputStream
+      out.write(bytes)
     }
   }
 }

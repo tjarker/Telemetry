@@ -11,7 +11,7 @@ import scala.swing.event.{ButtonClicked, SelectionChanged}
 class CanFrameLabel(title: String) extends GridBagPanel {
   border = CompoundBorder(TitledBorder(EtchedBorder,title),EmptyBorder(5,5,5,5))
 
-  private var lastCanMsg: CanFrame = null
+  private var lastCanMsg: Option[CanFrame] = None
 
   val c = new Constraints()
 
@@ -67,13 +67,13 @@ class CanFrameLabel(title: String) extends GridBagPanel {
   val hexChecker = new CheckBox{
     text = "hex"
     reactions += {
-      case e: scala.swing.event.ActionEvent => update(lastCanMsg)
+      case e: scala.swing.event.ActionEvent => update(lastCanMsg.get)
     }
   }
   layout(hexChecker) = c
 
   def update(canFrame: CanFrame): Unit = {
-    lastCanMsg = canFrame
+    lastCanMsg = Some(canFrame)
     len.text = canFrame.len.toString
     time.text = canFrame.stamp.toString
     if(hexChecker.selected){
