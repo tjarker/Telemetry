@@ -100,7 +100,7 @@ class Security {
         void encrypt(uint8_t *message, int len){
             uint64_t pt, ct, k;
             int j = 0;
-            while(j < len - 1){
+            while(j < len){
                 encrypter(&message[j]);
                 j++;
             }
@@ -122,13 +122,12 @@ class Security {
          * @brief Decrypts input message
          * @param Message as char pointer array
         */
-        void decrypt(BaseTelemetryMsg *message, int len){
+        void decrypt(uint8_t *message, int len){
             uint64_t pt, ct, k;
 
-            decrypter((uint8_t*) &(message->cmd));
             int j = 0;
-            while(j < len - 1){
-                decrypter(&(message->data[i]));
+            while(j < len){
+                decrypter(&message[i]);
                 j++;
             }
         }

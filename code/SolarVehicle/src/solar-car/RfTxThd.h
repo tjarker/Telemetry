@@ -66,17 +66,17 @@ THD_FUNCTION(rfWorker, arg){
         decryptedMsg.toString(tempString,64);
         Serial.println(tempString);
 
-        /*sec->encrypt(&decryptedMsg,32);
+        sec->encrypt((uint8_t*)&decryptedMsg,32);
 
         Serial.print("RfTxThd:\t");
         decryptedMsg.toString(tempString,64);
         Serial.println(tempString);
 
-        sec->decrypt(&decryptedMsg,32);
+        sec->decrypt((uint8_t*)&decryptedMsg,32);
 
         Serial.print("RfTxThd:\t");
         decryptedMsg.toString(tempString,64);
-        Serial.println(tempString);*/
+        Serial.println(tempString);
       }
       WITH_MTX(rfMTX){
         RFtransmit((BaseTelemetryMsg*)&decryptedMsg,32);

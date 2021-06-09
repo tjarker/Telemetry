@@ -52,7 +52,7 @@ THD_FUNCTION(canReceiverThd, arg){
         msg->update(&frame);
         fifo->signalData();
         fifo->moveTail();
-        ACAN::can0.tryToSend(frame);
+        //ACAN::can0.tryToSend(frame);
         chSysUnlock();
       }
     }
