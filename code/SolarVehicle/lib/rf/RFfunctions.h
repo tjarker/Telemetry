@@ -40,42 +40,41 @@ void RFinit()
     //radio.maskIRQ(1, 1, 0);
     radio.openWritingPipe(address[!radioNumber]);
     radio.openReadingPipe(1, address[radioNumber]);
-    //radio.maskIRQ(1,1,0);
     radio.startListening();                                     // Starts RX mode
 }
 
 // First transmit() function
 // Takes char array and its size to send. size cannot be greater than 32 bytes (null-terminated)
-bool RFtransmit(BaseTelemetryMsg *msg, uint32_t size)
+bool RFtransmit(void *buf, uint8_t len)
 {
     radio.stopListening();                                      // Starts TX mode
-    bool report = radio.write(msg, size);                       // Send message and wait for acknowledge
+    bool report = radio.write(buf, len);                       // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
-        Serial.print(F("Transmission successful! "));           // message was delivered
+        //Serial.print(F("Transmission successful! "));           // message was delivered
         if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
-            radio.read(msg, size);                              // Loads ACK packet into msg
-            Serial.print(F("Acknowledge received: "));
+            radio.read(buf, len);                              // Loads ACK packet into msg
+            /*Serial.print(F("Acknowledge received: "));
             char str[64];
-            msg->toString(str,sizeof(str));
-            Serial.print(str);                                  // Prints ACK packet
+            buf->toString(str,sizeof(str));
+            Serial.print(str);*/                                  // Prints ACK packet
         }
-        Serial.println();
+        //Serial.println();
         return true;
     } else {
-        Serial.println(F("Transmission failed or timed out"));  // message was not delivered
+        //Serial.println(F("Transmission failed or timed out"));  // message was not delivered
         return false;
     }
 }
 
 // First receive() function
 // Takes no arguments, prints received message to serial
-bool RFreceive(BaseTelemetryMsg *received)
+bool RFreceive(void *buf, uint8_t len)
 {
     radio.startListening();                                     // Starts RX mode
     uint8_t pipe;
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
-        radio.read(received, 32);                               // Read message, cannot be larger than 32 bytes (null-terminated)
-        radio.writeAckPayload(1, received, 32);                 // Send acknowledge payload
+        radio.read(buf, len);                               // Read message, cannot be larger than 32 bytes (null-terminated)
+        radio.writeAckPayload(1, buf, len);                 // Send acknowledge payload
         return true;
     }
     return false;
