@@ -1,6 +1,6 @@
 package telemetryui.components
 
-import telemetryui.types.CanFrame
+import telemetryui.types.{CanFrame, TimeStamp}
 
 import scala.swing.GridBagPanel.Anchor
 import scala.swing.Swing.{CompoundBorder, EmptyBorder, EtchedBorder, TitledBorder}
@@ -42,21 +42,21 @@ class CanFrameLabel(title: String) extends GridBagPanel {
 
   c.grid = (1,1)
   val id = new Label{
-    text = "%04d".format(0)
+    text = "0"
     horizontalAlignment = Alignment.Center
   }
   layout(id) = c
 
   c.grid = (2,1)
   val len = new Label{
-    text = "%01d".format(0)
+    text = "0"
     horizontalAlignment = Alignment.Center
   }
   layout(len) = c
 
   c.grid = (3,1)
   val msg = new Label{
-    text = "%019d".format(0)
+    text = "0"
     horizontalAlignment = Alignment.Center
   }
   layout(msg) = c
@@ -67,7 +67,7 @@ class CanFrameLabel(title: String) extends GridBagPanel {
   val hexChecker = new CheckBox{
     text = "hex"
     reactions += {
-      case e: scala.swing.event.ActionEvent => update(lastCanMsg.get)
+      case e: scala.swing.event.ActionEvent => update(lastCanMsg.getOrElse(CanFrame(0,false,0,0,TimeStamp(0,0,0))))
     }
   }
   layout(hexChecker) = c

@@ -57,7 +57,7 @@ object TelemetryUI extends SimpleSwingApplication {
     port.get.setNumStopBits(1)
     port.get.setParity(0)
     port.get.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0)
-    port.get.openPort()
+    if(!port.get.openPort()) println("Port could not be opened!")
 
     val udpServer = new UdpServer
 

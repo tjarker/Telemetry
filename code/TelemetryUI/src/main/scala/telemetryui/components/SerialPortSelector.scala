@@ -21,6 +21,7 @@ object SerialPortSelector {
     )
 
     if (s.isDefined && s.get.nonEmpty) {
+      println(s"Selected Port has system port name: ${ports(possibilities.indexOf(s.get)).getSystemPortName}")
       return SerialPort.getCommPort(ports(possibilities.indexOf(s.get)).getSystemPortName)
     }
     else
