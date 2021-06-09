@@ -12,7 +12,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <Arduino.h>
-#include <ACAN.h>
 
 class Security {
     public:
@@ -21,9 +20,8 @@ class Security {
 
         int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
         int n = pub_key * prv_key;                             // Modulus of prime numbers
-        uint64_t i, flag;
-        uint64_t e[256], d[256], temp[256], j;
-        //cmd_t cmd_temp[256];
+        long int i, flag;
+        long int e[256], d[256], temp[256], j;
 
     /**
      * @brief Function to check for prime number
@@ -78,58 +76,51 @@ class Security {
             }
         }
 
-        void encrypter(uint8_t *data){
-            uint64_t pt, ct, key = e[0], k;
-            pt = *data;
-            pt -= 96;
-            k = 1;
-            for (j = 0; j < key; j++){
-                k = k * pt;
-                k = k % n;
-            }
-            temp[i] = k;                       // Array used for encryption and decryption
-            ct = k + 96;
-            *data = ct;
-        }
-
         /**
          * @brief Encrypts input message
          * @param Message as char pointer array
         */
-        void encrypt(uint8_t *message, int len){
-            uint64_t pt, ct, key = e[0], k;
+        char* encrypt(char *message, long int len){
+            long int pt, ct, key = e[0], k;
             i = 0;
-            while(i < len - 1){
-                encrypter(&message[i]);
+
+            while(i != len){
+                pt = message[i];
+                pt -= 96;
+                k = 1;
+                for (j = 0; j < key; j++){
+                    k = k * pt;
+                    k = k % n;
+                }
+                temp[i] = k;                       // Array used for encryption and decryption
+                ct = k + 96;
+                message[i] = ct;                   // Encrypted message
                 i++;
             }
-        }
 
-        void decrypter(uint8_t *data){
-            uint64_t pt, ct, key = d[0], k;
-            ct = temp[i];                      // Array used for encryption and decryption
-            k = 1;
-            for (j = 0; j < key; j++){
-                k = k * ct;
-                k = k % n;
-            }
-            pt = k + 96;
-            *data = pt;
+            return message;
         }
 
         /**
          * @brief Decrypts input message
          * @param Message as char pointer array
         */
-        void decrypt(BaseTelemetryMsg *message, int len){
-            uint64_t pt, ct, key = d[0], k;
-
-            decrypter((uint8_t*) &(message->cmd));
+        char* decrypt(char* message, long int len){
+            long int pt, ct, key = d[0], k;
             i = 0;
-            while(i < len - 1){
-                decrypter(&(message->data[i]));
+            while(i != len){
+                ct = temp[i];                      // Array used for encryption and decryption
+                k = 1;
+                for (j = 0; j < key; j++){
+                    k = k * ct;
+                    k = k % n;
+                }
+                pt = k + 96;
+                message[i] = pt;                   // Decrypted message
                 i++;
             }
+
+            return message;
         }
 };
 

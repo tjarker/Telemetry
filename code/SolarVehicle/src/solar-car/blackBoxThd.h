@@ -41,8 +41,8 @@ THD_FUNCTION(canWorkerFunc, arg){
 
   while(!state->terminate){
 
-    Serial.println("BBThd:\t\tWaiting for data");
-    fifo->waitForData();
+    //Serial.println("BBThd:\t\tWaiting for data");
+    fifo->waitForData(readerId);
 
     if(state->pause){
       state->suspend();

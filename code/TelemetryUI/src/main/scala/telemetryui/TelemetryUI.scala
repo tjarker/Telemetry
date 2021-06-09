@@ -3,34 +3,40 @@ package telemetryui
 import com.fazecast.jSerialComm.SerialPort
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
-import telemetryui.components.{CanFrameForm, CanFrameLabel, SerialPortSelector}
+import telemetryui.components.{CanFrameForm, CanFrameLabel, CommandButton, SerialPortSelector}
 import telemetryui.serial.SerialWorker
 import telemetryui.types.CMD.BROADCAST_CAN
-import telemetryui.types.TelemetryMessage
+import telemetryui.types.{CanFrame, TelemetryMessage}
 import telemetryui.udp.UdpServer
+import telemetryui.util.Timer
 
 import java.awt.Dimension
 import javax.swing.UIManager
 import scala.swing.Swing.EmptyBorder
 import scala.swing._
+import scala.swing.event.ButtonClicked
 import scala.sys.exit
 
 object TelemetryUI extends SimpleSwingApplication {
   implicit val formats = DefaultFormats
 
-  var port: SerialPort = null
+  var port: Option[SerialPort] = None
+  var serialWorker: Option[SerialWorker] = None
 
   val canLbl = new CanFrameLabel("Last Received CAN Frame")
   val canForm = new CanFrameForm("Send CAN Frame", { canFrame =>
     val outBytes = TelemetryMessage(BROADCAST_CAN, canFrame).toByteArray
-    println(outBytes.map(_.toString).mkString(", "))
-    port.writeBytes(outBytes, outBytes.length)
+    synchronized(println(outBytes.map(_.toString).mkString(", ")))
+    port.get.writeBytes(outBytes, outBytes.length)
   })
 
   lazy val ui = new BoxPanel(Orientation.Vertical) {
     border = EmptyBorder(10, 10, 10, 10)
     contents += canForm
     contents += canLbl
+    contents += CommandButton("Hello"){
+      synchronized(println("Hallo"))
+    }
   }
 
 
@@ -45,23 +51,43 @@ object TelemetryUI extends SimpleSwingApplication {
     centerOnScreen()
     peer.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE)
 
-    port = SerialPortSelector()
-    port.setBaudRate(921600)
-    port.setNumDataBits(8)
-    port.setNumStopBits(1)
-    port.setParity(0)
-    port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0)
-    port.openPort()
+    port = Some(SerialPortSelector())
+    port.get.setBaudRate(921600)
+    port.get.setNumDataBits(8)
+    port.get.setNumStopBits(1)
+    port.get.setParity(0)
+    port.get.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0)
+    port.get.openPort()
 
     val udpServer = new UdpServer
 
-    val serialWorker = new SerialWorker(port,Seq(println,canLbl.update,udpServer.broadcastCanMessage),Seq(println),Seq(() => println("Error")))
-    serialWorker.start()
-    udpServer.start()
+    serialWorker = Some(new SerialWorker(port.get,
+      Seq(synchronized(println(_)),canLbl.update,udpServer.broadcastCanMessage),
+      Seq(synchronized(println(_))),
+      Seq(() => synchronized(println("Error")))
+    ))
+    serialWorker.get.start()
+    //udpServer.start()
+
+    val testData = new Thread{
+      var running = true
+      override def run(): Unit = {
+        while(running){
+          val msg = TelemetryMessage(1,CanFrame())
+          synchronized(println(msg))
+          serialWorker.get.send(msg)
+          Thread.sleep(1000)
+        }
+      }
+      def close(): Unit = running = false
+    }
+    testData.start()
+
     override def closeOperation(): Unit = {
-      println("Closing")
+      synchronized(println("Closing"))
+      testData.close()
       udpServer.close()
-      serialWorker.quit()
+      serialWorker.get.quit()
       exit(0)
     }
 

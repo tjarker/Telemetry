@@ -13,3 +13,10 @@ case class CanFrame(id: BigInt, rtr: Boolean, len: Int, data: BigInt, stamp: Tim
   }
 }
 
+object CanFrame {
+  def apply(): CanFrame = {
+    val rand = scala.util.Random
+    CanFrame(rand.nextInt(1000),rand.nextBoolean(),rand.nextInt(8),rand.nextInt(Int.MaxValue),TimeStamp())
+  }
+}
+

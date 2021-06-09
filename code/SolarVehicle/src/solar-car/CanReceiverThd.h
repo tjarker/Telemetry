@@ -41,13 +41,14 @@ THD_FUNCTION(canReceiverThd, arg){
     if(state->pause){
       state->suspend();
     }
-
+    
     if(ACAN::can0.receive(frame)){
       chSysLock();
       msg = fifo->tail();
       msg->update(&frame);
       fifo->signalData();
       fifo->moveTail();
+      ACAN::can0.tryToSend(frame);
       chSysUnlock();
     }
 
