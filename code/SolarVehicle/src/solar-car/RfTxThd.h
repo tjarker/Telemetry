@@ -13,7 +13,7 @@
 #include "RFfunctions.h"
 #include "MutexLocker.h"
 #include "Measure.h"
-#include "encryption.h"
+#include "Encryption.h"
 
 #include "solar-car/Mutexes.h"
 

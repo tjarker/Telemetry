@@ -11,8 +11,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-#include <Arduino.h>
-#include <ACAN.h>
+#include <stdint.h>
+
+#include "TelemetryMessages.h"
 
 class Security {
     public:
@@ -20,17 +21,17 @@ class Security {
         int prv_key = 13;                                      // Private key
 
         int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
-        int n = pub_key * prv_key;                             // Modulus of prime numbers
-        uint64_t i, flag;
-        uint64_t e[256], d[256], temp[256], j;
-        //cmd_t cmd_temp[256];
+        int n = pub_key * prv_key;
+        int i;                             // Modulus of prime numbers
+        uint64_t flag;
+        uint64_t e[256], d[256], temp[256];
 
     /**
      * @brief Function to check for prime number
      * @param Integer under test
     */
     private: int prime(int pr){
-        j = sqrt(pr);
+        int j = sqrt(pr);
         for (int l = 2; l <= j; l++){
             if (pr % l == 0){
                 return 0;
@@ -79,11 +80,11 @@ class Security {
         }
 
         void encrypter(uint8_t *data){
-            uint64_t pt, ct, key = e[0], k;
+            uint64_t pt, ct, enkey = e[0], k;
             pt = *data;
             pt -= 96;
             k = 1;
-            for (j = 0; j < key; j++){
+            for (int j = 0; j < enkey; j++){
                 k = k * pt;
                 k = k % n;
             }
@@ -97,19 +98,19 @@ class Security {
          * @param Message as char pointer array
         */
         void encrypt(uint8_t *message, int len){
-            uint64_t pt, ct, key = e[0], k;
-            i = 0;
-            while(i < len - 1){
-                encrypter(&message[i]);
-                i++;
+            uint64_t pt, ct, k;
+            int j = 0;
+            while(j < len - 1){
+                encrypter(&message[j]);
+                j++;
             }
         }
 
         void decrypter(uint8_t *data){
-            uint64_t pt, ct, key = d[0], k;
+            uint64_t pt, ct, dekey = d[0], k;
             ct = temp[i];                      // Array used for encryption and decryption
             k = 1;
-            for (j = 0; j < key; j++){
+            for (int j = 0; j < dekey; j++){
                 k = k * ct;
                 k = k % n;
             }
@@ -122,13 +123,13 @@ class Security {
          * @param Message as char pointer array
         */
         void decrypt(BaseTelemetryMsg *message, int len){
-            uint64_t pt, ct, key = d[0], k;
+            uint64_t pt, ct, k;
 
             decrypter((uint8_t*) &(message->cmd));
-            i = 0;
-            while(i < len - 1){
+            int j = 0;
+            while(j < len - 1){
                 decrypter(&(message->data[i]));
-                i++;
+                j++;
             }
         }
 };
