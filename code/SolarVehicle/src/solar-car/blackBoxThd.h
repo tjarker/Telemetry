@@ -48,20 +48,24 @@ THD_FUNCTION(canWorkerFunc, arg){
       state->suspend();
     }
 
-    msg = fifo->head(readerId);
+    MEASURE("BBThd:\t\t"){
+
+      msg = fifo->head(readerId);
 
 
-    if(Serial){
-      WITH_MTX(serialMtx){
-        char str[64];
-        msg->toString(str,64);
-        Serial.print("BBThd:\t\t");
-        Serial.println(str);
+      if(Serial){
+        WITH_MTX(serialMtx){
+          char str[64];
+          msg->toString(str,64);
+          Serial.print("BBThd:\t\t");
+          Serial.println(str);
+        }
       }
-    }
 
-    fifo->signalSpace();
-    fifo->moveHead(readerId);
+      fifo->signalSpace();
+      fifo->moveHead(readerId);
+
+    }
         
   }
 

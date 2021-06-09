@@ -9,26 +9,15 @@
  * the code block and reports it via Serial
  */
 
-class ExecutionTimeMeasurer{
-    private:
-        bool killed = false;
-        const char* name;
-        uint32_t startTime;
-    public:
-        ExecutionTimeMeasurer(const char* name) {
-            this->name = name;
-            startTime = micros();
-        }
-        ~ExecutionTimeMeasurer(){
-            Serial.printf("%s took %i us\n",name,micros()-startTime);
-        }
-        void kill(){killed = true;}
-        bool isKilled(){return killed;}
-};
+void measureEpilogue(const char *name, uint32_t t0){
+    char str[64];
+    snprintf(str,64,"%s took %lu us\n",name,micros()-t0);
+    Serial.print(str);
+}
 
 /**
  * Execute the provided code block and print out the execution time with the label "name"
  */
-#define MEASURE(name) for (ExecutionTimeMeasurer x(name); !x.isKilled(); x.kill())
+#define MEASURE(name) for (uint32_t t0 = micros(), i = 0; i < 1; i++, measureEpilogue(name,t0))
 
 #endif

@@ -8,7 +8,7 @@ import scala.swing.Dialog.{Message, showInput}
 import scala.swing.Swing
 
 object SerialPortSelector {
-  def apply(listener: (CanFrame => Unit)*): SerialPort = {
+  def apply(): SerialPort = {
     val ports = SerialPort.getCommPorts
     val possibilities = ports.map(p => p.getSystemPortName + " - " + p.getDescriptivePortName)
     val s = showInput(null,
