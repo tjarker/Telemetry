@@ -42,7 +42,7 @@ THD_FUNCTION(rfWorker, arg){
 
   uint8_t readerId = 1;
 
-  WITH_MTX(serialMtx){Serial.println("RfTxThd: Starting");}
+  WITH_MTX(serialMtx){Serial.println("RfTxThd:\tStarting");}
 
   while(!state->terminate){
    
