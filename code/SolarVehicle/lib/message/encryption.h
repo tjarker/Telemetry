@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <Arduino.h>
+#include <ACAN.h>
 
 class Security {
     public:
@@ -20,8 +21,9 @@ class Security {
 
         int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
         int n = pub_key * prv_key;                             // Modulus of prime numbers
-        long int i, flag;
-        long int e[256], d[256], temp[256], j;
+        uint64_t i, flag;
+        uint64_t e[256], d[256], temp[256], j;
+        //cmd_t cmd_temp[256];
 
     /**
      * @brief Function to check for prime number
@@ -76,16 +78,82 @@ class Security {
             }
         }
 
+        uint64_t encrypter(uint64_t data){
+            uint64_t pt, ct, key = e[0], k;
+            pt = data;
+            pt -= 96;
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * pt;
+                k = k % n;
+            }
+            temp[i] = k;                       // Array used for encryption and decryption
+            ct = k + 96;
+            return ct;
+        }
+
         /**
          * @brief Encrypts input message
          * @param Message as char pointer array
         */
-        char* encrypt(char *message, long int len){
-            long int pt, ct, key = e[0], k;
-            i = 0;
+        CanTelemetryMsg encrypt(CanTelemetryMsg message, int len){
+            //cmd_t cmd_pt, cmd_ct, cmd_k;
+            uint64_t pt, ct, key = e[0], k;
 
+            // cmd
+            /* Virker ikke helt efter hensigten...
+            cmd_pt = message.cmd;
+            //cmd_pt -= 96;
+            k = 1;
+            for (j = 0; j < key; j++){
+                cmd_k = cmd_k * cmd_pt;
+                cmd_k = cmd_k % n;
+            }
+            cmd_temp[i] = cmd_k;                       // Array used for encryption and decryption
+            cmd_ct = cmd_k + 96;
+            message.cmd = cmd_ct;
+            */
+
+            // id
+            pt = message.id;
+            pt -= 96;
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * pt;
+                k = k % n;
+            }
+            temp[i] = k;                       // Array used for encryption and decryption
+            ct = k + 96;
+            message.id = ct;
+
+            // rtr
+            pt = message.rtr;
+            pt -= 96;
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * pt;
+                k = k % n;
+            }
+            temp[i] = k;                       // Array used for encryption and decryption
+            ct = k + 96;
+            message.rtr = ct;
+
+            // len
+            pt = message.len;
+            pt -= 96;
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * pt;
+                k = k % n;
+            }
+            temp[i] = k;                       // Array used for encryption and decryption
+            ct = k + 96;
+            message.len = ct;
+
+            // data[8]
+            i = 0;
             while(i != len){
-                pt = message[i];
+                pt = message.data[i];
                 pt -= 96;
                 k = 1;
                 for (j = 0; j < key; j++){
@@ -94,19 +162,88 @@ class Security {
                 }
                 temp[i] = k;                       // Array used for encryption and decryption
                 ct = k + 96;
-                message[i] = ct;                   // Encrypted message
+                message.data[i] = ct;                   // Encrypted message
                 i++;
             }
 
+            // data64
+            encrypter(message.data64);
+
+            // s
+            encrypter(message.s);
+
+            // m
+            encrypter(message.m);
+
+            // h
+            encrypter(message.h);
+
             return message;
+        }
+
+        uint64_t decrypter(uint64_t data){
+            uint64_t pt, ct, key = d[0], k;
+            ct = temp[i];                      // Array used for encryption and decryption
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * ct;
+                k = k % n;
+            }
+            pt = k + 96;
+            data = pt;
         }
 
         /**
          * @brief Decrypts input message
          * @param Message as char pointer array
         */
-        char* decrypt(char* message, long int len){
-            long int pt, ct, key = d[0], k;
+        CanTelemetryMsg decrypt(CanTelemetryMsg message, int len){
+            cmd_t cmd_pt, cmd_ct;
+            uint64_t pt, ct, key = d[0], k;
+
+            // cmd
+            /* Virker ikke helt efter hensigten...
+            cmd_ct = temp[i];                      // Array used for encryption and decryption
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * cmd_ct;
+                k = k % n;
+            }
+            pt = k;
+            message.cmd = cmd_pt;
+            */
+
+            // id
+            ct = temp[i];                      // Array used for encryption and decryption
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * ct;
+                k = k % n;
+            }
+            pt = k + 96;
+            message.id = pt;
+
+            // rtr
+            ct = temp[i];                      // Array used for encryption and decryption
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * ct;
+                k = k % n;
+            }
+            pt = k + 96;
+            message.rtr = pt;
+
+            // len
+            ct = temp[i];                      // Array used for encryption and decryption
+            k = 1;
+            for (j = 0; j < key; j++){
+                k = k * ct;
+                k = k % n;
+            }
+            pt = k + 96;
+            message.len = pt;
+
+            // data[8]
             i = 0;
             while(i != len){
                 ct = temp[i];                      // Array used for encryption and decryption
@@ -116,9 +253,21 @@ class Security {
                     k = k % n;
                 }
                 pt = k + 96;
-                message[i] = pt;                   // Decrypted message
+                message.data[i] = pt;                   // Decrypted message
                 i++;
             }
+
+            // data64
+            decrypter(message.data64);
+
+            // s
+            decrypter(message.s);
+
+            // m
+            decrypter(message.m);
+
+            // h
+            decrypter(message.h);
 
             return message;
         }
