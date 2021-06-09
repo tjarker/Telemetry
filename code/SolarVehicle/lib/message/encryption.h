@@ -78,9 +78,9 @@ class Security {
             }
         }
 
-        uint64_t encrypter(uint64_t data){
+        void encrypter(uint8_t *data){
             uint64_t pt, ct, key = e[0], k;
-            pt = data;
+            pt = *data;
             pt -= 96;
             k = 1;
             for (j = 0; j < key; j++){
@@ -89,26 +89,23 @@ class Security {
             }
             temp[i] = k;                       // Array used for encryption and decryption
             ct = k + 96;
-            return ct;
+            *data = ct;
         }
 
         /**
          * @brief Encrypts input message
          * @param Message as char pointer array
         */
-        BaseTelemetryMsg encrypt(BaseTelemetryMsg message, int len){
+        void encrypt(uint8_t *message, int len){
             uint64_t pt, ct, key = e[0], k;
-
-            encrypter((uint8_t) message.cmd);
             i = 0;
             while(i < len - 1){
-                encrypter(message.data[i]);
+                encrypter(&message[i]);
+                i++;
             }
-
-            return message;
         }
 
-        uint64_t decrypter(uint64_t data){
+        void decrypter(uint8_t *data){
             uint64_t pt, ct, key = d[0], k;
             ct = temp[i];                      // Array used for encryption and decryption
             k = 1;
@@ -117,23 +114,22 @@ class Security {
                 k = k % n;
             }
             pt = k + 96;
-            data = pt;
+            *data = pt;
         }
 
         /**
          * @brief Decrypts input message
          * @param Message as char pointer array
         */
-        BaseTelemetryMsg decrypt(BaseTelemetryMsg message, int len){
+        void decrypt(BaseTelemetryMsg *message, int len){
             uint64_t pt, ct, key = d[0], k;
 
-            decrypter((uint8_t) message.cmd);
+            decrypter((uint8_t*) &(message->cmd));
             i = 0;
             while(i < len - 1){
-                decrypter(message.data[i]);
+                decrypter(&(message->data[i]));
+                i++;
             }
-
-            return message;
         }
 };
 
