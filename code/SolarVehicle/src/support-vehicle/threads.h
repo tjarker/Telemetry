@@ -3,15 +3,24 @@
 
 #include <ChRt.h>
 #include "RFfunctions.h"
+#include "ThreadState.h"
 #include "Encryption.h"
 
 Security sec; 
+ThreadState radioWorkerState; 
+
+struct threadBundle
+{
+    Security *sec; 
+    ThreadState *state;
+};
 
 THD_WORKING_AREA(waRadioWorkerThread, 2048);
 
 THD_FUNCTION(radioWorkerThread, arg)
-{ 
-  Security *sec = (Security*)arg;
+{
+  threadBundle radioWorkerBundle = (threadBundle*)arg; 
+  //Security *sec = (Security*)arg;
   BaseTelemetryMsg received; 
   chThdSleepMicroseconds(100); 
 
@@ -60,7 +69,19 @@ THD_FUNCTION(serialWorkerThread, arg)
         message.toString(str, sizeof(str));
         Serial.print("Transmitted: "); 
         Serial.println(str); 
-        //Serial.println("Acknowledge received.");  
+        switch (message.cmd){
+          case START_LOGGING:{
+            radio.powerUp();
+            break;
+          }
+          case STOP_LOGGING:{
+            radio.powerDown(); 
+            break; 
+          }
+          default: 
+            break;  
+        }
+        //Serial.println("Acknowledge received.");
       } else {
         Serial.println("Transmission failed or timed out.");
       }
