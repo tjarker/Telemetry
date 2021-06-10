@@ -13,7 +13,6 @@ THD_FUNCTION(radioWorkerThread, arg)
   BaseTelemetryMsg received; 
 
   while (true){
-    //Serial.println("Yes I am");
     if (radio.available()){
       if (RFreceive(&received, 32)){
       Serial.print("Received: ");
