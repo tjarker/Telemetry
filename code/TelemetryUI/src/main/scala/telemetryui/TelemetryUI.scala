@@ -3,9 +3,9 @@ package telemetryui
 import com.fazecast.jSerialComm.SerialPort
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
-import telemetryui.components.{CanFrameForm, CanFrameLabel, CommandButton, SerialPortSelector}
+import telemetryui.components.{CanFrameForm, CanFrameLabel, CommandButton, SerialPortSelector, ToggleCommandButton}
 import telemetryui.serial.SerialWorker
-import telemetryui.types.CMD.{BROADCAST_CAN, START_LOGGING, STOP_LOGGING}
+import telemetryui.types.CMD.{BROADCAST_CAN, START_LOGGING, START_STREAMING, STOP_LOGGING, STOP_STREAMING}
 import telemetryui.types.{CanFrame, TelemetryMessage}
 import telemetryui.udp.UdpServer
 import telemetryui.util.Timer
@@ -43,6 +43,13 @@ object TelemetryUI extends SimpleSwingApplication {
       contents += CommandButton("Stop Logging"){
         println(s"Stop Logging")
         serialWorker.get.send(TelemetryMessage(STOP_LOGGING, None))
+      }
+      contents += ToggleCommandButton("Streaming"){
+        println(s"Start Streaming")
+        serialWorker.get.send(TelemetryMessage(START_STREAMING, None))
+      }{
+        println(s"Stop Streaming")
+        serialWorker.get.send(TelemetryMessage(STOP_STREAMING, None))
       }
     }
   }
