@@ -9,10 +9,11 @@ THD_WORKING_AREA(waRadioWorkerThread, 2048);
 THD_FUNCTION(radioWorkerThread, arg)
 { 
   (void)arg;
+  chThdSleepMicroseconds(100); 
   BaseTelemetryMsg received; 
 
   while (true){
-    
+    //Serial.println("Yes I am");
     if (radio.available()){
       if (RFreceive(&received, 32)){
       Serial.print("Received: ");
@@ -44,7 +45,7 @@ THD_FUNCTION(serialWorkerThread, arg)
   BaseTelemetryMsg message; 
 
   while (true){
-    
+
     if (Serial.available()){
       Serial.readBytes((char*)&message, 32);
       if (RFtransmit(&message, 32)){
