@@ -9,9 +9,16 @@ import scala.swing.event._
 import telemetryui.util.Timer
 
 import java.util.Date
+import javax.swing.UIManager
 
 class CanFrameForm(title: String, sender: CanFrame => Unit) extends GridBagPanel {
   border = CompoundBorder(TitledBorder(EtchedBorder,title),EmptyBorder(5,5,5,5))
+
+  try {
+    UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
+  } catch {
+    case e: Throwable =>
+  }
 
   val c = new Constraints()
 
