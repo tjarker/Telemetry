@@ -12,17 +12,17 @@ THD_WORKING_AREA(waRadioWorkerThread, 2048);
 THD_FUNCTION(radioWorkerThread, arg)
 { 
   Security *sec = (Security*)arg;
-
-  chThdSleepMicroseconds(100); 
   BaseTelemetryMsg received; 
+  chThdSleepMicroseconds(100); 
 
   while (true){
     
     if (radio.available()){
       if (RFreceive(&received, 32)){
         Serial.print("Received: ");
-        sec->decrypt((uint8_t*)&received, 32);    // Decrypt received message
+        //sec->decrypt((uint8_t*)&received, 32);    // Decrypt received message
         char str[256];
+        Serial.println((uint8_t) received.cmd); 
         switch (received.cmd){
           case RECEIVED_CAN:
             CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received; 
@@ -30,6 +30,7 @@ THD_FUNCTION(radioWorkerThread, arg)
             Serial.println(str); 
             break;
           default:
+            Serial.println("default"); 
             received.toString(str, sizeof(str)); 
             Serial.println(str); 
             break; 
@@ -46,13 +47,14 @@ THD_WORKING_AREA(waSerialWorkerThread, 2048);
 
 THD_FUNCTION(serialWorkerThread, arg)
 {
-  (void)arg; 
+  Security *sec = (Security*)arg; 
   BaseTelemetryMsg message; 
 
   while (true){
 
     if (Serial.available()){
       Serial.readBytes((char*)&message, 32);
+      //sec->encrypt((uint8_t*)&message, 32); 
       if (RFtransmit(&message, 32)){
         char str[64]; 
         message.toString(str, sizeof(str));

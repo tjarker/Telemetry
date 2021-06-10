@@ -8,7 +8,7 @@ void chSetup()
 {
   chSysInit();  // Initializes ChibiOS system
   chThdCreateStatic(waRadioWorkerThread, sizeof(waRadioWorkerThread), NORMALPRIO + 1, radioWorkerThread, &sec);
-  chThdCreateStatic(waSerialWorkerThread, sizeof(waSerialWorkerThread), NORMALPRIO + 1, serialWorkerThread, NULL);
+  chThdCreateStatic(waSerialWorkerThread, sizeof(waSerialWorkerThread), NORMALPRIO + 1, serialWorkerThread, &sec);
 }  
 
 void setup()
@@ -22,6 +22,16 @@ void setup()
 
 void loop()
 {  
+  /*uint8_t message = 0; 
+  Serial.print("Original message: ");
+  Serial.print(message); 
+  sec.encrypt(&message, 2); 
+  Serial.print("; Encrypted message: ");
+  Serial.print(message); 
+  sec.decrypt(&message, 2); 
+  Serial.print("; Decrypted message: ");
+  Serial.println(message); 
+  delay(5000);
   /*Serial.println(radio.available()); 
   delay(1000);
   /* Not used */
