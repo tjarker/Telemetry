@@ -42,6 +42,9 @@ THD_FUNCTION(systemThd, arg){
 
   Serial.println("SystemThd:\tStarting");
 
+  blackBoxWorkerState->pause = true;
+  rfWorkerState->pause = true;
+
   chThdSleepMicroseconds(100); // release in order to allow creation of other threads
 
   while(true){
@@ -112,23 +115,25 @@ THD_FUNCTION(systemThd, arg){
             }
           }
             break;
-          case CONNECT_CAN:
+          case SLEEP:
           {
             if(canReceiverState->pause){
-              Serial.println("SystemThd:\tConnecting to CAN bus");
-              canReceiverState->wakeUp();
+              Serial.println("SystemThd:\tPutting system to sleep");
+              canReceiverState->pause = true;
+              if(!rfWorkerState->pause) rfWorkerState->pause = true;
+              if(!blackBoxWorkerState->pause) blackBoxWorkerState->pause = true;
             } else {
-              Serial.println("SystemThd:\tAlready connected to CAN bus");
+              Serial.println("SystemThd:\tSystem is already asleep");
             }
           }
             break;
-          case DISCONNECT_CAN:
+          case WAKE_UP:
           {
             if(!canReceiverState->pause){
-              Serial.println("SystemThd:\tDisconnecting from CAN bus");
-              canReceiverState->pause = true;
+              Serial.println("SystemThd:\tWaking up the system");
+              canReceiverState->wakeUp();
             } else {
-              Serial.println("SystemThd:\tAlready disconnected from CAN bus");
+              Serial.println("SystemThd:\tThe system is already awake");
             }
           }
             break;
