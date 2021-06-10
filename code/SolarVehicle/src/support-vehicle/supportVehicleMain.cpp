@@ -21,7 +21,21 @@ void setup()
 }
 
 void loop()
-{  
+{
+  /*
+  for (int i = 0; i < 256; i++){
+    uint8_t message = i; 
+    Serial.print("Original message: "); 
+    Serial.print(message); 
+    sec.encrypt(&message, 1); 
+    Serial.print("; Encrypted message: ");
+    Serial.print(message); 
+    sec.decrypt(&message, 1); 
+    Serial.print("; Decrypted message: ");
+    Serial.print(message); 
+    Serial.println();
+    delay(2000); 
+  }
   /*Serial.println(radio.available()); 
   delay(1000);
   /* Not used */
