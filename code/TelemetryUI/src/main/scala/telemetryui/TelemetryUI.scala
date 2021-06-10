@@ -5,7 +5,7 @@ import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
 import telemetryui.components.{CanFrameForm, CanFrameLabel, CommandButton, SerialPortSelector, ToggleCommandButton}
 import telemetryui.serial.SerialWorker
-import telemetryui.types.CMD.{BROADCAST_CAN, CONNECT_CAN, DISCONNECT_CAN, START_LOGGING, START_STREAMING, STOP_LOGGING, STOP_STREAMING}
+import telemetryui.types.CMD.{BROADCAST_CAN, CONNECT_CAN, DISCONNECT_CAN, SLEEP, START_LOGGING, START_STREAMING, STOP_LOGGING, STOP_STREAMING, WAKE_UP}
 import telemetryui.types.{CanFrame, TelemetryMessage}
 import telemetryui.udp.UdpServer
 import telemetryui.util.Timer
@@ -54,18 +54,16 @@ object TelemetryUI extends SimpleSwingApplication {
         println("Putting to sleep")
         if(loggingBtn.selected) {
           loggingBtn.selected = false
-          serialWorker.get.send(TelemetryMessage(STOP_LOGGING, None))
         }
         loggingBtn.enabled = false
         if(streamingBtn.selected){
           streamingBtn.selected = false
-          serialWorker.get.send(TelemetryMessage(STOP_STREAMING, None))
         }
         streamingBtn.enabled = false
-        serialWorker.get.send(TelemetryMessage(DISCONNECT_CAN, None))
+        serialWorker.get.send(TelemetryMessage(SLEEP, None))
       }{
         println("Waking up")
-        serialWorker.get.send(TelemetryMessage(CONNECT_CAN, None))
+        serialWorker.get.send(TelemetryMessage(WAKE_UP, None))
         loggingBtn.enabled = true
         streamingBtn.enabled = true
       }

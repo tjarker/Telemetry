@@ -35,8 +35,8 @@ typedef enum CMD: uint8_t {
   STOP_LOGGING = 0x03,
   START_STREAMING = 0x04, 
   STOP_STREAMING = 0x05,
-  CONNECT_CAN = 0x06,
-  DISCONNECT_CAN = 0x07
+  SLEEP = 0x06,
+  WAKE_UP = 0x07
 } cmd_t;
 
 /**
