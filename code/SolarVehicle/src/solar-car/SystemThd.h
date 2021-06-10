@@ -94,6 +94,7 @@ THD_FUNCTION(systemThd, arg){
           {
             if(rfWorkerState->pause){
               Serial.println("SystemThd:\tResuming streaming of CAN data");
+              radio.powerUp(); 
               rfWorkerState->wakeUp();
             } else {
               Serial.println("SystemThd:\tCAN data is already being streamed");
@@ -104,6 +105,7 @@ THD_FUNCTION(systemThd, arg){
           {
             if(!rfWorkerState->pause){
               Serial.println("SystemThd:\tPausing streaming of CAN data");
+              radio.powerDown(); 
               rfWorkerState->pause = true;
             } else {
               Serial.println("SystemThd:\tStreaming of CAN data is already paused");
