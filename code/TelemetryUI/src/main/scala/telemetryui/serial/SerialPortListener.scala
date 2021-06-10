@@ -15,9 +15,12 @@ class SerialPortListener(port: SerialPort, queue: ConcurrentLinkedQueue[Array[By
 
   def serialEvent(event: SerialPortEvent): Unit = {
     if (event.getEventType != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) return
-    val newData = new Array[Byte](port.bytesAvailable)
-    port.readBytes(newData, newData.length)
-    synchronized(println(newData.map(_.toChar).mkString("")))
-    queue.add(newData)
+    var newData: Option[Array[Byte]] = None
+    port.synchronized{
+      newData = Some(new Array[Byte](port.bytesAvailable))
+      port.readBytes(newData.get, newData.get.length)
+    }
+    println(newData.get.map(_.toChar).mkString(""))
+    queue.add(newData.get)
   }
 }
