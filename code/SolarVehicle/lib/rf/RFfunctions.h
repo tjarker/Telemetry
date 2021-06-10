@@ -49,24 +49,24 @@ bool RFtransmit(void *buf, uint8_t len)
 {
     radio.stopListening();                                      // Starts TX mode
     bool report = radio.write(buf, len);                       // Send message and wait for acknowledge
+    radio.startListening();
     if (report){    // Checks if message was delivered
         //Serial.print(F("Transmission successful! "));           // message was delivered
-        /*if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
+    /*if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
             uint8_t ack[32], *ori = (uint8_t*)buf;
             radio.read(&ack, len);                              // Loads ACK packet into msg
             for(uint8_t i = 0; i< 32; i++){
-                if(ack[i] != ori[i])
+                if(ack[i] != ori[i]){}
+                    radio.startListening(); 
+                    Serial.println("Character");
                     return false;
-            }
-            radio.startListening();
+            }  
             return true;
         }*/
         //Serial.println();
-        radio.startListening();
         return true;
     } else {
         //Serial.println(F("Transmission failed or timed out"));  // message was not delivered
-        radio.startListening();
         return false;
     }
 }
