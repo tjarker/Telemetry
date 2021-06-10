@@ -10,7 +10,7 @@
 Fifo<BaseTelemetryMsg> RFoutbox(32), RFinbox(32);
  
 // Thread states for all 4 active threads
-//ThreadState radioReceiverState, radioTransmitterState, serialReceiverState, serialTransmitterState; 
+ThreadState radioReceiverState, radioTransmitterState, serialReceiverState, serialTransmitterState; 
 ThreadState radioWorkerState, serialWorkerState; 
 // A bundle used for passsing all relevant resources to each thread
 struct threadBundle
@@ -151,45 +151,37 @@ THD_WORKING_AREA(waRadioWorkerThread, 2048);
 THD_FUNCTION(radioWorkerThread, arg)
 {
   threadBundle *radioWorkerBundle = (threadBundle*) arg; 
-  ThreadState *radioWorkerState = radioWorkerBundle->state; 
-  Fifo<BaseTelemetryMsg> *radioReceiverFifo = radioWorkerBundle->fifo[0], *radioTransmitterFifo = radioWorkerBundle->fifo[1]; 
-  chThdSleepMilliseconds(100); 
+  ThreadState *radioWorkerState = radioWorkerBundle->state;
+  chThdSleepMicroseconds(100); 
+  //Fifo<BaseTelemetryMsg> *radioReceiverFifo = radioWorkerBundle->fifo[0], *radioTransmitterFifo = radioWorkerBundle->fifo[1]; 
+  BaseTelemetryMsg received; 
 
   while (!radioWorkerState->terminate){
     
     if (radioWorkerState->pause){
       radioWorkerState->suspend(); 
     }
-
-    while (radio.available() && !radioReceiverFifo->full()){
-      if (RFreceive(radioReceiverFifo->tail(), 32)){
-        char str[64]; 
-        (radioReceiverFifo->tail())->toString(str, sizeof(str));
-        Serial.print("Received: ");
-        Serial.print(str); 
-        Serial.println();  
-        radioReceiverFifo->moveTail(); 
+    if (radio.available()){
+      if (RFreceive(&received, 32)){
+      Serial.print("Received: ");
+      cmd_t r = received.cmd; 
+      switch (r){
+        case RECEIVED_CAN:
+          char str[256]; 
+          CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received; 
+          ptr->toJSON(str, sizeof(str)); 
+          Serial.print(str); 
+          break;
+        default: 
+          break; 
+      }
+      Serial.println();  
       } else {
         Serial.println("Could not receive message.");
       }
-    } 
-    //chThdYield(); 
-    delay(50); 
-    if (!radioTransmitterFifo->empty()){
-      if (RFtransmit(radioTransmitterFifo->head(), 32)){
-        char str[64]; 
-        (radioTransmitterFifo->head())->toString(str, sizeof(str));
-        Serial.print("Transmitted: "); 
-        Serial.print(str); 
-        Serial.println(); 
-        Serial.println("Acknowledge received.");
-        radioTransmitterFifo->moveHead(); 
-      } else {
-        Serial.println("Transmission failed or timed out.");
-      }
     }
-    //chThdYield(); 
-    
+    //if (Serial.available()) chThdSleepMilliseconds(100); 
+    chThdYield();
   }
 }
 
@@ -199,41 +191,27 @@ THD_FUNCTION(serialWorkerThread, arg)
 {
   threadBundle *serialWorkerBundle = (threadBundle*) arg; 
   ThreadState *serialWorkerState = serialWorkerBundle->state; 
-  Fifo<BaseTelemetryMsg> *serialTransmitterFifo = serialWorkerBundle->fifo[0], *serialReceiverFifo = serialWorkerBundle->fifo[1];
-  BaseTelemetryMsg msg; 
-  char str[64];
+  //Fifo<BaseTelemetryMsg> *serialTransmitterFifo = serialWorkerBundle->fifo[0], *serialReceiverFifo = serialWorkerBundle->fifo[1];
+  BaseTelemetryMsg message; 
+
   while (!serialWorkerState->terminate){
-     
     if (serialWorkerState->pause){
       serialWorkerState->suspend(); 
-    }
-
-    if (!serialTransmitterFifo->empty()){   // Empty serialTransmitterFifo and send data via Serial
-      
-      switch (serialTransmitterFifo->head()->cmd){
-        case RECEIVED_CAN:
-          CanTelemetryMsg *ptr = (CanTelemetryMsg*) serialTransmitterFifo->head(); 
-          ptr->toJSON(str, sizeof(str)); 
-          Serial.println(str); 
-          break; 
-        default: 
-          break; 
-      }
-       
-      Serial.println((serialTransmitterFifo->head())->toString(str, sizeof(str)));
-      serialTransmitterFifo->moveHead(); 
-    }
-    chThdYield(); 
-    
-    if (!serialReceiverFifo->full() && Serial.available()){       // Fill serialReceiverFifo with randomized Telemetry data
-      Serial.readBytes((char *)serialReceiverFifo->tail(), 32); 
-      (serialReceiverFifo->tail())->toString(str, sizeof(str));
-      Serial.println(str); 
-      /*msg.randomize(); 
-      memcpy((void*) serialReceiverFifo->tail(), (void*) &msg, sizeof(msg));*/
-      serialReceiverFifo->moveTail();
     } 
-    chThdYield(); 
+     
+    if (Serial.available()){
+      Serial.readBytes((char*)&message, 32);
+      if (RFtransmit(&message, 32)){
+        char str[64]; 
+        message.toString(str, sizeof(str));
+        Serial.print("Transmitted: "); 
+        Serial.println(str); 
+        Serial.println("Acknowledge received.");
+      } else {
+        Serial.println("Transmission failed or timed out.");
+      }
+    }  
+    chThdYield();  
   }
 } 
 

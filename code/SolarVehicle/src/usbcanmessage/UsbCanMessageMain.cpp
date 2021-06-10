@@ -12,27 +12,26 @@ void sendRandomMessage(){
     Serial.print(str);
 }
 
-int main(){
+void setup(){
     pinMode(LED_BUILTIN,OUTPUT);
     Serial.begin(921600);
     while(!Serial){}
-
     randomSeed(analogRead(0));
+}
 
-    while(true){
-        //sendRandomMessage();
-        if(Serial.available()){
-            Serial.readBytes((char*)&msg,32);
-            msg.cmd = 0;
-            char str[256];
-            msg.toJSON(str,256);
-            Serial.println(str);
-            digitalWriteFast(LED_BUILTIN,HIGH);
-            delay(100);
-            digitalWriteFast(LED_BUILTIN,LOW);
-            delay(900);
-        }
-    }
-
-    return 0;
+void loop(){
+    sendRandomMessage(); 
+    delay(1000); 
+    /*if(Serial.available()){
+        
+        Serial.readBytes((char*)&msg,32);
+        msg.cmd = 0;
+        char str[256];
+        msg.toJSON(str,256);
+        Serial.println(str);
+        digitalWriteFast(LED_BUILTIN,HIGH);
+        delay(100);
+        digitalWriteFast(LED_BUILTIN,LOW);
+        delay(900);
+    }*/
 }
