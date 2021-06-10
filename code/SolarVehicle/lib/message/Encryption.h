@@ -13,18 +13,15 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "TelemetryMessages.h"
-
 class Security {
     public:
-        int pub_key = 7;                                       // Public key
-        int prv_key = 13;                                      // Private key
+        int pub_key = 11;                                       // Public key
+        int prv_key = 17;                                      // Private key
 
         int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
-        int n = pub_key * prv_key;
-        int i;                             // Modulus of prime numbers
-        uint64_t flag;
-        uint64_t e[256], d[256], temp[256];
+        int n = pub_key * prv_key;                             // Modulus of prime numbers
+        long int i, flag;                             
+        long int e[256], d[256], temp[256];
 
     /**
      * @brief Function to check for prime number
@@ -72,25 +69,11 @@ class Security {
                         d[k] = flag;
                         k++;
                     }
-                    if (k == 99){
+                    if (k == 9999){
                         break;
                     }
                 }
             }
-        }
-
-        void encrypter(uint8_t *data){
-            uint64_t pt, ct, enkey = e[0], k;
-            pt = *data;
-            pt -= 96;
-            k = 1;
-            for (int j = 0; j < enkey; j++){
-                k = k * pt;
-                k = k % n;
-            }
-            temp[i] = k;                       // Array used for encryption and decryption
-            ct = k + 96;
-            *data = ct;
         }
 
         /**
@@ -98,24 +81,22 @@ class Security {
          * @param Message as char pointer array
         */
         void encrypt(uint8_t *message, int len){
-            uint64_t pt, ct, k;
-            int j = 0;
-            while(j < len){
-                encrypter(&message[j]);
-                j++;
+            long int pt, ct, k;
+            i = 0;
+            while(i < len){
+                long int pt, ct, enkey = e[0], k;
+                pt = message[i];
+                pt -= 96;
+                k = 1;
+                for (int j = 0; j < enkey; j++){
+                    k = k * pt;
+                    k = k % n;
+                }
+                temp[i] = k;                       // Array used for encryption and decryption
+                ct = k + 96;
+                message[i] = ct;
+                i++;
             }
-        }
-
-        void decrypter(uint8_t *data){
-            uint64_t pt, ct, dekey = d[0], k;
-            ct = temp[i];                      // Array used for encryption and decryption
-            k = 1;
-            for (int j = 0; j < dekey; j++){
-                k = k * ct;
-                k = k % n;
-            }
-            pt = k + 96;
-            *data = pt;
         }
 
         /**
@@ -123,12 +104,18 @@ class Security {
          * @param Message as char pointer array
         */
         void decrypt(uint8_t *message, int len){
-            uint64_t pt, ct, k;
-
-            int j = 0;
-            while(j < len){
-                decrypter(&message[i]);
-                j++;
+            long int pt, ct, dekey = d[0], k;
+            i = 0;
+            while(i < len){
+                ct = temp[i];                      // Array used for encryption and decryption
+                k = 1;
+                for (int j = 0; j < dekey; j++){
+                    k = k * ct;
+                    k = k % n;
+                }
+                pt = k + 96;
+                message[i] = pt;
+                i++;
             }
         }
 };

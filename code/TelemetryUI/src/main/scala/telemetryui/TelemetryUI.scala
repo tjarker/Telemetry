@@ -25,7 +25,7 @@ object TelemetryUI extends SimpleSwingApplication {
 
   val canLbl = new CanFrameLabel("Last Received CAN Frame")
   val canForm = new CanFrameForm("Send CAN Frame", { canFrame =>
-    synchronized(println(s"Sending Frame: $canFrame"))
+    println(s"Sending Frame: $canFrame")
     serialWorker.get.send(TelemetryMessage(BROADCAST_CAN, canFrame))
   })
 
@@ -34,7 +34,7 @@ object TelemetryUI extends SimpleSwingApplication {
     contents += canForm
     contents += canLbl
     contents += CommandButton("Hello"){
-      synchronized(println("Hallo"))
+      println("Hallo")
     }
   }
 
@@ -61,9 +61,9 @@ object TelemetryUI extends SimpleSwingApplication {
     val udpServer = new UdpServer
 
     serialWorker = Some(new SerialWorker(port.get,
-      Seq(synchronized(println(_)),canLbl.update,udpServer.broadcastCanMessage),
-      Seq(synchronized(println(_))),
-      Seq(() => synchronized(println("Error")))
+      Seq(println,canLbl.update,udpServer.broadcastCanMessage),
+      Seq(println),
+      Seq(() => println("Error"))
     ))
     serialWorker.get.start()
     //udpServer.start()
@@ -73,7 +73,7 @@ object TelemetryUI extends SimpleSwingApplication {
       override def run(): Unit = {
         while(running){
           val msg = TelemetryMessage(1,CanFrame())
-          synchronized(println(msg))
+          println(msg)
           serialWorker.get.send(msg)
           Thread.sleep(1000)
         }
@@ -83,10 +83,11 @@ object TelemetryUI extends SimpleSwingApplication {
     //testData.start()
 
     override def closeOperation(): Unit = {
-      synchronized(println("Closing"))
+      println("Closing")
       testData.close()
       udpServer.close()
       serialWorker.get.quit()
+      port.get.closePort()
       TelemetryUI.quit()
       //exit(0)
     }
