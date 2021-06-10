@@ -52,9 +52,15 @@ object TelemetryUI extends SimpleSwingApplication {
       }
       val sleepBtn = ToggleCommandButton("Sleep"){
         println("Putting to sleep")
-        if(loggingBtn.selected) loggingBtn.doClick()
+        if(loggingBtn.selected) {
+          loggingBtn.selected = false
+          serialWorker.get.send(TelemetryMessage(STOP_LOGGING, None))
+        }
         loggingBtn.enabled = false
-        if(streamingBtn.selected) streamingBtn.doClick()
+        if(streamingBtn.selected){
+          streamingBtn.selected = false
+          serialWorker.get.send(TelemetryMessage(STOP_STREAMING, None))
+        }
         streamingBtn.enabled = false
         serialWorker.get.send(TelemetryMessage(DISCONNECT_CAN, None))
       }{
