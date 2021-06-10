@@ -112,6 +112,26 @@ THD_FUNCTION(systemThd, arg){
             }
           }
             break;
+          case CONNECT_CAN:
+          {
+            if(canReceiverState->pause){
+              Serial.println("SystemThd:\tConnecting to CAN bus");
+              canReceiverState->wakeUp();
+            } else {
+              Serial.println("SystemThd:\tAlready connected to CAN bus");
+            }
+          }
+            break;
+          case DISCONNECT_CAN:
+          {
+            if(!canReceiverState->pause){
+              Serial.println("SystemThd:\tDisconnecting from CAN bus");
+              canReceiverState->pause = true;
+            } else {
+              Serial.println("SystemThd:\tAlready disconnected from CAN bus");
+            }
+          }
+            break;
           default:
           {
             Serial.print("SystemThd:\tReceived Rf: ");
