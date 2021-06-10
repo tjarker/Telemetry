@@ -32,7 +32,6 @@ THD_FUNCTION(radioWorkerThread, arg)
         Serial.println("Could not receive message.");
       }
     }
-    //if (Serial.available()) chThdSleepMilliseconds(100); 
     chThdYield();
   }
 }
@@ -45,7 +44,7 @@ THD_FUNCTION(serialWorkerThread, arg)
   BaseTelemetryMsg message; 
 
   while (true){
-     
+    
     if (Serial.available()){
       Serial.readBytes((char*)&message, 32);
       if (RFtransmit(&message, 32)){
