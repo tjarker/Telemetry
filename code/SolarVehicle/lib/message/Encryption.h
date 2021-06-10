@@ -21,7 +21,7 @@ class Security {
         int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
         int n = pub_key * prv_key;                             // Modulus of prime numbers
         long int i, flag;                             
-        long int e[256], d[256], temp[256];
+        long int e[256], d[256];
 
     /**
      * @brief Function to check for prime number
@@ -69,7 +69,7 @@ class Security {
                         d[k] = flag;
                         k++;
                     }
-                    if (k == 9999){
+                    if (k == 999){
                         break;
                     }
                 }
@@ -84,7 +84,8 @@ class Security {
             long int pt, ct, k;
             i = 0;
             while(i < len){
-                long int pt, ct, enkey = e[0], k;
+                long int pt, enkey = e[0], k;
+                uint8_t ct;
                 pt = message[i];
                 pt -= 96;
                 k = 1;
@@ -107,7 +108,7 @@ class Security {
             long int pt, ct, dekey = d[0], k;
             i = 0;
             while(i < len){
-                ct = temp[i];                      // Array used for encryption and decryption
+                ct = message[i] - 96;                      // Array used for encryption and decryption
                 k = 1;
                 for (int j = 0; j < dekey; j++){
                     k = k * ct;
