@@ -60,16 +60,16 @@ THD_FUNCTION(rfWorker, arg){
       chSysLock();
       BaseTelemetryMsg decryptedMsg;
       memcpy(&decryptedMsg,msg,32);
-      char tempString[64];
+      char tempString[128];
       WITH_MTX(serialMtx){
         Serial.print("RfTxThd:\t");
-        decryptedMsg.toString(tempString,64);
+        decryptedMsg.toString(tempString,sizeof(tempString));
         Serial.println(tempString);
 
         /*sec->encrypt((uint8_t*)&decryptedMsg,32);
 
         Serial.print("RfTxThd:\t");
-        decryptedMsg.toString(tempString,64);
+        decryptedMsg.toString(tempString,sizeof(tempString));
         Serial.println(tempString);*/
 
         

@@ -36,6 +36,7 @@ THD_FUNCTION(systemThd, arg){
   ThreadState *canReceiverState = bundle->canReceiverState;
   ThreadState *rfWorkerState = bundle->rfWorkerState;
   ThreadState *blackBoxWorkerState = bundle->blackBoxWorkerState;
+  Security *sec = bundle->sec;
 
   BaseTelemetryMsg msg;
 
@@ -48,6 +49,7 @@ THD_FUNCTION(systemThd, arg){
     radio.startListening();
     if(radio.available()){
       RFreceive(&msg,32);
+      //sec->decrypt((uint8_t*)&msg,32);
       uint32_t count = 0;
       for(uint32_t i = 0; i < 32; i++) {
         count += ((uint8_t*)&msg)[i];
@@ -85,6 +87,26 @@ THD_FUNCTION(systemThd, arg){
               blackBoxWorkerState->pause = true;
             } else {
               Serial.println("SystemThd:\tBlackBox Thread already paused");
+            }
+          }
+            break;
+          case START_STREAMING:
+          {
+            if(rfWorkerState->pause){
+              Serial.println("SystemThd:\tResuming streaming of CAN data");
+              rfWorkerState->wakeUp();
+            } else {
+              Serial.println("SystemThd:\tCAN data is already being streamed");
+            }
+          }
+            break;
+          case STOP_STREAMING:
+          {
+            if(!rfWorkerState->pause){
+              Serial.println("SystemThd:\tPausing streaming of CAN data");
+              rfWorkerState->pause = true;
+            } else {
+              Serial.println("SystemThd:\tStreaming of CAN data is already paused");
             }
           }
             break;
