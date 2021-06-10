@@ -5,14 +5,14 @@ import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
 import telemetryui.components.{CanFrameForm, CanFrameLabel, CommandButton, SerialPortSelector}
 import telemetryui.serial.SerialWorker
-import telemetryui.types.CMD.BROADCAST_CAN
+import telemetryui.types.CMD.{BROADCAST_CAN, START_LOGGING, STOP_LOGGING}
 import telemetryui.types.{CanFrame, TelemetryMessage}
 import telemetryui.udp.UdpServer
 import telemetryui.util.Timer
 
 import java.awt.Dimension
 import javax.swing.UIManager
-import scala.swing.Swing.EmptyBorder
+import scala.swing.Swing.{CompoundBorder, EmptyBorder, EtchedBorder, TitledBorder}
 import scala.swing._
 import scala.swing.event.ButtonClicked
 import scala.sys.exit
@@ -25,16 +25,25 @@ object TelemetryUI extends SimpleSwingApplication {
 
   val canLbl = new CanFrameLabel("Last Received CAN Frame")
   val canForm = new CanFrameForm("Send CAN Frame", { canFrame =>
-    synchronized(println(s"Sending Frame: $canFrame"))
-    serialWorker.get.send(TelemetryMessage(BROADCAST_CAN, canFrame))
+    println(s"Sending Frame: $canFrame")
+    serialWorker.get.send(TelemetryMessage(BROADCAST_CAN, Some(canFrame)))
   })
 
   lazy val ui = new BoxPanel(Orientation.Vertical) {
     border = EmptyBorder(10, 10, 10, 10)
     contents += canForm
     contents += canLbl
-    contents += CommandButton("Hello"){
-      synchronized(println("Hallo"))
+    contents += new BoxPanel(Orientation.Horizontal){
+      border = CompoundBorder(TitledBorder(EtchedBorder,"Commands"),EmptyBorder(5,5,5,5))
+      this.
+      contents += CommandButton("Start Logging"){
+        println(s"Start Logging")
+        serialWorker.get.send(TelemetryMessage(START_LOGGING, None))
+      }
+      contents += CommandButton("Stop Logging"){
+        println(s"Stop Logging")
+        serialWorker.get.send(TelemetryMessage(STOP_LOGGING, None))
+      }
     }
   }
 
@@ -61,9 +70,9 @@ object TelemetryUI extends SimpleSwingApplication {
     val udpServer = new UdpServer
 
     serialWorker = Some(new SerialWorker(port.get,
-      Seq(synchronized(println(_)),canLbl.update,udpServer.broadcastCanMessage),
-      Seq(synchronized(println(_))),
-      Seq(() => synchronized(println("Error")))
+      Seq(println,canLbl.update,udpServer.broadcastCanMessage),
+      Seq(println),
+      Seq(() => println("Error"))
     ))
     serialWorker.get.start()
     //udpServer.start()
@@ -72,8 +81,8 @@ object TelemetryUI extends SimpleSwingApplication {
       var running = true
       override def run(): Unit = {
         while(running){
-          val msg = TelemetryMessage(1,CanFrame())
-          synchronized(println(msg))
+          val msg = TelemetryMessage(1,Some(CanFrame()))
+          println(msg)
           serialWorker.get.send(msg)
           Thread.sleep(1000)
         }
@@ -83,10 +92,11 @@ object TelemetryUI extends SimpleSwingApplication {
     //testData.start()
 
     override def closeOperation(): Unit = {
-      synchronized(println("Closing"))
+      println("Closing")
       testData.close()
       udpServer.close()
       serialWorker.get.quit()
+      port.get.closePort()
       TelemetryUI.quit()
       //exit(0)
     }

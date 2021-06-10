@@ -16,6 +16,7 @@ class SerialWorker(port: SerialPort,
 
   // queue used for passing raw data from the event driven routine to a processing routine
   private val queue = new ConcurrentLinkedQueue[Array[Byte]]()
+  private val outBox = new ConcurrentLinkedQueue[Array[Byte]]()
 
   // class assembling the json string with basic error checking
   private val assembler = new JsonAssembler
@@ -40,7 +41,7 @@ class SerialWorker(port: SerialPort,
           if(assembler.hasMessage) {
             val msg = assembler.getMessage
             cmdListener.foreach(_(msg.cmd))
-            if(msg.cmd == RECEIVED_CAN) canListener.foreach(_(msg.can))
+            if(msg.cmd == RECEIVED_CAN) canListener.foreach(_(msg.can.get))
           }
           if(assembler.hadError) errListener.foreach(_())
         }
@@ -50,10 +51,13 @@ class SerialWorker(port: SerialPort,
   }
 
   def send(msg: TelemetryMessage): Unit = {
-    synchronized{
+    port.synchronized{
       val bytes = msg.toByteArray
+      port.writeBytes(bytes,bytes.length)
+      /*
       val out = port.getOutputStream
       out.write(bytes)
+      out.close()*/
     }
   }
 }

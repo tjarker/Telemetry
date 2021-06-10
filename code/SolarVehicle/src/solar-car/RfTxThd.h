@@ -70,13 +70,9 @@ THD_FUNCTION(rfWorker, arg){
 
         Serial.print("RfTxThd:\t");
         decryptedMsg.toString(tempString,64);
-        Serial.println(tempString);
-
-        sec->decrypt((uint8_t*)&decryptedMsg,32);
-
-        Serial.print("RfTxThd:\t");
-        decryptedMsg.toString(tempString,64);
         Serial.println(tempString);*/
+
+        
       }
       WITH_MTX(rfMTX){
         if(!RFtransmit((BaseTelemetryMsg*)&decryptedMsg,32)){
@@ -85,6 +81,13 @@ THD_FUNCTION(rfWorker, arg){
           Serial.println("RfTxThd:\tMessage sent successfully");
         }
       }
+      /*WITH_MTX(serialMtx){
+        sec->decrypt((uint8_t*)&decryptedMsg,32);
+
+        Serial.print("RfTxThd:\t");
+        decryptedMsg.toString(tempString,64);
+        Serial.println(tempString);
+      }*/
       chSysUnlock();
       
       fifo->moveHead(readerId);
