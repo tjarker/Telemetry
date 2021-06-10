@@ -7,7 +7,7 @@
 #include "Encryption.h"
 
 Security sec; 
-ThreadState radioWorkerState; 
+ThreadState rfState; 
 
 struct threadBundle
 {
@@ -19,13 +19,18 @@ THD_WORKING_AREA(waRadioWorkerThread, 2048);
 
 THD_FUNCTION(radioWorkerThread, arg)
 {
-  threadBundle radioWorkerBundle = (threadBundle*)arg; 
-  //Security *sec = (Security*)arg;
+  threadBundle *bundle = (threadBundle*)arg; 
+  Security *sec = bundle->sec; 
+  ThreadState *state = bundle->state; 
   BaseTelemetryMsg received; 
   chThdSleepMicroseconds(100); 
 
-  while (true){
-    
+  while (!state->terminate){
+
+    if (state->pause){
+      state->suspend(); 
+    }
+
     if (radio.available()){
       if (RFreceive(&received, 32)){
         Serial.print("Received: ");
@@ -72,10 +77,12 @@ THD_FUNCTION(serialWorkerThread, arg)
         switch (message.cmd){
           case START_LOGGING:{
             radio.powerUp();
+            rfState.wakeUp();
             break;
           }
           case STOP_LOGGING:{
             radio.powerDown(); 
+            rfState.suspend(); 
             break; 
           }
           default: 
