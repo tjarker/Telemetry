@@ -45,7 +45,9 @@ THD_FUNCTION(systemThd, arg){
 
   while(true){
    
-    if(RFreceive(&msg,32)){
+    radio.startListening();
+    if(radio.available()){
+      RFreceive(&msg,32);
       uint32_t count = 0;
       for(uint32_t i = 0; i < 32; i++) {
         count += ((uint8_t*)&msg)[i];
@@ -57,14 +59,20 @@ THD_FUNCTION(systemThd, arg){
         Serial.print("SystemThd:\tReceived Rf: ");
         switch(msg.cmd){
           case BROADCAST_CAN:
+          {
             CanTelemetryMsg *ptr = (CanTelemetryMsg*)&msg;
             ptr->toString(str,64);
             Serial.println(str);
+            CANMessage canMsg;
+            ptr->toCanFrame(&canMsg);
+            ACAN::can0.tryToSend(canMsg);
+          }
             break;
           default:
+          {
             msg.toString(str,64);
             Serial.println(str);
-            break;
+          }
         }
       }
     }

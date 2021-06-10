@@ -157,13 +157,23 @@ class CanTelemetryMsg {
         stamp();
     }
     public: void update(CANMessage *msg){
-        chSysLock();
-        this->id = msg->id;
-        this->rtr = msg->rtr;
-        this->len = msg->len;
-        this->data64 = msg->data64;
-        stamp();
-        chSysUnlock();
+      chSysLock();
+      this->id = msg->id;
+      this->rtr = msg->rtr;
+      this->len = msg->len;
+      this->data64 = msg->data64;
+      stamp();
+      chSysUnlock();
+    }
+
+    public: void toCanFrame(CANMessage *msg){
+      chSysLock();
+      memcpy(&(msg->data),&data,8);
+      msg->id = id;
+      msg->rtr = rtr;
+      msg->len = len;
+      msg->ext = false;
+      chSysUnlock();
     }
 
     public: void stamp(){
