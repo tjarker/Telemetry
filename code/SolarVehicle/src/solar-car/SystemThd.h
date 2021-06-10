@@ -117,7 +117,7 @@ THD_FUNCTION(systemThd, arg){
             break;
           case SLEEP:
           {
-            if(canReceiverState->pause){
+            if(!canReceiverState->pause){
               Serial.println("SystemThd:\tPutting system to sleep");
               canReceiverState->pause = true;
               if(!rfWorkerState->pause) rfWorkerState->pause = true;
@@ -129,7 +129,7 @@ THD_FUNCTION(systemThd, arg){
             break;
           case WAKE_UP:
           {
-            if(!canReceiverState->pause){
+            if(canReceiverState->pause){
               Serial.println("SystemThd:\tWaking up the system");
               canReceiverState->wakeUp();
             } else {
