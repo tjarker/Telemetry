@@ -13,7 +13,7 @@
 #include "RFfunctions.h"
 #include "MutexLocker.h"
 #include "Measure.h"
-#include "encryption.h"
+#include "Encryption.h"
 
 #include "solar-car/Mutexes.h"
 
@@ -53,35 +53,39 @@ THD_FUNCTION(rfWorker, arg){
       state->suspend();
     }
 
-    msg = fifo->head(readerId);
-    
-    chSysLock();
-    BaseTelemetryMsg decryptedMsg;
-    memcpy(&decryptedMsg,msg,32);
-    char tempString[64];
-    WITH_MTX(serialMtx){
-      Serial.print("RfTxThd:\t");
-      decryptedMsg.toString(tempString,64);
-      Serial.println(tempString);
+    MEASURE("RfTxThd:\t"){
 
-      /*sec->encrypt(&decryptedMsg,32);
+      msg = fifo->head(readerId);
+      
+      chSysLock();
+      BaseTelemetryMsg decryptedMsg;
+      memcpy(&decryptedMsg,msg,32);
+      char tempString[64];
+      WITH_MTX(serialMtx){
+        Serial.print("RfTxThd:\t");
+        decryptedMsg.toString(tempString,64);
+        Serial.println(tempString);
 
-      Serial.print("RfTxThd:\t");
-      decryptedMsg.toString(tempString,64);
-      Serial.println(tempString);
+        /*sec->encrypt((uint8_t*)&decryptedMsg,32);
 
-      sec->decrypt(&decryptedMsg,32);
+        Serial.print("RfTxThd:\t");
+        decryptedMsg.toString(tempString,64);
+        Serial.println(tempString);
 
-      Serial.print("RfTxThd:\t");
-      decryptedMsg.toString(tempString,64);
-      Serial.println(tempString);*/
+        sec->decrypt((uint8_t*)&decryptedMsg,32);
+
+        Serial.print("RfTxThd:\t");
+        decryptedMsg.toString(tempString,64);
+        Serial.println(tempString);*/
+      }
+      WITH_MTX(rfMTX){
+        RFtransmit((BaseTelemetryMsg*)&decryptedMsg,32);
+      }
+      chSysUnlock();
+      
+      fifo->moveHead(readerId);
+
     }
-    WITH_MTX(rfMTX){
-      RFtransmit((BaseTelemetryMsg*)&decryptedMsg,32);
-    }
-    chSysUnlock();
-    
-    fifo->moveHead(readerId);
         
   }
   
