@@ -16,6 +16,7 @@ class SerialWorker(port: SerialPort,
 
   // queue used for passing raw data from the event driven routine to a processing routine
   private val queue = new ConcurrentLinkedQueue[Array[Byte]]()
+  private val outBox = new ConcurrentLinkedQueue[Array[Byte]]()
 
   // class assembling the json string with basic error checking
   private val assembler = new JsonAssembler

@@ -32,8 +32,8 @@ void RFinit()
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
     radio.enableDynamicPayloads();
-    radio.setAutoAck(true);
-    radio.enableAckPayload();
+    //radio.setAutoAck(true);
+    //radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
     //pinMode(IRQ_PIN, INPUT);
     //attachInterrupt(digitalPinToInterrupt(IRQ_PIN), RFinterrupt, FALLING); 
@@ -51,23 +51,22 @@ bool RFtransmit(void *buf, uint8_t len)
     bool report = radio.write(buf, len);                       // Send message and wait for acknowledge
     if (report){    // Checks if message was delivered
         //Serial.print(F("Transmission successful! "));           // message was delivered
-        if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
+        /*if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
             uint8_t ack[32], *ori = (uint8_t*)buf;
             radio.read(&ack, len);                              // Loads ACK packet into msg
             for(uint8_t i = 0; i< 32; i++){
                 if(ack[i] != ori[i])
                     return false;
             }
-            /*Serial.print(F("Acknowledge received: "));
-            char str[64];
-            buf->toString(str,sizeof(str));
-            Serial.print(str);*/  
+            radio.startListening();
             return true;
-        }
+        }*/
         //Serial.println();
-        return false;
+        radio.startListening();
+        return true;
     } else {
         //Serial.println(F("Transmission failed or timed out"));  // message was not delivered
+        radio.startListening();
         return false;
     }
 }
@@ -80,7 +79,7 @@ bool RFreceive(void *buf, uint8_t len)
     uint8_t pipe;
     if (radio.available(&pipe)){                                // Check if transmitter is sending message
         radio.read(buf, len);                               // Read message, cannot be larger than 32 bytes (null-terminated)
-        radio.writeAckPayload(1, buf, len);                 // Send acknowledge payload
+        //radio.writeAckPayload(1, buf, len);                 // Send acknowledge payload
         return true;
     }
     return false;
