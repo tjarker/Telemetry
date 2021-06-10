@@ -54,8 +54,18 @@ THD_FUNCTION(systemThd, arg){
         RFinit();
       } else {
         char str[64];
-      msg.toString(str,64);
-      Serial.print("SystemThd:\tReceived Rf: ");Serial.println(str);
+        Serial.print("SystemThd:\tReceived Rf: ");
+        switch(msg.cmd){
+          case BROADCAST_CAN:
+            CanTelemetryMsg *ptr = (CanTelemetryMsg*)&msg;
+            ptr->toString(str,64);
+            Serial.println(str);
+            break;
+          default:
+            msg.toString(str,64);
+            Serial.println(str);
+            break;
+        }
       }
     }
 
