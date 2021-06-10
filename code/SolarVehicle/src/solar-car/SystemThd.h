@@ -56,10 +56,10 @@ THD_FUNCTION(systemThd, arg){
         RFinit();
       } else {
         char str[64];
-        Serial.print("SystemThd:\tReceived Rf: ");
         switch(msg.cmd){
           case BROADCAST_CAN:
           {
+            Serial.print("SystemThd:\tReceived Rf: ");
             CanTelemetryMsg *ptr = (CanTelemetryMsg*)&msg;
             ptr->toString(str,64);
             Serial.println(str);
@@ -68,8 +68,29 @@ THD_FUNCTION(systemThd, arg){
             ACAN::can0.tryToSend(canMsg);
           }
             break;
+          case START_LOGGING:
+          {
+            if(blackBoxWorkerState->pause){
+              Serial.println("SystemThd:\tResuming BlackBox Thread");
+              blackBoxWorkerState->wakeUp();
+            } else {
+              Serial.println("SystemThd:\tBlackBox Thread already running");
+            }
+          }
+            break;
+          case STOP_LOGGING:
+          {
+            if(!blackBoxWorkerState->pause){
+              Serial.println("SystemThd:\tPausing BlackBox Thread");
+              blackBoxWorkerState->pause = true;
+            } else {
+              Serial.println("SystemThd:\tBlackBox Thread already paused");
+            }
+          }
+            break;
           default:
           {
+            Serial.print("SystemThd:\tReceived Rf: ");
             msg.toString(str,64);
             Serial.println(str);
           }

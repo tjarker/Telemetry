@@ -93,7 +93,7 @@ class Security {
                     k = k * pt;
                     k = k % n;
                 }
-                temp[i] = k;                       // Array used for encryption and decryption
+
                 ct = k + 96;
                 message[i] = ct;
                 i++;
