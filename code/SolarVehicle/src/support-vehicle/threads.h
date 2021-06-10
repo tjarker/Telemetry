@@ -74,20 +74,14 @@ THD_FUNCTION(serialWorkerThread, arg)
         message.toString(str, sizeof(str));
         Serial.print("Transmitted: "); 
         Serial.println(str); 
-        switch (message.cmd){
-          case START_LOGGING:{
-            radio.powerUp();
-            rfState.wakeUp();
-            break;
-          }
-          case STOP_LOGGING:{
-            radio.powerDown(); 
-            rfState.suspend(); 
-            break; 
-          }
-          default: 
-            break;  
-        }
+        /*
+        if (message.cmd == START_LOGGING || message.cmd == WAKE_UP){
+          //radio.powerUp();
+          rfState.wakeUp();
+        } else if (message.cmd == STOP_LOGGING || message.cmd == SLEEP){
+          //radio.powerDown(); 
+          rfState.suspend();
+        }*/
         //Serial.println("Acknowledge received.");
       } else {
         Serial.println("Transmission failed or timed out.");

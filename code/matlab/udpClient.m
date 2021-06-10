@@ -1,8 +1,7 @@
 %echoudp("on",3030);
-u = udpport("datagram","OutputDatagramSize",16);
+u = udpport("datagram","OutputDatagramSize",32);
 
 write(u,"start","uint8","127.0.0.1",4445);
-
 
 
 for i = 1:10

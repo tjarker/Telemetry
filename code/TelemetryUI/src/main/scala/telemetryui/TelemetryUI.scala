@@ -99,7 +99,7 @@ object TelemetryUI extends SimpleSwingApplication {
       Seq(() => println("Error"))
     ))
     serialWorker.get.start()
-    //udpServer.start()
+    udpServer.start()
 
     val testData = new Thread{
       var running = true
