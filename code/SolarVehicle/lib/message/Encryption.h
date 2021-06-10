@@ -81,20 +81,19 @@ class Security {
          * @param Message as char pointer array
         */
         void encrypt(uint8_t *message, int len){
-            long int pt, ct, k;
+            long int pt, k, enkey = e[0];
+            uint8_t ct;
             int i = 0;
             while(i < len){
-                long int pt, enkey = e[0], k;
-                uint8_t ct;
-                pt = message[i];
+                /*pt = message[i];
                 pt -= 96;
                 k = 1;
                 for (int j = 0; j < enkey; j++){
                     k = k * pt;
                     k = k % n;
-                }
+                }*/
 
-                ct = k + 96;
+                ct = message[i] + 96;
                 message[i] = ct;
                 i++;
             }
@@ -105,16 +104,17 @@ class Security {
          * @param Message as char pointer array
         */
         void decrypt(uint8_t *message, int len){
-            long int pt, ct, dekey = d[0], k;
+            long int ct, dekey = d[0], k;
+            uint8_t pt;
             int i = 0;
             while(i < len){
-                ct = message[i] - 96;                      // Array used for encryption and decryption
+                /*ct = message[i] - 96;                      // Array used for encryption and decryption
                 k = 1;
                 for (int j = 0; j < dekey; j++){
                     k = k * ct;
                     k = k % n;
-                }
-                pt = k + 96;
+                }*/
+                pt = message[i] - 96;
                 message[i] = pt;
                 i++;
             }
