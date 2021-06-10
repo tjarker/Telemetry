@@ -7,7 +7,7 @@
 void chSetup()
 {
   chSysInit();  // Initializes ChibiOS system
-  chThdCreateStatic(waRadioWorkerThread, sizeof(waRadioWorkerThread), NORMALPRIO + 1, radioWorkerThread, NULL);
+  chThdCreateStatic(waRadioWorkerThread, sizeof(waRadioWorkerThread), NORMALPRIO + 1, radioWorkerThread, &sec);
   chThdCreateStatic(waSerialWorkerThread, sizeof(waSerialWorkerThread), NORMALPRIO + 1, serialWorkerThread, NULL);
 }  
 
@@ -17,10 +17,12 @@ void setup()
   while(!Serial){}
   RFinit(); 
   chBegin(chSetup);     // Initialize and start all 4 threads
-  while (true){}
+  //while (true){}
 }
 
 void loop()
 {  
+  /*Serial.println(radio.available()); 
+  delay(1000);
   /* Not used */
 }

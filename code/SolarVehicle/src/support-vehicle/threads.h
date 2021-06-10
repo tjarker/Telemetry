@@ -3,31 +3,37 @@
 
 #include <ChRt.h>
 #include "RFfunctions.h"
+#include "Encryption.h"
+
+Security sec; 
 
 THD_WORKING_AREA(waRadioWorkerThread, 2048);
 
 THD_FUNCTION(radioWorkerThread, arg)
 { 
-  (void)arg;
+  Security *sec = (Security*)arg;
+
   chThdSleepMicroseconds(100); 
   BaseTelemetryMsg received; 
 
   while (true){
+    
     if (radio.available()){
       if (RFreceive(&received, 32)){
-      Serial.print("Received: ");
-      cmd_t r = received.cmd; 
-      switch (r){
-        case RECEIVED_CAN:
-          char str[256]; 
-          CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received; 
-          ptr->toJSON(str, sizeof(str)); 
-          Serial.print(str); 
-          break;
-        default: 
-          break; 
-      }
-      Serial.println();  
+        Serial.print("Received: ");
+        sec->decrypt((uint8_t*)&received, 32);    // Decrypt received message
+        char str[256];
+        switch (received.cmd){
+          case RECEIVED_CAN:
+            CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received; 
+            ptr->toJSON(str, sizeof(str)); 
+            Serial.println(str); 
+            break;
+          default:
+            received.toString(str, sizeof(str)); 
+            Serial.println(str); 
+            break; 
+        }  
       } else {
         Serial.println("Could not receive message.");
       }
