@@ -25,9 +25,8 @@ object TelemetryUI extends SimpleSwingApplication {
 
   val canLbl = new CanFrameLabel("Last Received CAN Frame")
   val canForm = new CanFrameForm("Send CAN Frame", { canFrame =>
-    val outBytes = TelemetryMessage(BROADCAST_CAN, canFrame).toByteArray
-    synchronized(println(outBytes.map(_.toString).mkString(", ")))
-    port.get.writeBytes(outBytes, outBytes.length)
+    synchronized(println(s"Sending Frame: $canFrame"))
+    serialWorker.get.send(TelemetryMessage(BROADCAST_CAN, canFrame))
   })
 
   lazy val ui = new BoxPanel(Orientation.Vertical) {
