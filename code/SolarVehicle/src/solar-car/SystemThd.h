@@ -45,7 +45,7 @@ THD_FUNCTION(systemThd, arg){
 
   while(true){
    
-    if(RFreceive(&msg)){
+    if(RFreceive(&msg,32)){
       uint32_t count = 0;
       for(uint32_t i = 0; i < 32; i++) {
         count += ((uint8_t*)&msg)[i];

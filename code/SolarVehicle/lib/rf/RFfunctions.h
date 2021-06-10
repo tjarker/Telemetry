@@ -52,14 +52,20 @@ bool RFtransmit(void *buf, uint8_t len)
     if (report){    // Checks if message was delivered
         //Serial.print(F("Transmission successful! "));           // message was delivered
         if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
-            radio.read(buf, len);                              // Loads ACK packet into msg
+            uint8_t ack[32], *ori = (uint8_t*)buf;
+            radio.read(&ack, len);                              // Loads ACK packet into msg
+            for(uint8_t i = 0; i< 32; i++){
+                if(ack[i] != ori[i])
+                    return false;
+            }
             /*Serial.print(F("Acknowledge received: "));
             char str[64];
             buf->toString(str,sizeof(str));
-            Serial.print(str);*/                                  // Prints ACK packet
+            Serial.print(str);*/  
+            return true;
         }
         //Serial.println();
-        return true;
+        return false;
     } else {
         //Serial.println(F("Transmission failed or timed out"));  // message was not delivered
         return false;
