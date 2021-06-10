@@ -8,8 +8,8 @@ case class CanFrame(id: BigInt, rtr: Boolean, len: Int, data: BigInt, stamp: Tim
   override def toString: String = s"($id: [$len]$data at $stamp)"
   def toByteArray : Array[Byte] = {
     //TODO: padTo seems to create arrays that vary in size
-    id.toByteArray.reverse.padTo(2,0.toByte) ++ Array((if(rtr)1 else 0).toByte) ++ Array(len.toByte) ++ data.toByteArray.reverse.padTo(8,0.toByte) ++
-      stamp.toByteArray
+    (id.toByteArray.reverse.padTo(2,0.toByte) ++ Array((if(rtr)1 else 0).toByte) ++ Array(len.toByte) ++ data.toByteArray.reverse.padTo(8,0.toByte) ++
+      stamp.toByteArray).padTo(31,0.toByte)
   }
 }
 

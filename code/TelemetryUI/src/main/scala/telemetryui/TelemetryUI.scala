@@ -5,7 +5,7 @@ import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
 import telemetryui.components.{CanFrameForm, CanFrameLabel, CommandButton, SerialPortSelector, ToggleCommandButton}
 import telemetryui.serial.SerialWorker
-import telemetryui.types.CMD.{BROADCAST_CAN, START_LOGGING, START_STREAMING, STOP_LOGGING, STOP_STREAMING}
+import telemetryui.types.CMD._
 import telemetryui.types.{CanFrame, TelemetryMessage}
 import telemetryui.udp.UdpServer
 import telemetryui.util.Timer
@@ -35,22 +35,39 @@ object TelemetryUI extends SimpleSwingApplication {
     contents += canLbl
     contents += new BoxPanel(Orientation.Horizontal){
       border = CompoundBorder(TitledBorder(EtchedBorder,"Commands"),EmptyBorder(5,5,5,5))
-      this.
-      contents += CommandButton("Start Logging"){
+
+      val loggingBtn = ToggleCommandButton("Logging"){
         println(s"Start Logging")
         serialWorker.get.send(TelemetryMessage(START_LOGGING, None))
-      }
-      contents += CommandButton("Stop Logging"){
+      }{
         println(s"Stop Logging")
         serialWorker.get.send(TelemetryMessage(STOP_LOGGING, None))
       }
-      contents += ToggleCommandButton("Streaming"){
+      val streamingBtn = ToggleCommandButton("Streaming"){
         println(s"Start Streaming")
         serialWorker.get.send(TelemetryMessage(START_STREAMING, None))
       }{
         println(s"Stop Streaming")
         serialWorker.get.send(TelemetryMessage(STOP_STREAMING, None))
       }
+      val sleepBtn = ToggleCommandButton("Sleep"){
+        println("Putting to sleep")
+        if(loggingBtn.selected) {
+          loggingBtn.selected = false
+        }
+        loggingBtn.enabled = false
+        if(streamingBtn.selected){
+          streamingBtn.selected = false
+        }
+        streamingBtn.enabled = false
+        serialWorker.get.send(TelemetryMessage(SLEEP, None))
+      }{
+        println("Waking up")
+        serialWorker.get.send(TelemetryMessage(WAKE_UP, None))
+        loggingBtn.enabled = true
+        streamingBtn.enabled = true
+      }
+      contents ++= Seq(sleepBtn,streamingBtn,loggingBtn)
     }
   }
 

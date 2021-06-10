@@ -36,10 +36,14 @@ THD_FUNCTION(systemThd, arg){
   ThreadState *canReceiverState = bundle->canReceiverState;
   ThreadState *rfWorkerState = bundle->rfWorkerState;
   ThreadState *blackBoxWorkerState = bundle->blackBoxWorkerState;
+  Security *sec = bundle->sec;
 
   BaseTelemetryMsg msg;
 
   Serial.println("SystemThd:\tStarting");
+
+  blackBoxWorkerState->pause = true;
+  rfWorkerState->pause = true;
 
   chThdSleepMicroseconds(100); // release in order to allow creation of other threads
 
@@ -48,6 +52,7 @@ THD_FUNCTION(systemThd, arg){
     radio.startListening();
     if(radio.available()){
       RFreceive(&msg,32);
+      //sec->decrypt((uint8_t*)&msg,32);
       uint32_t count = 0;
       for(uint32_t i = 0; i < 32; i++) {
         count += ((uint8_t*)&msg)[i];
@@ -85,6 +90,50 @@ THD_FUNCTION(systemThd, arg){
               blackBoxWorkerState->pause = true;
             } else {
               Serial.println("SystemThd:\tBlackBox Thread already paused");
+            }
+          }
+            break;
+          case START_STREAMING:
+          {
+            if(rfWorkerState->pause){
+              Serial.println("SystemThd:\tResuming streaming of CAN data");
+              radio.powerUp(); 
+              rfWorkerState->wakeUp();
+            } else {
+              Serial.println("SystemThd:\tCAN data is already being streamed");
+            }
+          }
+            break;
+          case STOP_STREAMING:
+          {
+            if(!rfWorkerState->pause){
+              Serial.println("SystemThd:\tPausing streaming of CAN data");
+              radio.powerDown(); 
+              rfWorkerState->pause = true;
+            } else {
+              Serial.println("SystemThd:\tStreaming of CAN data is already paused");
+            }
+          }
+            break;
+          case SLEEP:
+          {
+            if(!canReceiverState->pause){
+              Serial.println("SystemThd:\tPutting system to sleep");
+              canReceiverState->pause = true;
+              if(!rfWorkerState->pause) rfWorkerState->pause = true;
+              if(!blackBoxWorkerState->pause) blackBoxWorkerState->pause = true;
+            } else {
+              Serial.println("SystemThd:\tSystem is already asleep");
+            }
+          }
+            break;
+          case WAKE_UP:
+          {
+            if(canReceiverState->pause){
+              Serial.println("SystemThd:\tWaking up the system");
+              canReceiverState->wakeUp();
+            } else {
+              Serial.println("SystemThd:\tThe system is already awake");
             }
           }
             break;

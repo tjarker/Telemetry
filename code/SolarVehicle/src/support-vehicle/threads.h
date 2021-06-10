@@ -3,15 +3,24 @@
 
 #include <ChRt.h>
 #include "RFfunctions.h"
+#include "ThreadState.h"
 #include "Encryption.h"
 
 Security sec; 
+ThreadState radioWorkerState; 
+
+struct threadBundle
+{
+    Security *sec; 
+    ThreadState *state;
+};
 
 THD_WORKING_AREA(waRadioWorkerThread, 2048);
 
 THD_FUNCTION(radioWorkerThread, arg)
-{ 
-  Security *sec = (Security*)arg;
+{
+  threadBundle radioWorkerBundle = (threadBundle*)arg; 
+  //Security *sec = (Security*)arg;
   BaseTelemetryMsg received; 
   chThdSleepMicroseconds(100); 
 
@@ -22,18 +31,18 @@ THD_FUNCTION(radioWorkerThread, arg)
         Serial.print("Received: ");
         //sec->decrypt((uint8_t*)&received, 32);    // Decrypt received message
         char str[256];
-        Serial.println((uint8_t) received.cmd); 
         switch (received.cmd){
-          case RECEIVED_CAN:
+          case RECEIVED_CAN:{
             CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received; 
             ptr->toJSON(str, sizeof(str)); 
             Serial.println(str); 
+          }
             break;
-          default:
-            Serial.println("default"); 
+          default:{
             received.toString(str, sizeof(str)); 
-            Serial.println(str); 
-            break; 
+            Serial.println(str);
+          }
+            break;
         }  
       } else {
         Serial.println("Could not receive message.");
@@ -54,13 +63,25 @@ THD_FUNCTION(serialWorkerThread, arg)
 
     if (Serial.available()){
       Serial.readBytes((char*)&message, 32);
-      //sec->encrypt((uint8_t*)&message, 32); 
+      //sec->encrypt((uint8_t*)&message, 32);   // Encrypt message before transmission
       if (RFtransmit(&message, 32)){
         char str[64]; 
         message.toString(str, sizeof(str));
         Serial.print("Transmitted: "); 
         Serial.println(str); 
-        Serial.println("Acknowledge received.");
+        switch (message.cmd){
+          case START_LOGGING:{
+            radio.powerUp();
+            break;
+          }
+          case STOP_LOGGING:{
+            radio.powerDown(); 
+            break; 
+          }
+          default: 
+            break;  
+        }
+        //Serial.println("Acknowledge received.");
       } else {
         Serial.println("Transmission failed or timed out.");
       }
