@@ -5,7 +5,7 @@ import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
 import telemetryui.components.{CanFrameForm, CanFrameLabel, CommandButton, SerialPortSelector, ToggleCommandButton}
 import telemetryui.serial.SerialWorker
-import telemetryui.types.CMD.{BROADCAST_CAN, CONNECT_CAN, DISCONNECT_CAN, SLEEP, START_LOGGING, START_STREAMING, STOP_LOGGING, STOP_STREAMING, WAKE_UP}
+import telemetryui.types.CMD._
 import telemetryui.types.{CanFrame, TelemetryMessage}
 import telemetryui.udp.UdpServer
 import telemetryui.util.Timer
