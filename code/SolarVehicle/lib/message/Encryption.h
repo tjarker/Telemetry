@@ -92,7 +92,13 @@ class Security {
                     k = k * pt;
                     k = k % n;
                 }*/
-
+                pt = message[i];
+                pt -= 96;
+                k = 1;
+                for (int j = 0; j < enkey; j++){
+                    k = k * pt;
+                    k = k % n;
+                }
                 ct = message[i] + 96;
                 message[i] = ct;
                 i++;
@@ -108,14 +114,20 @@ class Security {
             uint8_t pt;
             int i = 0;
             while(i < len){
-                /*ct = message[i] - 96;                      // Array used for encryption and decryption
+                ct = message[i] - 96;                      // Array used for encryption and decryption
                 k = 1;
                 for (int j = 0; j < dekey; j++){
                     k = k * ct;
                     k = k % n;
-                }*/
-                pt = message[i] - 96;
-                message[i] = pt;
+                }
+                pt = k + 96;
+                /*k = 1;
+                for (int j = 0; j < dekey; j++){
+                    k = k * ct;
+                    k = k % n;
+                }
+                pt = k + 96;*/
+                message[i] = ct;
                 i++;
             }
         }
