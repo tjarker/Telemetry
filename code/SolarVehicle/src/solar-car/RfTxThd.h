@@ -79,7 +79,11 @@ THD_FUNCTION(rfWorker, arg){
         Serial.println(tempString);*/
       }
       WITH_MTX(rfMTX){
-        RFtransmit((BaseTelemetryMsg*)&decryptedMsg,32);
+        if(!RFtransmit((BaseTelemetryMsg*)&decryptedMsg,32)){
+          Serial.println("RfTxThd:\tMessage not send or incorrect ACK");
+        } else {
+          Serial.println("RfTxThd:\tMessage sent successfully");
+        }
       }
       chSysUnlock();
       
