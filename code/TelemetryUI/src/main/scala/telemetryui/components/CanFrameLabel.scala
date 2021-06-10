@@ -2,6 +2,7 @@ package telemetryui.components
 
 import telemetryui.types.{CanFrame, TimeStamp}
 
+import javax.swing.UIManager
 import scala.swing.GridBagPanel.Anchor
 import scala.swing.Swing.{CompoundBorder, EmptyBorder, EtchedBorder, TitledBorder}
 import scala.swing._
@@ -10,6 +11,12 @@ import scala.swing.event.{ButtonClicked, SelectionChanged}
 
 class CanFrameLabel(title: String) extends GridBagPanel {
   border = CompoundBorder(TitledBorder(EtchedBorder,title),EmptyBorder(5,5,5,5))
+
+  try {
+    UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
+  } catch {
+    case e: Throwable =>
+  }
 
   private var lastCanMsg: Option[CanFrame] = None
 

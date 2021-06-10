@@ -41,7 +41,7 @@ class SerialWorker(port: SerialPort,
           if(assembler.hasMessage) {
             val msg = assembler.getMessage
             cmdListener.foreach(_(msg.cmd))
-            if(msg.cmd == RECEIVED_CAN) canListener.foreach(_(msg.can))
+            if(msg.cmd == RECEIVED_CAN) canListener.foreach(_(msg.can.get))
           }
           if(assembler.hadError) errListener.foreach(_())
         }
