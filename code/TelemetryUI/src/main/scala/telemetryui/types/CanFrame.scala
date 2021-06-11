@@ -11,7 +11,7 @@ case class CanFrame(id: BigInt, rtr: Boolean, len: Int, data: BigInt, stamp: Tim
     println(data.toByteArray.reverse.padTo(8,0.toByte).mkString(", "))
     (id.toByteArray.reverse.padTo(2,0.toByte) ++ Array((if(rtr)1 else 0).toByte) ++ Array(len.toByte) ++
       (if((data & 0x8000000000000000L) == 0) data.toByteArray.reverse.padTo(8,0.toByte) else data.toByteArray.drop(1).reverse.padTo(8,0.toByte)) ++
-      stamp.toByteArray)//.padTo(31,0.toByte)
+      stamp.toByteArray).padTo(31,0.toByte)
   }
 }
 
