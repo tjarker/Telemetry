@@ -40,7 +40,7 @@ class UdpServer extends Thread {
   }
   def broadcastCanMessage(msg: CanFrame): Unit = {
     if(hasListener){
-      val buf = msg.toByteArray
+      val buf = msg.toByteArray.slice(0,16)
       val packet = new DatagramPacket(buf,buf.length,listenerAddress,listenerPort)
       socket.send(packet)
     }

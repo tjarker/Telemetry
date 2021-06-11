@@ -44,6 +44,7 @@ THD_FUNCTION(systemThd, arg){
 
   blackBoxWorkerState->pause = true;
   rfWorkerState->pause = true;
+  canReceiverState->pause = false;
 
   chThdSleepMicroseconds(100); // release in order to allow creation of other threads
 
@@ -97,7 +98,7 @@ THD_FUNCTION(systemThd, arg){
           {
             if(rfWorkerState->pause){
               Serial.println("SystemThd:\tResuming streaming of CAN data");
-              radio.powerUp(); 
+              //radio.powerUp(); 
               rfWorkerState->wakeUp();
             } else {
               Serial.println("SystemThd:\tCAN data is already being streamed");
@@ -108,7 +109,7 @@ THD_FUNCTION(systemThd, arg){
           {
             if(!rfWorkerState->pause){
               Serial.println("SystemThd:\tPausing streaming of CAN data");
-              radio.powerDown(); 
+              //radio.powerDown(); 
               rfWorkerState->pause = true;
             } else {
               Serial.println("SystemThd:\tStreaming of CAN data is already paused");
