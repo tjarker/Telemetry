@@ -1,5 +1,5 @@
 %echoudp("on",3030);
-u = udpport("datagram","OutputDatagramSize",32);
+u = udpport("datagram","OutputDatagramSize",16);
 
 write(u,"start","uint8","127.0.0.1",4445);
 
@@ -18,9 +18,9 @@ for i = 1:10
        can.data64 = bitor(can.data64,bitshift(d(k+5),8*k));
     end
     can.data = d(5:12);
-    can.t.hour = d(13);
+    can.t.hour = d(15);
     can.t.min = d(14);
-    can.t.sec = d(15);
+    can.t.sec = d(13);
     can
     can.t
 end
