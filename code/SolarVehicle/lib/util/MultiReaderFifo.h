@@ -58,13 +58,16 @@ class MultiReaderFifo {
         chSemWait(&(dataSems[readerId]));
     }
 
-    public: void waitForData(){
+    public: void waitForData() {
         chSemWait(&(dataSems[0]));
     }
 
     public: void moveTail() {
         writeIndex = advance(writeIndex); // TODO: push read indices when they are overtaken
-
+        for(uint32_t i = 0; i < readers; i++) {
+            if(writeIndex == readIndices[i])
+                readIndices[i] = advance(readIndices[i]);
+        }
     }
 
     public: void moveHead(uint32_t readerId) {
