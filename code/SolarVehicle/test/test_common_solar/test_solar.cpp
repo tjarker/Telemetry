@@ -21,11 +21,27 @@
 #include <sys/stat.h>
 #include <ctime>
 #include <fstream>
+#include <ChRt.h>
 
 #include "BlackBox.h"
+#include "TelemetryMessages.h"
+#include "Encryption.h"
+#include "RFfunctions.h"
+#include "MultiReaderFifo.h"
+#include "ThreadState.h"
+#include "solar-car/blackBoxThd.h"
+#include "solar-car/CanReceiverThd.h"
+#include "solar-car/Mutexes.h"
+#include "solar-car/RfTxThd.h"
+#include "solar-car/SystemThd.h"
 
 CANMessage frame;
 BlackBox box;
+Security security;
+MultiReaderFifo<CanTelemetryMsg> canFifo(64,2);
+ThreadState blackBoxWorkerState;
+ThreadState canReceiverState;
+ThreadState rfWorkerState;
 
 // void setUp(void) {
 // // set stuff up here
@@ -35,21 +51,14 @@ BlackBox box;
 // // clean stuff up here
 // }
 
-void test_add(void) {
+void test_sanity(void) {
     TEST_ASSERT_EQUAL(32, 25 + 7);
-}
-
-void test_subtract(void) {
     TEST_ASSERT_EQUAL(20, 23 - 3);
-}
-
-void test_multiplication(void) {
     TEST_ASSERT_EQUAL(50, 25 * 2);
-}
-
-void test_division(void) {
     TEST_ASSERT_EQUAL(32, 96 / 3);
 }
+
+// --------------------------------- setup --------------------------------- //
 
 // Should test that both CAN0 port and CAN1 port is active
 void test_can_x_begin(void) {
@@ -60,6 +69,114 @@ void test_can_x_begin(void) {
     TEST_ASSERT_TRUE(can1_begin);
 }
 
+// -------------------------- TelemetryMessages.h -------------------------- //
+
+//uint32_t toString(char *buf, uint32_t len, uint8_t base)
+
+//uint32_t toString(char *buf, uint32_t len)
+
+//static const String getHeader()
+
+// Should set data in CAN frame
+//void toCanFrame(CANMessage *msg)
+
+// Should update time stamp on CAN message
+//void update(CANMessage *msg)
+
+// Should set correct time in seconds, minutes and hours
+//void stamp()
+
+// ------------------------------ Encryption.h ----------------------------- //
+
+// Should test that an encryption array from Security class is made
+// Test does not take into account that an encryption key could be all zero
+// void encryption_key()
+void test_encryption_key(void){
+    int cnte, cntd = 0;
+    for (int i = 0; i < 256; i++){
+        if (security.e[i] != 0){
+            cnte++;
+        }
+        if (security.d[i] != 0){
+            cntd++;
+        }
+    }
+    TEST_ASSERT_TRUE(cnte);
+    TEST_ASSERT_TRUE(cntd);
+}
+
+// Should test that an input message is encrypted
+//void encrypt(uint16_t *message, int len)
+//void decrypt(uint16_t *message, int len)
+void test_encrypt_decrypt(void){
+    uint16_t msg[16], msgcon[16];
+    int cnten = 0;
+    security.encryption_key();
+    // Random test
+    for(int j = 0; j < 100; j++){
+        for(int i = 0; i < 16; i++){
+            msg[i] = random(0,256);
+            msgcon[i] = msg[i];
+        }
+        security.encrypt(msg, 16);
+        for (int i = 0; i < 16; i++){
+            if (msg[i] != msgcon[i]){
+                cnten++;
+            }
+        }
+        // Takes into account that a data value might not be changed after encryption process.
+        // The integer used for comparison is the desired minimum amount of changed values.
+        TEST_ASSERT_TRUE(cnten > 13);
+        security.decrypt(msg, 16);
+        for(int i = 0; i < 16; i++){
+            TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
+        }
+    }
+    // Edge case test
+    uint16_t msg2[16] = {[0 ... 15] = 0};
+    uint16_t msgcon2[16] = {[0 ... 15] = 0};
+    security.encrypt(msg, 16);
+    for (int i = 0; i < 16; i++){
+        if (msg[i] != msgcon[i]){
+            cnten++;
+        }
+    }
+    // Takes into account that a data value might not be changed after encryption process.
+    // The integer used for comparison is the desired minimum amount of changed values.
+    TEST_ASSERT_TRUE(cnten > 13);
+    security.decrypt(msg, 16);
+    for(int i = 0; i < 16; i++){
+        TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
+    }
+
+    uint16_t msg3[16] = {[0 ... 15] = 255};
+    uint16_t msgcon3[16] = {[0 ... 15] = 255};
+    security.encrypt(msg, 16);
+    for (int i = 0; i < 16; i++){
+        if (msg[i] != msgcon[i]){
+            cnten++;
+        }
+    }
+    // Takes into account that a data value might not be changed after encryption process.
+    // The integer used for comparison is the desired minimum amount of changed values.
+    TEST_ASSERT_TRUE(cnten > 13);
+    security.decrypt(msg, 16);
+    for(int i = 0; i < 16; i++){
+        TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
+    }
+}
+
+// ----------------------------- RFfunctions.h ----------------------------- //
+
+// Should test that the RF module is initialized
+// void RFinit()
+
+// Should test that the RF module is transmitting
+// bool RFtransmit(void *buf, uint8_t len)
+
+// Should test that the RF module is receiving
+//bool RFreceive(void *buf, uint8_t len)
+
 // ------------------------------- BlackBox.h ------------------------------ //
 
 // Should test that the blackbox initializes
@@ -68,6 +185,7 @@ void test_init(void){
     TEST_ASSERT_TRUE(t);
 }
 
+// Should test that the Teensy 3.6 real time clock is correct within 1 second
 void test_getTeensy3Time(void){
     char test_str[200];
     snprintf(test_str,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx16 ",%d,%d,%" PRIx64 "", 
@@ -77,21 +195,11 @@ void test_getTeensy3Time(void){
     TEST_ASSERT_INT_WITHIN(1, test_str, box.getTeensy3Time);
 }
 
-void test_updateFileName(void){
-    /*String oldname = BlackBox::fileName;
-    delay(1000);
-    box.updateFileName();
-    String newname = BlackBox::fileName;
-    assertEqual(newname, "log__%02d_%02d_%02d__%02d_%02d_%04d.csv", hour(), minute(), second(),
-    day(), month(), year())
-    assertNotEqual(oldname, newname);*/
-}
-
 // Should test that a new log file is started
 void test_startNewLogFile(void){
-    /*box.startNewLogFile();
+    box.startNewLogFile();
     struct stat buffer;
-    assertEqual(true, (stat ("Tjark, hvor ligger filen?", &buffer) == 0));*/
+    TEST_ASSERT_TRUE((stat ("Tjark, hvor ligger filen?", &buffer) == 0));
 }
 
 // Should test that the current log file is ended
@@ -122,29 +230,75 @@ void test_addNewLogStr(void){
     }*/
 }
 
+// ------------------------------- Fail test ------------------------------- //
+
+// Should test that a test can fail
+void test_fail(void) {
+    TEST_ASSERT_TRUE(false);
+}
+
 void process() {
     UNITY_BEGIN();
-    RUN_TEST(test_add);
-    RUN_TEST(test_subtract);
-    RUN_TEST(test_multiplication);
-    RUN_TEST(test_division);
+    RUN_TEST(test_sanity);
     RUN_TEST(test_can_x_begin);
     RUN_TEST(test_init);
+    RUN_TEST(test_fail);
+    RUN_TEST(test_encryption_key);
+    RUN_TEST(test_encrypt_decrypt);
+    RUN_TEST(test_getTeensy3Time);
+    RUN_TEST(test_startNewLogFile);
+    RUN_TEST(test_endLogFile);
     UNITY_END();
 }
 
 #ifdef ARDUINO
 
+void chSetup(){
+
+  chSysInit();
+  
+  // create the three worker threads
+  BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &canFifo, .state = &blackBoxWorkerState, .bb = &box};
+  chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO + 3, canWorkerFunc, &blackBoxWorkerBundle);
+  rfTxWorkerBundle rfWorkerBundle = {.fifo = &canFifo, .state = &rfWorkerState, .sec = &security};
+  chThdCreateStatic(waRfWorker,sizeof(waRfWorker),NORMALPRIO + 2, rfWorker, &rfWorkerBundle);
+  systemThdBundle systemThdBundle = {.canReceiverState = &canReceiverState, .blackBoxWorkerState = &blackBoxWorkerState, .rfWorkerState = &rfWorkerState, .sec = &security};
+  chThdCreateStatic(waSystemThd, sizeof(waSystemThd), NORMALPRIO + 1, systemThd, &systemThdBundle);
+  CanReceiverBundle canReceiverBundle = {.fifo = &canFifo, .state = &canReceiverState};
+  chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO + 1, canReceiverThd, &canReceiverBundle);
+  
+}
+
 #include <Arduino.h>
 void setup() {
     // NOTE!!! Wait for >2 secs
     // if board doesn't support software reset via Serial.DTR/RTS
-    delay(2000);
-    ACANSettings settings (125 * 1000); // Sets wished bitrate
-    ACAN::can0.begin (settings);
-    ACAN::can1.begin (settings);
+      // initialize serial port
+    
+    Serial.begin(921600);
+    while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
 
-    process();
+    // setup built in LED
+    pinMode(LED_BUILTIN,OUTPUT);
+
+    Serial.println("Initializing...");
+
+    // setup CAN bus
+    ACANSettings settings(125 * 1000);
+    if(ACAN::can0.begin(settings) != 0){Serial.println("CAN setup failed!");}
+
+    // setup radio module
+    RFinit();
+
+    box.init();
+
+    security.encryption_key();
+
+    canFifo.clear();
+
+    Serial.println("Starting...");
+
+    chBegin(chSetup);
 }
 
 void loop() {
