@@ -7,7 +7,7 @@
 #include "Encryption.h"
 
 Security sec; 
-ThreadState radioWorkerState; 
+ThreadState rfState; 
 
 struct threadBundle
 {
@@ -19,13 +19,18 @@ THD_WORKING_AREA(waRadioWorkerThread, 2048);
 
 THD_FUNCTION(radioWorkerThread, arg)
 {
-  threadBundle radioWorkerBundle = (threadBundle*)arg; 
-  //Security *sec = (Security*)arg;
+  threadBundle *bundle = (threadBundle*)arg; 
+  Security *sec = bundle->sec; 
+  ThreadState *state = bundle->state; 
   BaseTelemetryMsg received; 
   chThdSleepMicroseconds(100); 
 
-  while (true){
-    
+  while (!state->terminate){
+
+    if (state->pause){
+      state->suspend(); 
+    }
+
     if (radio.available()){
       if (RFreceive(&received, 32)){
         Serial.print("Received: ");
@@ -69,18 +74,14 @@ THD_FUNCTION(serialWorkerThread, arg)
         message.toString(str, sizeof(str));
         Serial.print("Transmitted: "); 
         Serial.println(str); 
-        switch (message.cmd){
-          case START_LOGGING:{
-            radio.powerUp();
-            break;
-          }
-          case STOP_LOGGING:{
-            radio.powerDown(); 
-            break; 
-          }
-          default: 
-            break;  
-        }
+        /*
+        if (message.cmd == START_LOGGING || message.cmd == WAKE_UP){
+          //radio.powerUp();
+          rfState.wakeUp();
+        } else if (message.cmd == STOP_LOGGING || message.cmd == SLEEP){
+          //radio.powerDown(); 
+          rfState.suspend();
+        }*/
         //Serial.println("Acknowledge received.");
       } else {
         Serial.println("Transmission failed or timed out.");

@@ -20,8 +20,8 @@ class Security {
 
         int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
         int n = pub_key * prv_key;                             // Modulus of prime numbers
-        long int flag;                             
-        long int e[256], d[256];
+        long int i, flag;                             
+        long int e[256], d[256], temp[256];
 
     /**
      * @brief Function to check for prime number
@@ -57,7 +57,7 @@ class Security {
         */
         void encryption_key(){
             int k = 0;
-            for (int i = 2; i < t; i++){
+            for (i = 2; i < t; i++){
                 if (t % i == 0){
                     continue;
                 }
@@ -69,7 +69,7 @@ class Security {
                         d[k] = flag;
                         k++;
                     }
-                    if (k == 999){
+                    if (k == 9999){
                         break;
                     }
                 }
@@ -80,20 +80,23 @@ class Security {
          * @brief Encrypts input message
          * @param Message as char pointer array
         */
-        void encrypt(uint8_t *message, int len){
-            long int pt, k, enkey = e[0];
-            uint8_t ct;
-            int i = 0;
+        void encrypt(uint16_t *message, int len){
+            long int pt, ct, k, enkey = e[0];
+            i = 0;
             while(i < len){
-                /*pt = message[i];
+                pt = message[i];
                 pt -= 96;
                 k = 1;
                 for (int j = 0; j < enkey; j++){
                     k = k * pt;
                     k = k % n;
+                }
+                //temp[i] = k;                       // Array used for encryption and decryption
+                //ct = k + 96;
+                ct = k + 2*96;
+                /*while (ct < 0){
+                    ct += 96;
                 }*/
-
-                ct = message[i] + 96;
                 message[i] = ct;
                 i++;
             }
@@ -103,20 +106,22 @@ class Security {
          * @brief Decrypts input message
          * @param Message as char pointer array
         */
-        void decrypt(uint8_t *message, int len){
-            long int ct, dekey = d[0], k;
-            uint8_t pt;
-            int i = 0;
+        void decrypt(uint16_t *message, int len){
+            long int pt, ct, dekey = d[0], k;
+            i = 0;
             while(i < len){
-                ct = message[i] - 96;                      // Array used for encryption and decryption
-
-                /*k = 1;
+                //ct = temp[i];                      // Array used for encryption and decryption
+                ct = message[i] - 2*96;
+                /*while (ct > 255){
+                    ct -= 96;
+                }*/
+                k = 1;
                 for (int j = 0; j < dekey; j++){
                     k = k * ct;
                     k = k % n;
                 }
-                pt = k + 96;*/
-                message[i] = ct;
+                pt = k + 96;
+                message[i] = pt;
                 i++;
             }
         }

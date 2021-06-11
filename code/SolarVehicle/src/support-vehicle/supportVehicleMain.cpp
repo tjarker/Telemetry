@@ -7,7 +7,8 @@
 void chSetup()
 {
   chSysInit();  // Initializes ChibiOS system
-  chThdCreateStatic(waRadioWorkerThread, sizeof(waRadioWorkerThread), NORMALPRIO + 1, radioWorkerThread, &sec);
+  threadBundle bundle = {.sec = &sec, .state = &rfState}; 
+  chThdCreateStatic(waRadioWorkerThread, sizeof(waRadioWorkerThread), NORMALPRIO + 1, radioWorkerThread, &bundle);
   chThdCreateStatic(waSerialWorkerThread, sizeof(waSerialWorkerThread), NORMALPRIO + 1, serialWorkerThread, &sec);
 }  
 
