@@ -3,6 +3,7 @@ package telemetryui.serial
 import com.fazecast.jSerialComm.SerialPort
 import telemetryui.types.CMD.RECEIVED_CAN
 import telemetryui.types.{CanFrame, TelemetryMessage}
+import java.util.concurrent.Semaphore
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -12,11 +13,12 @@ class SerialWorker(port: SerialPort,
                    errListener: Seq[() => Unit]
                   ) extends Thread {
 
+  private val serialMutex = new Semaphore(1)
+
   this.setDaemon(true)
 
   // queue used for passing raw data from the event driven routine to a processing routine
   private val queue = new ConcurrentLinkedQueue[Array[Byte]]()
-  private val outBox = new ConcurrentLinkedQueue[Array[Byte]]()
 
   // class assembling the json string with basic error checking
   private val assembler = new JsonAssembler
@@ -31,7 +33,7 @@ class SerialWorker(port: SerialPort,
 
   override def run(): Unit = {
 
-    port.addDataListener(new SerialPortListener(port,queue))
+    port.addDataListener(new SerialPortListener(port,serialMutex,queue))
 
     while(running){
 
@@ -51,13 +53,9 @@ class SerialWorker(port: SerialPort,
   }
 
   def send(msg: TelemetryMessage): Unit = {
-    port.synchronized{
-      val bytes = msg.toByteArray
-      port.writeBytes(bytes,bytes.length)
-      /*
-      val out = port.getOutputStream
-      out.write(bytes)
-      out.close()*/
-    }
+    serialMutex.acquireUninterruptibly()
+    val bytes = msg.toByteArray
+    port.writeBytes(bytes,bytes.length)
+    serialMutex.release()
   }
 }
