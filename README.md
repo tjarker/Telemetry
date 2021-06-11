@@ -29,6 +29,8 @@
 - [ ] Test RF modules over long distance >100 m (basic range test) [monday]
 - [ ] implement log file switching (open a new log file, when another is filled (?)) in SCU (4GiB-1 is theoretical limit)
 - [ ] command system
+- [ ] MultiReaderFifo needs to push reader when overtaken by writer
+- [ ] add state to remember config before sleep
 
 ## Organization
 - [ ] ask other groups about their CAN bus usage (how many messages per sec?)
