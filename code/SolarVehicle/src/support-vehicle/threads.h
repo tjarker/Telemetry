@@ -15,8 +15,13 @@ struct threadBundle
     ThreadState *state;
 };
 
+// 2048 byte working stack for radioWorkerThread
 THD_WORKING_AREA(waRadioWorkerThread, 2048);
 
+/**
+ * @brief Thread function for radioWorkerThread
+ * @param arg, typecast to threadBundle pointer
+*/
 THD_FUNCTION(radioWorkerThread, arg)
 {
   threadBundle *bundle = (threadBundle*)arg; 
@@ -57,29 +62,32 @@ THD_FUNCTION(radioWorkerThread, arg)
   }
 }
 
+// 2048 byte working stack for serialWorkerThread
 THD_WORKING_AREA(waSerialWorkerThread, 2048);
 
+/**
+ * @brief Thread function for serialWorkerThread  
+ * @param arg, typecast to Security class pointer
+*/
 THD_FUNCTION(serialWorkerThread, arg)
 {
   Security *sec = (Security*)arg; 
   BaseTelemetryMsg message; 
 
-  while (true){
-
-    if (Serial.available()){
-      Serial.readBytes((char*)&message, 32);
-      //sec->encrypt((uint16_t*)&message, 32);   // Encrypt message before transmission
-      if (RFtransmit(&message, 32)){
+  while (true){                                 
+    if (Serial.available()){                      // Check if bytes are available on the serial interface
+      Serial.readBytes((char*)&message, 32);      // Read 32 bytes and cast them to a BaseTelemetryMessage 
+      //sec->encrypt((uint16_t*)&message, 32);    // Encrypt message before transmission
+      if (RFtransmit(&message, 32)){              // Check if message was transmitted succesfully 
         char str[128]; 
         message.toString(str, sizeof(str));
         Serial.print("Transmitted: "); 
         Serial.println(str); 
-        //Serial.println("Acknowledge received.");
-      } else {
-        Serial.println("Transmission failed or timed out.");
+      } else {      
+        Serial.println("Transmission failed or timed out.");  // Message was not transmitted
       }
     }  
-    chThdYield();  
+    chThdYield();                                 // Yield for same-priority thread                       
   }
 } 
 
