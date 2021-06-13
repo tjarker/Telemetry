@@ -68,9 +68,9 @@ Remote sensing of data from the solar car will give the ROAST team a competitive
 \end{itemize}
 
 \section{Methodology}
-The project methodology has largely consisted of making a preliminary design to be completed in a series of design sprints. At first a detailed specification was drafted which then served as a reevaluation tool and an overall guidance each time a sprint was completed and when the goal for the next sprint had to be selected. Taking a starting point in this, we made a prototype setup of the hardware on breadboards as our first sprint. The following sprints would then mostly be conducted in software, such as making a first transmission and receiving of data, and finally a last hardware sprint where we soldered our hardware to a perf board.\\
-During the coding of the software functions, we also made verification and validation of our code design. In verification we would discuss code naming and functionality. To validate our code we made unit tests that would test the actual behaviour of our code against the intended behaviour.\\
-During the coding phase, we attempted to make our debugging more efficient with the use of a debugger. However, this would prove quite troublesome, as the Teensy board does not have an on-board debugger and in general is not very suited for debuggers. If we would insist on using a debugger such as st-link, we would have to hold or solder wires to the debug ports on the Teensy board's backside, which would complicate our prototype setup. Therefore, we decided not to spent more time on finding a debugger solution. This was a clear setback, as we would spent a lot of time debugging our code.
+The project methodology has largely consisted of making a preliminary design to be completed in a series of design sprints. At first a detailed specification was drafted which then served as a reevaluation tool and an overall guidance each time a sprint was completed and when the goal for the next sprint had to be selected. Using the specification, we made a prototype setup of the hardware on breadboards as our first sprint. The following sprints would then mostly have software development objectives, such as achieving a first transmission and receiving of data. Finally, a last hardware sprint was conducted where we soldered our hardware to a perf board.\\
+During the development of the software functions, we also verified and validated our code design. In verification the code and its functionality was discussed. To validate our code we made unit tests that test the actual behaviour of our code against the intended behaviour.\\
+During the software development phase, we attempted to make our debugging more efficient with the use of a debugger. However, this proved quite troublesome, as the Teensy 3.6 board does not have an on-board debugger and in general is not very suited for debuggers. If we had insisted on using a debugger such as st-link, we would have had to hold or solder wires to the debug ports on the Teensy board's backside, which would complicate our prototype setup. Therefore, we decided not to spent more time on finding a debugger solution. This was a clear setback, as debugging could only be conducted by sending text over the serial connection.
 \section{Design}
 Overall specification?
 
@@ -86,7 +86,7 @@ In this section the main software tools and libraries used throughout the projec
 The Teensy micro-processor line-up is integrated into the Arduino framework and implements as such the Arduino standard API. As a cross-platform build tool, PlatformIO is a more potent alternative to the standard Arduino IDE including more advanced features such as a static code analyzer and even a remote unit testing framework.
 
 \subsubsection{ChibiOS}
-An open-source RTOS for embedded systems including Teensy. Supports threads, semaphores, data-sharing and timers to ease the scheduling of different tasks by the program kernel. 
+An open-source RTOS for embedded systems including Teensy. It supports threads, semaphores, data-sharing and timers and more to ease the scheduling of different tasks by the program kernel. 
 
 \subsubsection{Other Libraries}
 
@@ -101,9 +101,11 @@ The CAN network in the solar car enables the micro-controllers at each electrica
 The frame uses an identifier to tell which messages goes to which unit. When two messages tries to access the bus, the one with the highest priority, lowest ID, will be granted access to the bus, while the other message has to wait. After the ID comes the RTR bit which determines whether the frame is set to be at sent or received by the node. The control field, sometimes called DLC, tells the amount of bytes used in the following frame field with actual data. The rest of the fields in fig. \ref{fig:CANframe} is not important concerning the nodes ability to communicate across the CAN network.\\
 The CAN bus itself is two twisted wires, CAN High and CAN Low. These control the bits in the CAN message by setting a dominant and recessive voltage, which corresponds to a 0 and 1 respectively. A 1 is seen when the voltage in both wires is 2.5V while a 0 is seen when the CAN High wire is driven by 3.5V and the CAN Low wire is driven at 2.5V. 
 \subsection{RF module} % Steffan 
-The nRF24L01+ LoRa RF module is used provide two-way communication between the solar car and support vehicle.  module was chosen as it satisfied the project requirements on paper with a range exceeding 1000 m with and transmission rate of up to 2 Mbit/s. In addition, comprehensive driver libraries are provided, allowing us 
+The nRF24L01+ LoRa RF module is used to provide two-way communication between the solar car and support vehicle. It satisfies all the communications requirements a range exceeding 1000 m with and transmission rate of up to 2 Mbit/s. In addition, comprehensive driver libraries are provided, allowing us to raise the abstraction of our transmission protocol. \\
+
 
 \subsection{Message protocol}
+The nRF24L01 module uses the Enhanced Shockburst packet structure to transmit messages over the 2.4 GHz ISM band. The package 
 
 \section{Implementation}
 
@@ -129,7 +131,7 @@ The conclusion goes here.
 \section*{Acknowledgment}
 
 
-The authors would like to thank Christian Kampp Kruse for his assistance as project coordinator. The authors would also like to thank Claus from the department of Mechanical Engineering at DTU.
+The authors would like to thank Martin Schoeberl and Christian Kampp Kruse for their mentoring and assistance throughout the project. The authors would also like to thank Claus from the department of Mechanical Engineering at DTU.
 
 \bibliographystyle{IEEEtran}
 \bibliography{IEEEabrv,../bib/paper}
