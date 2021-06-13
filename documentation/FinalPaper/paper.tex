@@ -52,7 +52,7 @@ ROAST, telemetry, CAN
 
 \section{Introduction}
 
-\IEEEPARstart{I}{n} 2023, DTU Roadrunners Solar Team, abbreviated ROAST, is set to participate in the Bridgestone World Solar Challenge, a race spanning over 3000 km across Australia from Darwin in Northern Territory to Adelaide in South Australia. The solar car has limited opportunities for recharging during the race, so the main energy source during the race will be the sun. To this end, solar panels will cover the car, however, the solar car is only allowed to have a maximum of 4 square meters of solar panels. This emphasizes the need to create an energy-efficient solar car to win the race \cite{wsc}.\\
+\IEEEPARstart{I}{n} 2023, the DTU Roadrunners Solar Team (abbreviated ROAST) is set to participate in the Bridgestone World Solar Challenge, a race spanning over 3000 km across Australia from Darwin in the Northern Territory to Adelaide in South Australia. The solar car has limited opportunities for recharging during the race, so the main energy source during the race will come from the sun. To this end, solar panels will cover the car, however, the solar car is only allowed to have a maximum of 4 square meters of solar panels. This emphasizes the need to create an energy-efficient solar car to win the race \cite{wsc}.\\
 Throughout the race the solar car will be monitored by a support vehicle, which can monitor the car's condition and should be able to issue commands to the solar car's internal systems. This is a crucial function as the solar car will be navigating Australia's busy highways, where the heat and tire pressure may cause a detriment to the vehicle. The support car will therefore be able to analyze and react to the data stream being transmitted from the solar car, even when the driver is preoccupied by driving the car and navigating traffic. \\
 The main function of the telemetry module is to read data from the solar car's on-board CAN (Controller Area Network) bus and transmit it via an RF-transceiver to the support vehicle, while simultaneously logging data in a local storage acting as a "black box". The support vehicle is equipped with a similar module such that the support crew can react to the data manually or automatically by sending commands back to the CAN bus. As a consequence, the telemetry module plays a vital role in the communication between both vehicles, considering that the distance between them may be up to 1 km depending on traffic conditions.\\
 Therefore, the telemetry module must both serve the purpose of fulfilling the necessary specifications for communication, while also being as energy-efficient as possible. This project will mainly focus on the former, that is, ensuring that the module meets the specifications with a solid solution.
@@ -71,6 +71,7 @@ Remote sensing of data from the solar car will give the ROAST team a competitive
 The project methodology has largely consisted of making a preliminary design to be completed in a series of design sprints. At first a detailed specification was drafted which then served as a reevaluation tool and an overall guidance each time a sprint was completed and when the goal for the next sprint had to be selected. Using the specification, we made a prototype setup of the hardware on breadboards as our first sprint. The following sprints would then mostly have software development objectives, such as achieving a first transmission and receiving of data. Finally, a last hardware sprint was conducted where we soldered our hardware to a perf board.\\
 During the development of the software functions, we also verified and validated our code design. In verification the code and its functionality was discussed. To validate our code we made unit tests that test the actual behaviour of our code against the intended behaviour.\\
 During the software development phase, we attempted to make our debugging more efficient with the use of a debugger. However, this proved quite troublesome, as the Teensy 3.6 board does not have an on-board debugger and in general is not very suited for debuggers. If we had insisted on using a debugger such as st-link, we would have had to hold or solder wires to the debug ports on the Teensy board's backside, which would complicate our prototype setup. Therefore, we decided not to spent more time on finding a debugger solution. This was a clear setback, as debugging could only be conducted by sending text over the serial connection.
+
 \section{Design}
 Overall specification?
 
@@ -101,11 +102,10 @@ The CAN network in the solar car enables the micro-controllers at each electrica
 The frame uses an identifier to tell which messages goes to which unit. When two messages tries to access the bus, the one with the highest priority, lowest ID, will be granted access to the bus, while the other message has to wait. After the ID comes the RTR bit which determines whether the frame is set to be at sent or received by the node. The control field, sometimes called DLC, tells the amount of bytes used in the following frame field with actual data. The rest of the fields in fig. \ref{fig:CANframe} is not important concerning the nodes ability to communicate across the CAN network.\\
 The CAN bus itself is two twisted wires, CAN High and CAN Low. These control the bits in the CAN message by setting a dominant and recessive voltage, which corresponds to a 0 and 1 respectively. A 1 is seen when the voltage in both wires is 2.5V while a 0 is seen when the CAN High wire is driven by 3.5V and the CAN Low wire is driven at 2.5V. 
 \subsection{RF module} % Steffan 
-The nRF24L01+ LoRa RF module is used to provide two-way communication between the solar car and support vehicle. It satisfies all the communications requirements a range exceeding 1000 m with and transmission rate of up to 2 Mbit/s. In addition, comprehensive driver libraries are provided, allowing us to raise the abstraction of our transmission protocol. \\
-
+The nRF24L01+ LoRa RF module is used to provide two-way communication between the solar car and support vehicle. The module includes a detachable antenna, power amplifier and low-nose amplifier to provide a theoretical range in excess of 1000 m at data rates of up to 2 Mbit/s.  In addition to this, comprehensive driver libraries are provided by the manufacturer, making it very easy to integrate with our project. \\
 
 \subsection{Message protocol}
-The nRF24L01 module uses the Enhanced Shockburst packet structure to transmit messages over the 2.4 GHz ISM band. The package 
+The nRF24L01+ module uses the Enhanced Shockburst $\copyright$ packet structure to transmit messages over the 2.4 GHz ISM band. Messages contain a data payload of up to 32 bytes, allowing us to transmit one CAN telemetry message per cycle. Further, the package structure includes a preamble, address, packet and CRC byte segments as shown in Figure X. These are all generated automatically when a call to the radio write function is made, and therefore fall outside the scope of this project.   
 
 \begin{figure}
     \centering
@@ -162,6 +162,8 @@ https://www.learn-cpp.org/
 \bibitem{Aunit}
 Documentation,
 https://www.arduino.cc/reference/en/libraries/aunit/
+\bibitem{shockburst}
+nRF24 transmission protocol, URL: https://lastminuteengineers.com/nrf24l01-arduino-wireless-communication/
 \end{thebibliography}
 \endgroup
 
