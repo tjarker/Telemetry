@@ -22,20 +22,23 @@
 # TODO
 
 ## Implementation and Test
-- [ ] TelemetryUI: implement command buttons (e.g. start/stop logging)
-- [ ] File transfer from SCU to SVU?
+- [x] TelemetryUI: implement command buttons (e.g. start/stop logging)
 - [x] fix uno CAN generator
 - [ ] solder on perfboard
-- [ ] Test RF modules over long distance >100 m (basic range test) [monday]
+- [ ] Test RF modules over long distance >100 m (basic range test)
 - [ ] implement log file switching (open a new log file, when another is filled (?)) in SCU (4GiB-1 is theoretical limit)
-- [ ] command system
-- [ ] MultiReaderFifo needs to push reader when overtaken by writer
+- [x] command system
+- [x] MultiReaderFifo needs to push reader when overtaken by writer
 - [ ] add state to remember config before sleep
+- [ ] Improve thread stability
+-  http://www.java2s.com/Tutorial/Java/0260__Swing-Event/CreatingaCustomEvent.htm
+-  https://docs.oracle.com/javase/tutorial/uiswing/concurrency/interim.html
 
 ## Organization
-- [ ] ask other groups about their CAN bus usage (how many messages per sec?)
-- [ ] put code into bitbucket
-- [ ] write out to other groups for a big test setup in the end
+- [x] ask other groups about their CAN bus usage (how many messages per sec?) -> right now very limited. Speeder sends updates in fixed intervals 
+- [ ] put code into bitbucket and merge with code from other groups in one pio project
+- [x] write out to other groups for a big test setup in the end
+- [ ] Define big test date
 
 ## Documentation
 - [x] revisit problem description (include sending data to matlab?)

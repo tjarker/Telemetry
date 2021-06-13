@@ -89,4 +89,16 @@ The encryption class is done :)
 \section{14-05}
 We've met briefly over Discord to discuss the plan going forward in the three week period. This will revolve around the entire process of sending, as in, should the logging to blackbox and transmission of data be on the same thread, should the support vehicle be able to request log files, in contrast to making log files itself, in case of transmission disruption etc. We believe we are nearing a point where we have made all the small pieces that must now work together.
 
+\section{07-06}
+As we've encountered increasingly difficulties with debugging the code for operation, we've decided to look more seriously into finding a suitable debug tool for the teensy board. However, as the Teensy board comes with no debug tool, we need to setup our own. At first, we've tried with a ft232r using ftdi debug tool, but because of difficulties with the compability of PlatformIO, we have abandoned this debug tool.
+PlatformIO itself suggests J-Link as a compatible debug tool, we will look into this and see if such a debug tool is available at DTU.
+
+\section{08-06}
+Christian has provided us with a St-link debugger and although it is not J-link, it should be able to work with the Teensy board, as it is an ARM processor.
+It seems that we must admit that debugging the Teensy is not likely to be possible for us. https://mcuoneclipse.com/2017/04/29/modifying-the-teensy-3-5-and-3-6-for-arm-swd-debugging/
+After finding out how to connect the st-link debugger to the board, we may find that the debugging will not work in spite of this. Also, since the pins must be connected to the backside of the board, which proves troublesome to our setup with the breadboard. (Why could the debug pins not be on the topside?!)
+
+\section{10-06}
+After several days of work, we performed an actual range test. The solar car unit was indoors, due to power supply requirements, (which will be nullified when we make a setup on perf board), and the support car unit moved outdoors. We observed that inside the building, the transmission was not affected by the range (about 30m), while as soon as the support module was outside the building, the transmission range dropped rapidly. With a glass window in between the two modules, the max range was about 5m. However, we were testing with the power amplifier on the lowest settings, so when we perform more tests on perf board, we have the option to increase this amplifier.
+
 \end{document}

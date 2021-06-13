@@ -35,3 +35,6 @@ In short, the nRF24L01+ uses an acknowledge flag with an interrupt to indicate w
 ## The Message Protocol
 
 The Enhanced ShockBurst protocol allows for data payload sizes of up to 32 bytes
+
+
+<img src="images/MessageTypes.png" alt="Enhanced ShockBurst Protocol">
