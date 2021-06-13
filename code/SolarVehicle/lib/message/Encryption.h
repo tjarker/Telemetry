@@ -84,6 +84,7 @@ class Security {
             long int pt, ct, k, enkey = e[0];
             i = 0;
             while(i < len){
+                Serial.println(message[i]); 
                 pt = message[i];
                 pt -= 96;
                 k = 1;
@@ -111,6 +112,7 @@ class Security {
             i = 0;
             while(i < len){
                 //ct = temp[i];                      // Array used for encryption and decryption
+                Serial.println(message[i]); 
                 ct = message[i] - 2*96;
                 /*while (ct > 255){
                     ct -= 96;

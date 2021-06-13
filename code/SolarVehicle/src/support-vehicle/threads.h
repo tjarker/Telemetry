@@ -7,7 +7,7 @@
 #include "Encryption.h"
 
 Security sec; 
-ThreadState rfState; 
+ThreadState rfState;
 
 struct threadBundle
 {
@@ -68,20 +68,12 @@ THD_FUNCTION(serialWorkerThread, arg)
 
     if (Serial.available()){
       Serial.readBytes((char*)&message, 32);
-      //sec->encrypt((uint8_t*)&message, 32);   // Encrypt message before transmission
+      //sec->encrypt((uint16_t*)&message, 32);   // Encrypt message before transmission
       if (RFtransmit(&message, 32)){
-        char str[64]; 
+        char str[128]; 
         message.toString(str, sizeof(str));
         Serial.print("Transmitted: "); 
         Serial.println(str); 
-        /*
-        if (message.cmd == START_LOGGING || message.cmd == WAKE_UP){
-          //radio.powerUp();
-          rfState.wakeUp();
-        } else if (message.cmd == STOP_LOGGING || message.cmd == SLEEP){
-          //radio.powerDown(); 
-          rfState.suspend();
-        }*/
         //Serial.println("Acknowledge received.");
       } else {
         Serial.println("Transmission failed or timed out.");
