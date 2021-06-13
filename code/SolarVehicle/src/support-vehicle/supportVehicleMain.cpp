@@ -1,6 +1,38 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include "support-vehicle/threads.h"
+#include "RSA.h"
+
+
+void rsa_print1()
+{
+  Security sec; 
+  BaseTelemetryMsg msg; char str[64]; 
+  msg.randomize(); 
+  msg.toString(str, sizeof(str)); 
+  Serial.println(str); 
+  sec.encrypt((uint16_t*)&msg, 32); 
+  msg.toString(str, sizeof(str)); 
+  Serial.println(str);
+  sec.decrypt((uint16_t*)&msg, 32); 
+  msg.toString(str, sizeof(str)); 
+  Serial.println(str);
+}
+
+void rsa_print2()
+{
+  RSA rsa; 
+  BaseTelemetryMsg msg; char str[64]; 
+  msg.randomize(); 
+  msg.toString(str, sizeof(str)); 
+  Serial.println(str); 
+  rsa.encrypt((uint8_t*)&msg, 32); 
+  msg.toString(str, sizeof(str)); 
+  Serial.println(str);
+  rsa.decrypt((uint8_t*)&msg, 32); 
+  msg.toString(str, sizeof(str)); 
+  Serial.println(str);
+}
 
 // ChibiOS setup function
 // Initializes all 4 threads with a working area, priority level, thread function and initial argument. 
@@ -18,25 +50,12 @@ void setup()
   while(!Serial){}
   RFinit(); 
   chBegin(chSetup);     // Initialize and start all 4 threads
-  //while (true){}
+  //rsa_print2();
+  while (true){}
 }
 
 void loop()
 {
-  /*
-  for (int i = 0; i < 256; i++){
-    uint8_t message = i; 
-    Serial.print("Original message: "); 
-    Serial.print(message); 
-    sec.encrypt(&message, 1); 
-    Serial.print("; Encrypted message: ");
-    Serial.print(message); 
-    sec.decrypt(&message, 1); 
-    Serial.print("; Decrypted message: ");
-    Serial.print(message); 
-    Serial.println();
-    delay(2000); 
-  }
   /*Serial.println(radio.available()); 
   delay(1000);
   /* Not used */
