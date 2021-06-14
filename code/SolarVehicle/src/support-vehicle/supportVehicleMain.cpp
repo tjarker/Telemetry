@@ -40,23 +40,20 @@ void chSetup()
 {
   chSysInit();  // Initializes ChibiOS system
   threadBundle bundle = {.sec = &sec, .state = &rfState}; 
-  chThdCreateStatic(waRadioWorkerThread, sizeof(waRadioWorkerThread), NORMALPRIO + 1, radioWorkerThread, &bundle);
-  chThdCreateStatic(waSerialWorkerThread, sizeof(waSerialWorkerThread), NORMALPRIO + 1, serialWorkerThread, &sec);
+  chThdCreateStatic(WaReceiverThread, sizeof(WaReceiverThread), NORMALPRIO + 1, receiverThread, &bundle);
+  chThdCreateStatic(waTransmitterThread, sizeof(waTransmitterThread), NORMALPRIO + 1, transmitterThread, &sec);
 }  
 
 void setup()
 {
-  Serial.begin(921600); // initialize serial port
-  while(!Serial){}
-  RFinit(); 
+  Serial.begin(921600); // Initialize serial port
+  while(!Serial){}      // Wait until serial is available
+  RFinit();             // Initialize RF module
   chBegin(chSetup);     // Initialize and start all 4 threads
-  //rsa_print2();
-  while (true){}
+  while (true){}        
 }
 
 void loop()
 {
-  /*Serial.println(radio.available()); 
-  delay(1000);
   /* Not used */
 }

@@ -1,3 +1,9 @@
+/********************************************************************************
+ * @file    RFfunctions.h                                                       *
+ * @author  Steffan Martin Kunoy                                                *
+ * @brief   Declaration of functions to operate and configure nRF24L01+ module. * 
+*********************************************************************************/
+
 #ifndef __RF_FUNCTIONS__
 #define __RF_FUNCTIONS__
 #include <Arduino.h>
@@ -23,11 +29,12 @@ bool radioNumber = 1;
 
 RF24 radio(CE_PIN, CSN_PIN);                                    // CE and CSN pins
 static const byte address[][6] = {"00001", "00002"};            // TX/RX byte addresses
+bool ack = true; 
 
-/**
- * @brief Initializes and configures RF24 class object
- * @param None 
-*/
+/**********************************************************
+ * @brief   Initializes and configures RF24 class object. *
+ * @param   None                                          *
+***********************************************************/
 void RFinit()
 {
     if(!radio.begin()){Serial.println("Radio not working!");}
@@ -35,58 +42,47 @@ void RFinit()
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
     radio.enableDynamicPayloads();
     radio.setAutoAck(true);
-    //radio.enableAckPayload();
+    if (ack) radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
     radio.openWritingPipe(address[!radioNumber]);
     radio.openReadingPipe(1, address[radioNumber]);
     radio.startListening();                                     // Starts RX mode
 }
 
-/**
- * @brief Tries to transmit message to RX node. Returns true when message was succesfully
- * transmitted, false otherwise. 
- * @param buf Pointer to the data to be sent. 
- * @param len Number of bytes to be sent. Maximum 32 bytes (null-terminated).  
-*/
+/********************************************************************************
+ * @brief   Tries to transmit message to RX node.                               *
+ * @param   buf Pointer to the data to be sent.                                 *
+ * @param   len Number of bytes to be sent. Maximum 32 bytes (null-terminated). * 
+ * @return  True if message was succesfully transmitted, otherwise false.       *
+*********************************************************************************/
 bool RFtransmit(void *buf, uint8_t len)
 {
-    radio.stopListening();                                      // Starts TX mode
-    bool report = radio.write(buf, len);                       // Send message and wait for acknowledge
+    radio.stopListening();                              // Starts TX mode
+    bool report = radio.write(buf, len);                // Send message and wait for acknowledge
     radio.startListening();
-    if (report){    // Checks if message was delivered
-        //Serial.print(F("Transmission successful! "));           // message was delivered
-    /*if (radio.isAckPayloadAvailable()){                     // Checks for ACK packet from RX
-            uint8_t ack[32], *ori = (uint8_t*)buf;
-            radio.read(&ack, len);                              // Loads ACK packet into msg
-            for(uint8_t i = 0; i< 32; i++){
-                if(ack[i] != ori[i]){}
-                    radio.startListening(); 
-                    Serial.println("Character");
-                    return false;
-            }  
-            return true;
-        }*/
-        //Serial.println();
+    if (report){                                        // Checks if message was delivered
+        if (ack && radio.isAckPayloadAvailable()){      // Checks for ACK packet from RX                    
+            radio.read(&buf, len);                      // Loads ACK packet into buffer
+        }
         return true;
     } else {
-        //Serial.println(F("Transmission failed or timed out"));  // message was not delivered
         return false;
     }
 }
 
-/**
- * @brief Tries to receive message from TX node. Returns true when message was succesfully
- * received, false otherwise. 
- * @param buf Pointer to a buffer where the data should be written. 
- * @param len Maximum number of bytes to be read into the buffer, maximum 32 bytes.  
-*/
+/**************************************************************************************
+ * @brief   Tries to receive message from TX node.                                    *
+ * @param   buf Pointer to a buffer where the data should be written.                 *
+ * @param   len Maximum number of bytes to be read into the buffer, maximum 32 bytes. *
+ * @return  True if a message was succesfully received, otherwise false.              *
+***************************************************************************************/
 bool RFreceive(void *buf, uint8_t len)
 {
-    radio.startListening();                                     // Starts RX mode
-    uint8_t pipe;
-    if (radio.available(&pipe)){                                // Check if transmitter is sending message
-        radio.read(buf, len);                               // Read message, cannot be larger than 32 bytes (null-terminated)
-        //radio.writeAckPayload(1, buf, len);                 // Send acknowledge payload
+    radio.startListening();                             // Starts RX mode
+    uint8_t pipe;                                       
+    if (radio.available(&pipe)){                        // Check if transmitter is sending message on pipe
+        radio.read(buf, len);                           // Read message, cannot be larger than 32 bytes (null-terminated)
+        if (ack) radio.writeAckPayload(1, buf, len);    // Send acknowledge payload
         return true;
     }
     return false;

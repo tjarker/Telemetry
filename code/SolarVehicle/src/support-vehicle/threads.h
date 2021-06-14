@@ -6,8 +6,8 @@
 #include "ThreadState.h"
 #include "Encryption.h"
 
-Security sec; 
-ThreadState rfState;
+Security sec;         // Security global variable
+ThreadState rfState;  // ThreadState global variable
 
 struct threadBundle
 {
@@ -15,14 +15,14 @@ struct threadBundle
     ThreadState *state;
 };
 
-// 2048 byte working stack for radioWorkerThread
-THD_WORKING_AREA(waRadioWorkerThread, 2048);
+// 2048 byte working stack for receiverThread
+THD_WORKING_AREA(WaReceiverThread, 2048);
 
 /**
- * @brief Thread function for radioWorkerThread
- * @param arg, typecast to threadBundle pointer
+ * @brief       Thread function for receiverThread
+ * @param arg   Typecast to threadBundle pointer
 */
-THD_FUNCTION(radioWorkerThread, arg)
+THD_FUNCTION(receiverThread, arg)
 {
   threadBundle *bundle = (threadBundle*)arg; 
   Security *sec = bundle->sec; 
@@ -58,18 +58,18 @@ THD_FUNCTION(radioWorkerThread, arg)
         Serial.println("Could not receive message.");
       }
     }
-    chThdYield();
+    chThdYield();                                       // Yield for same-priority thread
   }
 }
 
-// 2048 byte working stack for serialWorkerThread
-THD_WORKING_AREA(waSerialWorkerThread, 2048);
+// 2048 byte working stack for transmitterThread
+THD_WORKING_AREA(waTransmitterThread, 2048);
 
 /**
- * @brief Thread function for serialWorkerThread  
- * @param arg, typecast to Security class pointer
+ * @brief     Thread function for transmitterThread  
+ * @param arg Typecast to Security class pointer
 */
-THD_FUNCTION(serialWorkerThread, arg)
+THD_FUNCTION(transmitterThread, arg)
 {
   Security *sec = (Security*)arg; 
   BaseTelemetryMsg message; 
