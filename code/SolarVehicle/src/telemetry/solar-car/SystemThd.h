@@ -15,7 +15,7 @@
 #include "Measure.h"
 #include "Encryption.h"
 
-#include "solar-car/Mutexes.h"
+#include "telemetry/solar-car/Mutexes.h"
 
 /**
  * A bundle used for passsing all relevant resources to the radio thread

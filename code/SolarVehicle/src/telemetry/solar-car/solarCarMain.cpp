@@ -21,11 +21,11 @@
 #include "MultiReaderFifo.h"
 #include "ThreadState.h"
 
-#include "solar-car/blackBoxThd.h"
-#include "solar-car/CanReceiverThd.h"
-#include "solar-car/Mutexes.h"
-#include "solar-car/RfTxThd.h"
-#include "solar-car/SystemThd.h"
+#include "telemetry/solar-car/blackBoxThd.h"
+#include "telemetry/solar-car/CanReceiverThd.h"
+#include "telemetry/solar-car/Mutexes.h"
+#include "telemetry/solar-car/RfTxThd.h"
+#include "telemetry/solar-car/SystemThd.h"
 
 
 #ifdef CH_CFG_TIME_QUANTUM
