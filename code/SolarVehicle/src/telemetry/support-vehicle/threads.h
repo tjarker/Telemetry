@@ -1,3 +1,9 @@
+/**
+ * @file    threads.h
+ * @author  Steffan Martin Kunoy
+ * @brief   ChibiOS threads to be run on the Support Vehicle
+ */
+
 #ifndef __RF_THD_H__
 #define __RF_THD_H__        
 
@@ -18,10 +24,10 @@ struct threadBundle
 // 2048 byte working stack for receiverThread
 THD_WORKING_AREA(WaReceiverThread, 2048);
 
-/**
- * @brief       Thread function for receiverThread
- * @param arg   Typecast to threadBundle pointer
-*/
+/***************************************************
+ * @brief   Thread function for receiverThread.    *
+ * @param   arg, typecast to threadBundle pointer. *
+****************************************************/
 THD_FUNCTION(receiverThread, arg)
 {
   threadBundle *bundle = (threadBundle*)arg; 
@@ -65,10 +71,10 @@ THD_FUNCTION(receiverThread, arg)
 // 2048 byte working stack for transmitterThread
 THD_WORKING_AREA(waTransmitterThread, 2048);
 
-/**
- * @brief     Thread function for transmitterThread  
- * @param arg Typecast to Security class pointer
-*/
+/*****************************************************
+ * @brief   Thread function for transmitterThread.   *
+ * @param   arg, typecast to Security class pointer. *
+******************************************************/
 THD_FUNCTION(transmitterThread, arg)
 {
   Security *sec = (Security*)arg; 

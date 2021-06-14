@@ -1,48 +1,25 @@
+/****************************************************************************************************
+ * @file    supportVehicleMain.cpp                                                                  *
+ * @author  Steffan Martin Kunoy                                                                    *
+ * @brief   Includes setup() and loop() functions to be run on the support vehicle microcontroller. *
+ ****************************************************************************************************/
+
 #include <Arduino.h>
 #include <SPI.h>
 #include "telemetry/support-vehicle/threads.h"
 #include "RSA.h"
 
-
-void rsa_print1()
-{
-  Security sec; 
-  BaseTelemetryMsg msg; char str[64]; 
-  msg.randomize(); 
-  msg.toString(str, sizeof(str)); 
-  Serial.println(str); 
-  sec.encrypt((uint16_t*)&msg, 32); 
-  msg.toString(str, sizeof(str)); 
-  Serial.println(str);
-  sec.decrypt((uint16_t*)&msg, 32); 
-  msg.toString(str, sizeof(str)); 
-  Serial.println(str);
-}
-
-void rsa_print2()
-{
-  RSA rsa; 
-  BaseTelemetryMsg msg; char str[64]; 
-  msg.randomize(); 
-  msg.toString(str, sizeof(str)); 
-  Serial.println(str); 
-  rsa.encrypt((uint8_t*)&msg, 32); 
-  msg.toString(str, sizeof(str)); 
-  Serial.println(str);
-  rsa.decrypt((uint8_t*)&msg, 32); 
-  msg.toString(str, sizeof(str)); 
-  Serial.println(str);
-}
-
-// ChibiOS setup function
-// Initializes all 4 threads with a working area, priority level, thread function and initial argument. 
+/*********************************************************
+ * @brief Initializes all threads with a working area,   *
+ * priority level, thread function and initial argument. *
+ *********************************************************/  
 void chSetup()
 {
   chSysInit();  // Initializes ChibiOS system
   threadBundle bundle = {.sec = &sec, .state = &rfState}; 
   chThdCreateStatic(WaReceiverThread, sizeof(WaReceiverThread), NORMALPRIO + 1, receiverThread, &bundle);
   chThdCreateStatic(waTransmitterThread, sizeof(waTransmitterThread), NORMALPRIO + 1, transmitterThread, &sec);
-}  
+}
 
 void setup()
 {
