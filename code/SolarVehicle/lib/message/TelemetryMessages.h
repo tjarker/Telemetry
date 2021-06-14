@@ -53,7 +53,7 @@ class BaseTelemetryMsg {
 
   public: uint32_t toString(char *buf, uint32_t len){
     uint32_t curPos = snprintf(buf,len,"%02x:",cmd);
-    for(uint8_t i = 0; i < 31; i++){
+    for(uint8_t i = 0; i < BYTES_PER_MESSAGE-1; i++){
       curPos += snprintf(&(buf[curPos]),len-curPos," %02x",data[i]);
     }
     return curPos;
