@@ -58,24 +58,26 @@ THD_FUNCTION(rfWorker, arg){
       msg = fifo->head(readerId);
       
       chSysLock();
-      BaseTelemetryMsg decryptedMsg;
-      memcpy(&decryptedMsg,msg,32);
+      uint16_t encrypted[16];
       char tempString[128];
+
       WITH_MTX(serialMtx){
         Serial.print("RfTxThd:\t");
-        decryptedMsg.toString(tempString,sizeof(tempString));
+        msg->toMessage()->toString(tempString,sizeof(tempString));
         Serial.println(tempString);
 
-        /*sec->encrypt((uint8_t*)&decryptedMsg,32);
+        sec->encrypt((uint8_t*)msg,encrypted,BaseTelemetryMsg::length());
 
         Serial.print("RfTxThd:\t");
-        decryptedMsg.toString(tempString,sizeof(tempString));
-        Serial.println(tempString);*/
+        for(uint32_t i = 0; i < BaseTelemetryMsg::length(); i++) {
+          Serial.print(encrypted[i]); Serial.print(" ");
+        }
+        Serial.println();
 
         
       }
       WITH_MTX(rfMTX){
-        if(!RFtransmit((BaseTelemetryMsg*)&decryptedMsg,32)){
+        if(!RFtransmit(encrypted,BaseTelemetryMsg::length()<<1)){
           Serial.println("RfTxThd:\tMessage not send or incorrect ACK");
         } else {
           Serial.println("RfTxThd:\tMessage sent successfully");

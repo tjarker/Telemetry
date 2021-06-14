@@ -25,6 +25,8 @@
 
 #endif
 
+#define BYTES_PER_MESSAGE 16
+
 /**
  * This type is used for indentifying message types
  */
@@ -45,7 +47,9 @@ typedef enum CMD: uint8_t {
 class BaseTelemetryMsg {
 
   public: cmd_t cmd;
-  public: uint8_t data[31];
+  public: uint8_t data[BYTES_PER_MESSAGE-1];
+
+  public: static uint32_t length(){return BYTES_PER_MESSAGE;}
 
   public: uint32_t toString(char *buf, uint32_t len){
     uint32_t curPos = snprintf(buf,len,"%02x:",cmd);
@@ -55,31 +59,12 @@ class BaseTelemetryMsg {
     return curPos;
   }
 
-  public: uint8_t* toBytes(){return (uint8_t*)this;}
-
   public: void randomize(){
       this->cmd = (cmd_t) random(0, 0x99);   
       for (int i = 0; i < 31; i++){
         this->data[i] = random(0,0x99); 
       }  
   }
-
-}__attribute__((packed));
-
-/**
- * A message type used to stream characters from a file
- */
-class FileStreamMsg {
-  public: cmd_t cmd;
-  public: char str[31];
-
-  public: const String toString(){
-    char tmp[31+4];
-    snprintf(tmp,31+4,"FS: %s",str);
-    return String(tmp);
-  }
-
-  public: BaseTelemetryMsg* toMessage(){return (BaseTelemetryMsg*)this;}
 
 }__attribute__((packed));
 
@@ -115,6 +100,8 @@ class CanTelemetryMsg {
     public: ~CanTelemetryMsg(){
         // nothing
     }
+
+    public: static uint32_t length(){return BYTES_PER_MESSAGE;}
 
     public: BaseTelemetryMsg* toMessage(){return (BaseTelemetryMsg*)this;}
     

@@ -200,8 +200,8 @@ THD_FUNCTION(serialWorkerThread, arg)
     } 
      
     if (Serial.available()){
-      Serial.readBytes((char*)&message, 32);
-      if (RFtransmit(&message, 32)){
+      Serial.readBytes((char*)&message, BaseTelemetryMsg::length());
+      if (RFtransmit(&message, BaseTelemetryMsg::length())){
         char str[64]; 
         message.toString(str, sizeof(str));
         Serial.print("Transmitted: "); 

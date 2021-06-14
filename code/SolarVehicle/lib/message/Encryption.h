@@ -80,13 +80,12 @@ class Security {
          * @brief Encrypts input message
          * @param Message as char pointer array
         */
-        void encrypt(uint16_t *message, int len){
-            long int pt, ct, k, enkey = e[0];
+        void encrypt(uint8_t *message, uint16_t *array, int len){
+            long int pt, k, enkey = e[0];
+            uint16_t ct;
             i = 0;
             while(i < len){
-                Serial.println(message[i]); 
-                pt = message[i];
-                pt -= 96;
+                pt = message[i] - 96;
                 k = 1;
                 for (int j = 0; j < enkey; j++){
                     k = k * pt;
@@ -98,7 +97,7 @@ class Security {
                 /*while (ct < 0){
                     ct += 96;
                 }*/
-                message[i] = ct;
+                array[i] = ct;
                 i++;
             }
         }
@@ -107,13 +106,13 @@ class Security {
          * @brief Decrypts input message
          * @param Message as char pointer array
         */
-        void decrypt(uint16_t *message, int len){
-            long int pt, ct, dekey = d[0], k;
+        void decrypt(uint16_t *array, uint8_t *message, int len){
+            long int ct, dekey = d[0], k;
+            uint8_t pt;
             i = 0;
             while(i < len){
                 //ct = temp[i];                      // Array used for encryption and decryption
-                Serial.println(message[i]); 
-                ct = message[i] - 2*96;
+                ct = array[i] - 2*96;
                 /*while (ct > 255){
                     ct -= 96;
                 }*/
