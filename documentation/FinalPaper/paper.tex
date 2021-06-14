@@ -105,8 +105,13 @@ The CAN bus itself is two twisted wires, CAN High and CAN Low. These control the
 The nRF24L01+ LoRa RF module is used to provide two-way communication between the solar car and support vehicle. The module includes a detachable antenna, power amplifier and low-nose amplifier to provide a theoretical range in excess of 1000 m at data rates of up to 2 Mbit/s.  In addition to this, comprehensive driver libraries are provided by the manufacturer, making it very easy to integrate with our project. \\
 
 \subsection{Message protocol}
-The nRF24L01+ module uses the Enhanced Shockburst $\copyright$ packet structure to transmit messages over the 2.4 GHz ISM band. Messages contain a data payload of up to 32 bytes, allowing us to transmit one CAN telemetry message per cycle. Further, the package structure includes a preamble, address, packet and CRC byte segments as shown in Figure X. These are all generated automatically when a call to the radio write function is made, and therefore fall outside the scope of this project.   
-
+The nRF24L01+ module uses the Enhanced Shockburst $\copyright$ packet structure to transmit messages over the 2.4 GHz ISM band. Messages contain a data payload of up to 32 bytes, allowing us to transmit one CAN telemetry message per cycle. Further, the package structure includes a preamble, address, packet and CRC byte segments as shown in Figure \ref{fig:shockburst}. These are all generated automatically when a call to the radio write function is made, and therefore fall outside the scope of this project.   
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{documentation/images/EnhancedShockburst.png}
+    \caption{The Enhanced Shockburst $\copyright$ packet structure.}
+    \label{fig:shockburst}
+\end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{documentation/images/MessageTypes.pdf}
