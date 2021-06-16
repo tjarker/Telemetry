@@ -16,9 +16,9 @@
 void chSetup()
 {
   chSysInit();  // Initializes ChibiOS system
-  threadBundle bundle = {.sec = &sec, .state = &rfState}; 
-  chThdCreateStatic(WaReceiverThread, sizeof(WaReceiverThread), NORMALPRIO + 1, receiverThread, &bundle);
-  chThdCreateStatic(waTransmitterThread, sizeof(waTransmitterThread), NORMALPRIO + 1, transmitterThread, &sec);
+  chThdCreateStatic(WaReceiverThread, sizeof(WaReceiverThread), NORMALPRIO + 1, receiverThread, &sec);
+  threadBundle transmitterBundle = {.security = &sec, .fifo = &TXfifo}; 
+  chThdCreateStatic(waTransmitterThread, sizeof(waTransmitterThread), NORMALPRIO + 1, transmitterThread, &transmitterBundle);
 }
 
 void setup()
@@ -26,6 +26,7 @@ void setup()
   Serial.begin(921600); // Initialize serial port
   while(!Serial){}      // Wait until serial is available
   RFinit();             // Initialize RF module
+  sec.encryption_key(); // Create message encryption key
   chBegin(chSetup);     // Initialize and start all 4 threads
   while (true){}        
 }

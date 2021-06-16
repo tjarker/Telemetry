@@ -29,23 +29,23 @@ bool radioNumber = 1;
 
 RF24 radio(CE_PIN, CSN_PIN);                                    // CE and CSN pins
 static const byte address[][6] = {"00001", "00002"};            // TX/RX byte addresses
-bool ack = true; 
+bool ack = false; 
 
 /**********************************************************
  * @brief   Initializes and configures RF24 class object. *
  * @param   None                                          *
 ***********************************************************/
 void RFinit()
-{
+{ 
     if(!radio.begin()){Serial.println("Radio not working!");}
-    radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level
-    radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
-    radio.enableDynamicPayloads();
-    radio.setAutoAck(true);
+    radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level, choose between MIN, LOW, HIGH, MAX (higher PA level improves range)
+    radio.setDataRate(RF24_1MBPS);                              // Set Data Rate, choose between RF24_250KBS, RF24_1MBS, RF24_2MBS (higher Data Rates may cause data loss)
+    radio.enableDynamicPayloads();                              // Enable variable data payloads
+    radio.setAutoAck(true);                                     // RX node sends an automatic ack packet
     if (ack) radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
-    radio.openWritingPipe(address[!radioNumber]);
-    radio.openReadingPipe(1, address[radioNumber]);
+    radio.openWritingPipe(address[!radioNumber]);               // Open writing pipe at address 
+    radio.openReadingPipe(1, address[radioNumber]);             // Open reading pipe at address
     radio.startListening();                                     // Starts RX mode
 }
 
