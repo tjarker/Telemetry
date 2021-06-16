@@ -70,7 +70,7 @@ THD_FUNCTION(rfWorker, arg){
 
         Serial.print("RfTxThd:\t");
         for(uint32_t i = 0; i < BaseTelemetryMsg::length(); i++) {
-          Serial.print(encrypted[i]); Serial.print(" ");
+          Serial.print(encrypted[i],HEX); Serial.print(" ");
         }
         Serial.println();
 
@@ -83,13 +83,14 @@ THD_FUNCTION(rfWorker, arg){
           Serial.println("RfTxThd:\tMessage sent successfully");
         }
       }
-      /*WITH_MTX(serialMtx){
-        sec->decrypt((uint8_t*)&decryptedMsg,32);
+      WITH_MTX(serialMtx){
+        BaseTelemetryMsg decryptedMsg;
+        sec->decrypt(encrypted,(uint8_t*)&decryptedMsg,BaseTelemetryMsg::length()<<1);
 
         Serial.print("RfTxThd:\t");
-        decryptedMsg.toString(tempString,64);
+        decryptedMsg.toString(tempString,sizeof(tempString));
         Serial.println(tempString);
-      }*/
+      }
       chSysUnlock();
       
       fifo->moveHead(readerId);

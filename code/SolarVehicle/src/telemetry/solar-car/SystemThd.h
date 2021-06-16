@@ -43,7 +43,7 @@ THD_FUNCTION(systemThd, arg){
   Serial.println("SystemThd:\tStarting");
 
   blackBoxWorkerState->pause = true;
-  rfWorkerState->pause = true;
+  rfWorkerState->pause = false;
   canReceiverState->pause = false;
 
   chThdSleepMicroseconds(100); // release in order to allow creation of other threads
@@ -52,8 +52,9 @@ THD_FUNCTION(systemThd, arg){
    
     radio.startListening();
     if(radio.available()){
-      RFreceive(&msg,32);
-      //sec->decrypt((uint8_t*)&msg,32);
+      uint16_t encrypted[16];
+      RFreceive(encrypted,BaseTelemetryMsg::length()<<1);
+      sec->decrypt(encrypted,(uint8_t*)&msg,32);
       uint32_t count = 0;
       for(uint32_t i = 0; i < 32; i++) {
         count += ((uint8_t*)&msg)[i];

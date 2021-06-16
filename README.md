@@ -33,6 +33,7 @@
 - [ ] Improve thread stability
 -  http://www.java2s.com/Tutorial/Java/0260__Swing-Event/CreatingaCustomEvent.htm
 -  https://docs.oracle.com/javase/tutorial/uiswing/concurrency/interim.html
+-  [x] Measure energy consumption -> draws 77mA at 12V
 
 ## Organization
 - [x] ask other groups about their CAN bus usage (how many messages per sec?) -> right now very limited. Speeder sends updates in fixed intervals 

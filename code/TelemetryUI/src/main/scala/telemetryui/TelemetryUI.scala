@@ -3,6 +3,7 @@ package telemetryui
 import com.fazecast.jSerialComm.SerialPort
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization
+import telemetryui.TelemetryUI.port
 import telemetryui.components.{CanFrameForm, CanFrameLabel, CommandButton, SerialPortSelector, ToggleCommandButton}
 import telemetryui.serial.SerialWorker
 import telemetryui.types.CMD._
@@ -83,13 +84,21 @@ object TelemetryUI extends SimpleSwingApplication {
     centerOnScreen()
     peer.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE)
 
-    port = Some(SerialPortSelector())
-    port.get.setBaudRate(921600)
-    port.get.setNumDataBits(8)
-    port.get.setNumStopBits(1)
-    port.get.setParity(0)
-    port.get.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0)
-    if(!port.get.openPort()) println("Port could not be opened!")
+    port = SerialPortSelector()
+    port match {
+      case Some(port) => {
+        port.setBaudRate(921600)
+        port.setNumDataBits(8)
+        port.setNumStopBits(1)
+        port.setParity(0)
+        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 0, 0)
+        if(!port.openPort()) println("Port could not be opened!")
+      }
+      case None => {
+        TelemetryUI.quit()
+      }
+    }
+
 
     val udpServer = new UdpServer
 
@@ -101,23 +110,8 @@ object TelemetryUI extends SimpleSwingApplication {
     serialWorker.get.start()
     udpServer.start()
 
-    val testData = new Thread{
-      var running = true
-      override def run(): Unit = {
-        while(running){
-          val msg = TelemetryMessage(1,Some(CanFrame()))
-          println(msg)
-          serialWorker.get.send(msg)
-          Thread.sleep(1000)
-        }
-      }
-      def close(): Unit = running = false
-    }
-    //testData.start()
-
     override def closeOperation(): Unit = {
       println("Closing")
-      testData.close()
       udpServer.close()
       serialWorker.get.quit()
       port.get.closePort()
