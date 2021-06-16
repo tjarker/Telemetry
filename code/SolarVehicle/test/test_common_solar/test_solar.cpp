@@ -1,20 +1,14 @@
 /*
- Copyright (c) 2014-present PlatformIO <contact@platformio.org>
+ Test file for testing various functions made for the telemetry module for the ROAST solar car
+ @author Victor Alexander Hansen
+ @author Steffan Martin Kunoy
+ @author Tjark Petersen
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ To run the test, open a pio terminal and type "pio test" in PlatformIO
+ Be sure to have the correct board connected for the corresponding environment in the .ini file.
+ If the test keeps uploading but nothing happens, try to comment out the other environments in
+ the .ini file
 **/
-
-// Maybe use pio --without-building?
 
 #include <unity.h>
 #include <ACAN.h>
@@ -29,13 +23,14 @@
 #include "RFfunctions.h"
 #include "MultiReaderFifo.h"
 #include "ThreadState.h"
-#include "solar-car/blackBoxThd.h"
-#include "solar-car/CanReceiverThd.h"
-#include "solar-car/Mutexes.h"
-#include "solar-car/RfTxThd.h"
-#include "solar-car/SystemThd.h"
+#include "telemetry/solar-car/blackBoxThd.h"
+#include "telemetry/solar-car/CanReceiverThd.h"
+#include "telemetry/solar-car/Mutexes.h"
+#include "telemetry/solar-car/RfTxThd.h"
+#include "telemetry/solar-car/SystemThd.h"
 
 CANMessage frame;
+CanTelemetryMsg CANmsg;
 BlackBox box;
 Security security;
 MultiReaderFifo<CanTelemetryMsg> canFifo(64,2);
@@ -71,20 +66,69 @@ void test_can_x_begin(void) {
 
 // -------------------------- TelemetryMessages.h -------------------------- //
 
+// Should a string with CAN data in the format hour, minutes, seconds, id, rtr, len data
+// Due to lack of support, only base 16 (hexadecimal) is tested and expected to pass, other tests will fail
 //uint32_t toString(char *buf, uint32_t len, uint8_t base)
+void test_toString(void){
+    CANmsg.randomize();
+    char *testbuf;
+    // Hexadecimal test
+    CANmsg.toString(testbuf, CANmsg.len, 16);
+    TEST_ASSERT_EQUAL_STRING(("\"%02d-%02d-%02d\",%X,%X,%X,%llX", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf);
+    // Decimal test
+    CANmsg.toString(testbuf, CANmsg.len, 10);
+    TEST_ASSERT_EQUAL_STRING(("\"%02d-%02d-%02d\",%D,%D,%D,%llD", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf);
+    // Octal
+    CANmsg.toString(testbuf, CANmsg.len, 8);
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(("\"%02d-%02d-%02d\",%0,%0,%0,%ll0", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf, "Not yet implemented");
+    // Binary
+    CANmsg.toString(testbuf, CANmsg.len, 2);
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(("\"%02d-%02d-%02d\",%B,%B,%B,%llB", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf, "Not yet implemented");
+}
+
 
 //uint32_t toString(char *buf, uint32_t len)
+void test_toString2(void){
+    CANmsg.randomize();
+    char *testbuf;
+    // Hexadecimal test
+    CANmsg.toString(testbuf, CANmsg.len);
+    TEST_ASSERT_EQUAL_STRING(("\"%02d-%02d-%02d\",%u,%u,%u,%llu", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf);
+}
 
+// Should test that a string header is returned in the format \"time\",\"id\",\"rtr\",\"len\",\"data\"
 //static const String getHeader()
+void test_getHeader(void){
+    //TEST_ASSERT_EQUAL_STRING(CANmsg.getHeader(), const String("\"time\",\"id\",\"rtr\",\"len\",\"data\""));
+}
 
 // Should set data in CAN frame
 //void toCanFrame(CANMessage *msg)
 
 // Should update time stamp on CAN message
-//void update(CANMessage *msg)
+// void update(CANMessage *msg)
+void test_update(void){
+    CANMessage MsgTest;
+    CANmsg.randomize();
+        /*char tmp[200]; // Debug lines
+    snprintf(tmp,200,"%d,%d,%d,%llu",test_msg.id,test_msg.rtr,test_msg.len,test_msg.data64);
+    Serial.println(tmp);*/
+    CANmsg.update(&MsgTest);
+    char test_str[200];
+    /*snprintf(test_str,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx16 ",%d,%d,%" PRIx64 "", 
+        day(), month(), year(), hour(), minute(), second(), test_msg.id, test_msg.rtr, test_msg.len, 
+        test_msg.data64);
+    TEST_ASSERT_EQUAL_STRING(test_str, CANMessage.toString());*/
+}
 
 // Should set correct time in seconds, minutes and hours
 //void stamp()
+
 
 // ------------------------------ Encryption.h ----------------------------- //
 
@@ -109,7 +153,8 @@ void test_encryption_key(void){
 //void encrypt(uint16_t *message, int len)
 //void decrypt(uint16_t *message, int len)
 void test_encrypt_decrypt(void){
-    uint16_t msg[16], msgcon[16];
+    uint8_t msg[16], msgcon[16];
+    uint16_t array[16];
     int cnten = 0;
     security.encryption_key();
     // Random test
@@ -118,7 +163,7 @@ void test_encrypt_decrypt(void){
             msg[i] = random(0,256);
             msgcon[i] = msg[i];
         }
-        security.encrypt(msg, 16);
+        security.encrypt(msg, array, 16);
         for (int i = 0; i < 16; i++){
             if (msg[i] != msgcon[i]){
                 cnten++;
@@ -127,15 +172,16 @@ void test_encrypt_decrypt(void){
         // Takes into account that a data value might not be changed after encryption process.
         // The integer used for comparison is the desired minimum amount of changed values.
         TEST_ASSERT_TRUE(cnten > 13);
-        security.decrypt(msg, 16);
+        security.decrypt(array, msg, 16);
         for(int i = 0; i < 16; i++){
             TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
         }
     }
     // Edge case test
-    uint16_t msg2[16] = {[0 ... 15] = 0};
-    uint16_t msgcon2[16] = {[0 ... 15] = 0};
-    security.encrypt(msg, 16);
+    uint8_t msg2[16] = {[0 ... 15] = 0};
+    uint16_t array2[16];
+    uint8_t msgcon2[16] = {[0 ... 15] = 0};
+    security.encrypt(msg2, array2, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){
             cnten++;
@@ -144,14 +190,15 @@ void test_encrypt_decrypt(void){
     // Takes into account that a data value might not be changed after encryption process.
     // The integer used for comparison is the desired minimum amount of changed values.
     TEST_ASSERT_TRUE(cnten > 13);
-    security.decrypt(msg, 16);
+    security.decrypt(array, msg, 16);
     for(int i = 0; i < 16; i++){
         TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
     }
 
-    uint16_t msg3[16] = {[0 ... 15] = 255};
-    uint16_t msgcon3[16] = {[0 ... 15] = 255};
-    security.encrypt(msg, 16);
+    uint8_t msg3[16] = {[0 ... 15] = 255};
+    uint16_t array3[16];
+    uint8_t msgcon3[16] = {[0 ... 15] = 255};
+    security.encrypt(msg3, array3, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){
             cnten++;
@@ -160,7 +207,7 @@ void test_encrypt_decrypt(void){
     // Takes into account that a data value might not be changed after encryption process.
     // The integer used for comparison is the desired minimum amount of changed values.
     TEST_ASSERT_TRUE(cnten > 13);
-    security.decrypt(msg, 16);
+    security.decrypt(array3, msg3, 16);
     for(int i = 0; i < 16; i++){
         TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
     }
@@ -241,6 +288,8 @@ void process() {
     UNITY_BEGIN();
     RUN_TEST(test_sanity);
     RUN_TEST(test_can_x_begin);
+    RUN_TEST(test_toString);
+    RUN_TEST(test_toString2);
     RUN_TEST(test_init);
     RUN_TEST(test_fail);
     RUN_TEST(test_encryption_key);
