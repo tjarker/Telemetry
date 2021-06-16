@@ -24,8 +24,8 @@
 ## Implementation and Test
 - [x] TelemetryUI: implement command buttons (e.g. start/stop logging)
 - [x] fix uno CAN generator
-- [ ] solder on perfboard
-- [ ] Test RF modules over long distance >100 m (basic range test)
+- [x] solder on perfboard
+- [x] Test RF modules over long distance >100 m (basic range test)
 - [ ] implement log file switching (open a new log file, when another is filled (?)) in SCU (4GiB-1 is theoretical limit)
 - [x] command system
 - [x] MultiReaderFifo needs to push reader when overtaken by writer
@@ -43,9 +43,9 @@
 
 ## Documentation
 - [x] revisit problem description (include sending data to matlab?)
-- [ ] stitch some holes in the meeting notes
+- [x] stitch some holes in the meeting notes
 - [ ] throughput analysis
-- [ ] message protocol
+- [x] message protocol
 
 ## Hand-ins
 - [ ] Final paper, due 21/06/21
