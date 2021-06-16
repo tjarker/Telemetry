@@ -12,18 +12,18 @@
 #include <nRF24L01.h>
 #include "TelemetryMessages.h"
 
-#ifdef TEENSY36_BOARD
-#define IRQ_PIN 2   // SPI interrupt pin
-#define CE_PIN 10    // SPI chip-enable (CE) pin
-#define CSN_PIN 9  // SPI chip-select (CSN) pin
+#ifdef TEENSY36_BOARD   // SPI pins are configured differently on Teensy 3.6
+#define IRQ_PIN 2       // SPI interrupt (IRQ) pin
+#define CE_PIN 10       // SPI chip-enable (CE) pin
+#define CSN_PIN 9       // SPI chip-select (CSN) pin
 #else
-#define IRQ_PIN 2   // SPI interrupt pin
-#define CE_PIN 9    // SPI chip-enable (CE) pin
-#define CSN_PIN 10  // SPI chip-select (CSN) pin
+#define IRQ_PIN 2       // SPI interrupt (IRQ) pin 
+#define CE_PIN 9        // SPI chip-enable (CE) pin
+#define CSN_PIN 10      // SPI chip-select (CSN) pin
 #endif
 
-#define COUNT 5     // Number of transmission retries
-#define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
+#define COUNT 5         // Number of transmission retries
+#define DELAY 15        // Delay between retries (= DELAY * 250 us + 250 us)
 
 #ifdef TEENSY40_BOARD
 bool radioNumber = 0;       
@@ -33,9 +33,9 @@ bool radioNumber = 1;
 bool radioNumber = 1;
 #endif
 
-RF24 radio(CE_PIN, CSN_PIN);                                    // CE and CSN pins
-static const byte address[][6] = {"00001", "00002"};            // TX/RX byte addresses
-bool ack = false; 
+RF24 radio(CE_PIN, CSN_PIN);                                    // RF24 global variable declaration
+static const byte address[][6] = {"00001", "00002"};            // Byte addresses for reading/writing pipes
+bool ack = false;                                               // Enable ack packages by setting this true
 
 /**********************************************************
  * @brief   Initializes and configures RF24 class object. *
