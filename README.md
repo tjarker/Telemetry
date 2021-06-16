@@ -26,11 +26,11 @@
 - [x] fix uno CAN generator
 - [x] solder on perfboard
 - [x] Test RF modules over long distance >100 m (basic range test)
-- [ ] implement log file switching (open a new log file, when another is filled (?)) in SCU (4GiB-1 is theoretical limit)
+- [x] implement log file switching (open a new log file, when another is filled (?)) in SCU (4GiB-1 is theoretical limit)
 - [x] command system
 - [x] MultiReaderFifo needs to push reader when overtaken by writer
-- [ ] add state to remember config before sleep
-- [ ] Improve thread stability
+- [x] add state to remember config before sleep
+- [x] Improve thread stability
 -  http://www.java2s.com/Tutorial/Java/0260__Swing-Event/CreatingaCustomEvent.htm
 -  https://docs.oracle.com/javase/tutorial/uiswing/concurrency/interim.html
 -  [x] Measure energy consumption -> draws 77mA at 12V

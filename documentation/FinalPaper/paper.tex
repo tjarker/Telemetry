@@ -1,18 +1,18 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 
-\usepackage{cite}
+
 \usepackage[pdftex]{graphicx}
-\usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{comment}
 \usepackage{textcomp}
 \usepackage{xcolor}
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
-
+\usepackage{hyperref}
+\usepackage[style=ieee]{biblatex}
+\addbibresource{paper.bib}
 \usepackage{url}
 
 % correct bad hyphenation here
@@ -85,22 +85,30 @@ During the development of the software functions, we also verified and validated
 During the software development phase, we attempted to make our debugging more efficient with the use of a debugger. However, this proved quite troublesome, as the Teensy 3.6 board does not have an on-board debugger and in general is not very suited for debuggers. If we had insisted on using a debugger such as st-link, we would have had to hold or solder wires to the debug ports on the Teensy board's backside, which would complicate our prototype setup. Therefore, we decided not to spent more time on finding a debugger solution. This was a clear setback, as debugging could only be conducted by sending text over the serial connection.
 
 \section{Design}
-- Block Diagram and description of overall data flow
+The overall system consists of three separate modules; the Solar Car Unit which communicates with the Support Vehicle Unit via a wireless RF connection, which in turn interacts with the Support Vehicle Laptop through a serial USB connection. The schematic for the system is outlined in Figure \ref{fig:schematic}. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{documentation/images/schematic.png}
+    \caption{Overview of the system's components in block diagram form.}
+    \label{fig:schematic}
+\end{figure}
 
 \section{Components}
 \subsection{CAN bus}
 % MCP
 \subsection{RF network} % Steffan
-The nRF24L01+ LoRa RF module is used to provide two-way communication between the solar car and support vehicle. The module includes a detachable antenna, power amplifier and low-noise amplifier to provide a theoretical range in excess of 1000 m at data rates of up to 2 Mbit/s. In addition to this, comprehensive driver libraries are provided by the manufacturer, making it very easy to integrate with our project.
+The system uses two nRF24L01+ transceivers to provide a bidirectional connection between the Solar Car and Support Vehicle over the 2.4 GHz ISM band. The module features a detachable antenna, power amplifier and low-noise amplifier to provide a theoretical range in excess of 1000 m at data rates of up to 2 Mbit/s.
+
+An advantage of using an off-the-shelf RF module is the automated message protocol, known as Enhanced Shockburst$^{\copyright}$.
+
 The nRF24L01+ module uses the Enhanced Shockburst $\copyright$ packet structure to transmit messages over the 2.4 GHz ISM band. Messages contain a data payload of up to 32 bytes, allowing us comfortably to transmit one CAN telemetry message per packet \cite{shockburst}. Further, the package structure includes a preamble, address, packet and CRC bytes segments as shown in Figure \ref{fig:shockburst}. 
-\begin{comment}
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{documentation/images/EnhancedShockburst.png}
     \caption{The Enhanced Shockburst $\copyright$ packet structure.}
     \label{fig:shockburst}
 \end{figure}
-\end{comment}
 
 \subsection{SD card}
 \subsection{Microcontrollers} % Steffan
@@ -219,7 +227,7 @@ We performed software validation as we went along with the software coding, to m
 Doing this provided us a test bench for our project, which greatly improved the credibility of our work, proving that our design works in general cases and not just the case we represent in our report.
 
 \section{Discussion}
-% variable length messages would reduce overhead -> but most messages cotain CAN and are optimized
+% variable length messages would reduce overhead -> but most messages contain CAN and are optimized
 % 
 
 \section{Conclusion}
@@ -230,32 +238,7 @@ The conclusion goes here.
 \section*{Acknowledgment}
 The authors would like to thank Martin Schoeberl and Christian Kampp Kruse for their mentoring and assistance throughout the project. The authors would also like to thank Claus Suldrup Nielsen from the department of Mechanical Engineering at DTU.
 
-\bibliographystyle{IEEEtran}
-\bibliography{IEEEabrv,../bib/paper}
 
-\section{References}
-\begingroup
-\renewcommand{\section}[2]{}%
-%\renewcommand{\chapter}[2]{}% for other classes
-\begin{thebibliography}{}
-\bibitem{wsc}
-Bridgestone World Solar Challenge, 
-URL: https://worldsolarchallenge.org/
-\bibitem{ROAST}
-Reports and source files provided by DTU ROAST
-\bibitem{teensy}
-Teensy microcontroller,
-URL: https://www.pjrc.com/teensy/
-\bibitem{C++}
-Website for learning C++
-https://www.learn-cpp.org/
-\bibitem{ACAN}
-Documentation,
-https://github.com/pierremolinaro/acan
-\bibitem{shockburst}
-nRF24 transmission protocol, URL: https://lastminuteengineers.com/nrf24l01-arduino-wireless-communication/
-\end{thebibliography}
-\endgroup
-
+\printbibliography
 
 \end{document}
