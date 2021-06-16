@@ -36,6 +36,7 @@ class UdpServer extends Thread {
         case "end" =>
           println("Stopping UDP stream")
           hasListener = false
+        case _ =>
       }
 
     }
