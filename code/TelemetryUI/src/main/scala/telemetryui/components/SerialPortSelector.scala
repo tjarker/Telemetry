@@ -8,7 +8,7 @@ import scala.swing.Dialog.{Message, showInput}
 import scala.swing.Swing
 
 object SerialPortSelector {
-  def apply(): SerialPort = {
+  def apply(): Option[SerialPort] = {
     val ports = SerialPort.getCommPorts
     val possibilities = ports.map(p => p.getSystemPortName + " - " + p.getDescriptivePortName)
     val s = showInput(null,
@@ -17,14 +17,20 @@ object SerialPortSelector {
       Message.Plain,
       Swing.EmptyIcon,
       possibilities,
-      possibilities.head
+      if (!possibilities.isEmpty) possibilities.head else "No ports found"
     )
 
-    if (s.isDefined && s.get.nonEmpty) {
-      println(s"Selected Port has system port name: ${ports(possibilities.indexOf(s.get)).getSystemPortName}")
-      return SerialPort.getCommPort(ports(possibilities.indexOf(s.get)).getSystemPortName)
+    s match {
+      case Some("No ports found") => {
+        this.apply()
+      }
+      case Some(str) => {
+        println(s"Selected Port has system port name: ${ports(possibilities.indexOf(s.get)).getSystemPortName}")
+        return Some(SerialPort.getCommPort(ports(possibilities.indexOf(str)).getSystemPortName))
+      }
+      case None => {
+        return None
+      }
     }
-    else
-      throw new SerialPortInvalidPortException()
   }
 }

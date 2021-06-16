@@ -12,9 +12,15 @@
 #include <nRF24L01.h>
 #include "TelemetryMessages.h"
 
+#ifdef TEENSY36_BOARD
+#define IRQ_PIN 2   // SPI interrupt pin
+#define CE_PIN 10    // SPI chip-enable (CE) pin
+#define CSN_PIN 9  // SPI chip-select (CSN) pin
+#else
 #define IRQ_PIN 2   // SPI interrupt pin
 #define CE_PIN 9    // SPI chip-enable (CE) pin
 #define CSN_PIN 10  // SPI chip-select (CSN) pin
+#endif
 
 #define COUNT 5     // Number of transmission retries
 #define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)

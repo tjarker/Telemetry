@@ -43,7 +43,7 @@ THD_FUNCTION(systemThd, arg){
   Serial.println("SystemThd:\tStarting");
 
   blackBoxWorkerState->pause = true;
-  rfWorkerState->pause = true;
+  rfWorkerState->pause = false;
   canReceiverState->pause = false;
 
   chThdSleepMicroseconds(100); // release in order to allow creation of other threads

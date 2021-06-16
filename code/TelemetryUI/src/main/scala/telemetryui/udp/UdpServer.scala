@@ -2,7 +2,7 @@ package telemetryui.udp
 
 import telemetryui.types.{CanFrame, TimeStamp}
 
-import java.net.{DatagramPacket, DatagramSocket}
+import java.net.{DatagramPacket, DatagramSocket, SocketException}
 
 class UdpServer extends Thread {
   val socket = new DatagramSocket(4445)
@@ -19,20 +19,26 @@ class UdpServer extends Thread {
     val rPacket = new DatagramPacket(buf,buf.length)
 
     while (running) {
-      socket.receive(rPacket)
+      synchronized{
+        try{
+          socket.receive(rPacket)
+        } catch {
+          case e: SocketException =>
+        }
+      }
       val received = new String(rPacket.getData,0,rPacket.getLength)
-      println("Received Package!!!!!!!!!!!!!!!")
-      if(received.equals("start")){
-        println("Package was start!!!!!!!!!!!")
-        listenerAddress = rPacket.getAddress
-        listenerPort = rPacket.getPort
-        hasListener = true
-      } else if(received.equals("end")){
-        hasListener = false
+      received match {
+        case "start" =>
+          println("Starting UDP stream")
+          listenerAddress = rPacket.getAddress
+          listenerPort = rPacket.getPort
+          hasListener = true
+        case "end" =>
+          println("Stopping UDP stream")
+          hasListener = false
       }
 
     }
-
   }
   def close(): Unit = {
     running = false
@@ -42,7 +48,9 @@ class UdpServer extends Thread {
     if(hasListener){
       val buf = msg.toByteArray.slice(0,16)
       val packet = new DatagramPacket(buf,buf.length,listenerAddress,listenerPort)
-      socket.send(packet)
+      synchronized{
+        socket.send(packet)
+      }
     }
   }
 }
