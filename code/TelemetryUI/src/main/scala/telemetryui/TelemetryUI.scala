@@ -51,12 +51,16 @@ object TelemetryUI extends SimpleSwingApplication {
         println(s"Stop Streaming")
         serialWorker.get.send(TelemetryMessage(STOP_STREAMING, None))
       }
+      var oldStateLoggingButton = false
+      var oldStateStreamingButton = false
       val sleepBtn = ToggleCommandButton("Sleep"){
         println("Putting to sleep")
+        oldStateLoggingButton = loggingBtn.selected
         if(loggingBtn.selected) {
           loggingBtn.selected = false
         }
         loggingBtn.enabled = false
+        oldStateStreamingButton = streamingBtn.selected
         if(streamingBtn.selected){
           streamingBtn.selected = false
         }
@@ -67,6 +71,8 @@ object TelemetryUI extends SimpleSwingApplication {
         serialWorker.get.send(TelemetryMessage(WAKE_UP, None))
         loggingBtn.enabled = true
         streamingBtn.enabled = true
+        loggingBtn.selected = oldStateLoggingButton
+        streamingBtn.selected = oldStateStreamingButton
       }
       contents ++= Seq(sleepBtn,streamingBtn,loggingBtn)
     }

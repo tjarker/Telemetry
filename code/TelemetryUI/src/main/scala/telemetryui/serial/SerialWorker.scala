@@ -28,7 +28,10 @@ class SerialWorker(port: SerialPort,
   def isRunning: Boolean = running
   def quit(): Unit = {
     running = false
+    serialMutex.acquire()
+    port.removeDataListener()
     port.closePort()
+    serialMutex.release()
   }
 
   override def run(): Unit = {
