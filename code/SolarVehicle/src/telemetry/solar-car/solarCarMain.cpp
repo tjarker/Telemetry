@@ -45,7 +45,7 @@ void setup(){
   
   // initialize serial port
   Serial.begin(921600);
-  while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
+  //while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
 
   // setup built in LED
   pinMode(LED_BUILTIN,OUTPUT);
@@ -57,6 +57,7 @@ void setup(){
   if(ACAN::can0.begin(settings) != 0){Serial.println("CAN setup failed!");}
 
   // setup radio module
+  Serial.println(radio.begin());
   RFinit();
 
   bb.init();

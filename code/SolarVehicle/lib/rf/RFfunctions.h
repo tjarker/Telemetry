@@ -12,9 +12,15 @@
 #include <nRF24L01.h>
 #include "TelemetryMessages.h"
 
+#ifdef TEENSY36_BOARD
+#define IRQ_PIN 2   // SPI interrupt pin
+#define CE_PIN 10    // SPI chip-enable (CE) pin
+#define CSN_PIN 9  // SPI chip-select (CSN) pin
+#else
 #define IRQ_PIN 2   // SPI interrupt pin
 #define CE_PIN 9    // SPI chip-enable (CE) pin
 #define CSN_PIN 10  // SPI chip-select (CSN) pin
+#endif
 
 #define COUNT 5     // Number of transmission retries
 #define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
@@ -29,7 +35,7 @@ bool radioNumber = 1;
 
 RF24 radio(CE_PIN, CSN_PIN);                                    // CE and CSN pins
 static const byte address[][6] = {"00001", "00002"};            // TX/RX byte addresses
-bool ack = true; 
+bool ack = false; 
 
 /**********************************************************
  * @brief   Initializes and configures RF24 class object. *
@@ -38,7 +44,7 @@ bool ack = true;
 void RFinit()
 {
     if(!radio.begin()){Serial.println("Radio not working!");}
-    radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level
+    radio.setPALevel(RF24_PA_MAX);                              // Set Power Amplifier level
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate
     radio.enableDynamicPayloads();
     radio.setAutoAck(true);
