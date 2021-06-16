@@ -5,9 +5,7 @@
  ****************************************************************************************************/
 
 #include <Arduino.h>
-#include <SPI.h>
 #include "telemetry/support-vehicle/threads.h"
-#include "RSA.h"
 
 /*********************************************************
  * @brief Initializes all threads with a working area,   *
@@ -15,7 +13,7 @@
  *********************************************************/  
 void chSetup()
 {
-  chSysInit();  // Initializes ChibiOS system
+  chSysInit();          // Initializes ChibiOS system
   chThdCreateStatic(WaReceiverThread, sizeof(WaReceiverThread), NORMALPRIO + 1, receiverThread, &sec);
   threadBundle transmitterBundle = {.security = &sec, .fifo = &TXfifo}; 
   chThdCreateStatic(waTransmitterThread, sizeof(waTransmitterThread), NORMALPRIO + 1, transmitterThread, &transmitterBundle);
@@ -27,6 +25,7 @@ void setup()
   while(!Serial){}      // Wait until serial is available
   RFinit();             // Initialize RF module
   sec.encryption_key(); // Create message encryption key
+  TXfifo.clear();       // Clears TXfifo 
   chBegin(chSetup);     // Initialize and start all 4 threads
   while (true){}        
 }
