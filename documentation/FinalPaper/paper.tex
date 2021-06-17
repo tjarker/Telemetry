@@ -119,7 +119,7 @@ An advantage of using the off-the-shelf RF module is the automated message proto
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.5\textwidth]{documentation/images/EnhancedShockburst.png}
+    \includegraphics[width=0.5\textwidth]{documentation/images/EnhancedShockburst.pdf}
     \caption{The Enhanced Shockburst$^\copyright$ packet structure.}
     \label{fig:shockburst}
 \end{figure}
@@ -143,7 +143,7 @@ We chose to build the software for the telemetry system on top of a real time op
 
 This comes at the cost of introducing overhead when switching between threads, but the great flexibility in code organization following with an RTOS was evaluated to make the overhead a worthwhile trade-off.
 
-As a specific RTOS, we chose ChibiOS \cite{chibios}, since it supported both the Teensy 3.6 and 4.0 and since it attempts to keep the memory footprint of the real time kernel as small as possible.
+As a specific RTOS, we chose ChibiOS \cite{chibios}, since it is supported both the Teensy 3.6 and 4.0 and since it attempts to keep the memory footprint of the real time kernel as small as possible.
 
 \subsection{Other Libraries}
 
@@ -164,7 +164,7 @@ The majority of messages passed between the two telemetry subsystems will contai
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{documentation/images/MessageTypes.pdf}
-    \caption{The different message types used in the telemetry system.\todo{delete uint16\_t part in fig and make cmd to broadcast can}}
+    \caption{The different message types used in the telemetry system.}
     \label{fig:messageTypes}
 \end{figure}
 
@@ -174,7 +174,14 @@ The first byte, the command, always identifies the message type and indicates ho
 
 As an example of a specific message type, figure \ref{fig:messageTypes} shows a message at the bottom with the command \texttt{BROADCAST\_CAN} which is encoded by \texttt{0x01}. This message carries a CAN message as a payload and commands the solar car subsystem to inject the message into the solar car CAN bus. Even though some message types are only sent one direction between the telemetry modules, a unified design was chosen due to the inherent simplicity.
 
-As an extra feature not included in our original specification, we have made an encryption protocol for our telemetry module. The encryption is based on the RSA algorithm, which essentially generates an encryption key based on the modulus and totient function of two prime numbers. The pairings of prime numbers suited for the encryption protocol can be seen below in Table \ref{}. When a message is encrypted, each of the 16 bytes is extended to a 16-bit unsigned integer to avoid overflow problems. Once transmitted to the receiving node, the message is then decrypted and converted back to unsigned 8-bit type. This essentially doubles the size of the data payloads being sent in our RF transmission, which is the downside of our encryption solution.
+As an extra feature not included in our original specification, we have made an encryption protocol for our telemetry module. The encryption is based on the RSA algorithm, which essentially generates an encryption key based on the modulus and totient function of two prime numbers. The pairings of prime numbers suited for the encryption protocol can be seen below in Table \ref{fig:prime_tabel}. When a message is encrypted, each of the 16 bytes is extended to a 16-bit unsigned integer to avoid overflow problems. Once transmitted to the receiving node, the message is then decrypted and converted back to unsigned 8-bit type. This essentially doubles the size of the data payloads being sent in our RF transmission, which is the downside of our encryption solution.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{documentation/images/prime_tabel.pdf}
+    \caption{Valid combinations of prime numbers, marked by OOOOOO}
+    \label{fig:prime_tabel}
+\end{figure}
 
 % message protcol
 % command system
@@ -183,6 +190,13 @@ As an extra feature not included in our original specification, we have made an 
 
 \section{\todo{Final product}}
 \subsection{Solar Car}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{documentation/images/SCU_CircuitDiagram.pdf}
+    \caption{The circuit diagram for the SCU.}
+    \label{fig:SCU_circuit}
+\end{figure}
 % threads 
 \subsection{Support Vehicle}
 % threads
