@@ -92,33 +92,50 @@ The overall system consists of three separate modules; the Solar Car Unit which 
     \caption{Overview of the system's components in block diagram form.}
     \label{fig:schematic}
 \end{figure}
+% 
 
 \section{Components}
 \subsection{CAN bus}
+The CAN network in the solar car enables the micro-controllers at each electrical unit in the car to send and receive data without a host computer. This is possible with the special structure of the CAN message.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.35]{documentation/images/detailed-can-data-frame-architecture.jpg}
+    \caption{Structure of a CAN frame}
+    \label{fig:CANframe}
+\end{figure}
+
+The frame uses an identifier to tell which messages goes to which unit. When two messages try to access the bus, the one with the highest priority, lowest ID, will be granted access to the bus, while the other message has to wait. After the ID comes the RTR bit which determines whether the frame remotely requests or actually sends data to a node. The control field, sometimes called DLC, holds the amount of bytes used in the following frame field containing the actual data. The rest of the fields in fig. \ref{fig:CANframe} serve error checking and coordination of communication on the bus.
+
+The physical CAN bus itself consists of a differential pair of twisted wires, CAN High and CAN Low. These control the bits in the CAN message by setting a dominant and recessive voltage, which corresponds to a 0 and 1 respectively. A 1 is seen when the voltage in both wires is 2.5V while a 0 is seen when the CAN High wire is driven by 3.5V and the CAN Low wire is driven at 2.5V. 
+
+The Teensy 3.6 used in the solar car features a CAN controller handling the communication with the CAN bus. In order to interface with the physical CAN bus though, a transceiver is needed. Here the MCP2551 was chosen, which maintains one input and one output serial stream to the CAN controller on the Teensy and drives the CAN bus when a message is transmitted.
 % MCP
 \subsection{RF network} % Steffan
-The system uses two nRF24L01+ transceivers to provide a bidirectional connection between the Solar Car and Support Vehicle over the 2.4 GHz ISM band. The module features a detachable antenna, power amplifier and low-noise amplifier to provide a theoretical range in excess of 1000 m at data rates of up to 2 Mbit/s.
+The system uses two nRF24L01+ transceivers to provide a bidirectional connection between the Solar Car and Support Vehicle over the 2.4 GHz ISM band. The module features a detachable antenna, power amplifier and low-noise amplifier to provide a theoretical range in excess of 1000 m at data transfer rates of up to 2 Mbit/s.
 
-An advantage of using an off-the-shelf RF module is the automated message protocol, known as Enhanced Shockburst$^{\copyright}$.
-
-The nRF24L01+ module uses the Enhanced Shockburst $\copyright$ packet structure to transmit messages over the 2.4 GHz ISM band. Messages contain a data payload of up to 32 bytes, allowing us comfortably to transmit one CAN telemetry message per packet \cite{shockburst}. Further, the package structure includes a preamble, address, packet and CRC bytes segments as shown in Figure \ref{fig:shockburst}. 
+An advantage of using the off-the-shelf RF module is the automated message protocol, known as Enhanced Shockburst$^\copyright$ \cite{shockburst}. Package structures contain a preamble, address, packet, data payload and CRC bytes segments as shown in Figure \ref{fig:shockburst}. 
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{documentation/images/EnhancedShockburst.png}
-    \caption{The Enhanced Shockburst $\copyright$ packet structure.}
+    \caption{The Enhanced Shockburst$^\copyright$ packet structure.}
     \label{fig:shockburst}
 \end{figure}
 
 \subsection{SD card}
+
+We chose a SD card as a permanent local storage solution for the solar cars "black box" due to its ease of use, its interchangeability and since the Teensy 3.6 has an integrated SD card slot on its PCB. Furthermore, this solution makes it easy to increase the storage capacity to more than sufficient sizes with new SD card sizes exceeding 1 TiB.
+
 \subsection{Microcontrollers} % Steffan
+Finally, Teensy 3.6 and 4.0 microcontrollers are used as connection hubs in the Solar Car and Support Vehicle Units respectively. The boards can interact with the various components through an SPI interface to gather, process and transmit large amounts of data. Being based on the Arduino framework, both Teensys offer support for numerous protocols and software libraries to ease the implementation of our design. 
 
 \section{Software Stack}
 
-Several of the key functionalities of the telemetry are implemented in software. This together with the aim of designing a system which is easy to extend in the future makes the choice of software frameworks very important, since they affect reusability and maintainability of the developed code.
+Several of the key functionalities of the telemetry module are implemented in software. This together with the aim of designing a system which is easy to extend in the future makes the choice of software frameworks very important, since they affect reusability and maintainability of the developed code.
 
 \subsection{Build system}
-As a build system, platformIO \cite{platformIO} was chosen for the project. It is a version control friendly, cross-platform embedded build tool which includes library management and works by defining \textit{environments} to allow development with different embedded platforms on the same code base. Other project groups working on the solar car in parallel integrated their software into the platformIO ecosystem as well, making extensive code reuse in the future possible.
+As a build system, PlatformIO \cite{platformIO} was chosen for the project. It is a version control friendly, cross-platform embedded build tool which includes library management and works by defining \textit{environments} to allow development with different embedded platforms on the same code base. Other project groups working on the solar car in parallel integrated their software into the platformIO ecosystem as well, making extensive code reuse in the future possible.
 
 \subsection{Real Time Operating System}
 We chose to build the software for the telemetry system on top of a real time operating system. The small kernel running behind the scenes when using a RTOS allows a step up in abstraction from bare metal programming. Different tasks can be spawned as threads running concurrently. These threads get delegated time slices to run on the processor by the real time kernel based on their priority. 
@@ -128,6 +145,10 @@ This comes at the cost of introducing overhead when switching between threads, b
 As a specific RTOS, we chose ChibiOS \cite{chibios}, since it supported both the Teensy 3.6 and 4.0 and since it attempts to keep the memory footprint of the real time kernel as small as possible.
 
 \subsection{Other Libraries}
+
+In order to interface with the components presented in the previous section, a set of libraries were used.
+
+The ACAN library by Pierre Molinaro is a CAN network driver for the Teensy 3.6 board, as well as older Teensy series 3 boards. The library has been important for the connection between the CAN network and the ports on the Teensy board. We have only used the classic CAN configuration, but in addition to this, the library supports Flex CAN and CANFD. The driver supports bit rates ranging from 62.5 kbit/s up to 1 Mbit/s\cite{ACAN}.
 % ACAN.h
 % RF24.h
 % 
@@ -171,34 +192,9 @@ The primary components for our project has been two Teensy boards, a Teensy 3.6 
 
 In addition to these components, we have used a 12V to 5V DC converter, a logic converter from 5V to 3V, a molex board connector, a 100\(\mu\)F capacitor, a coin cell battery holder and a perf board for implementing our solution with the above mentioned components. We have also made use of Arduino Uno boards during the development to generate random CAN data.
 
-\subsection{Software Stack}
-
-In this section the main software tools and libraries used throughout the project are introduced.
-
-\subsubsection{PlatformIO}
-
-
-\subsubsection{ChibiOS}
-An open-source RTOS for embedded systems including Teensy. It supports threads, semaphores, data-sharing and timers and more to ease the scheduling of different tasks by the program kernel. 
-
-\subsubsection{ACAN}
-The ACAN library by Pierre Molinaro is a CAN network driver for the Teensy 3.6 board, as well as older Teensy series 3 boards. The library has been important for the connection between the CAN network and the ports on the Teensy board. We have only used the classic CAN configuration, but in addition to this, the library supports Flex CAN and CANFD. The driver supports bit rates ranging from 62.5 kbit/s up to 1 Mbit/s\cite{ACAN}.
-
-\subsubsection{Other Libraries}
 
 \subsection{CAN} % Victor
-The CAN network in the solar car enables the micro-controllers at each electrical unit in the car to send and receive data without a host computer. This is possible with the special structure of the CAN message.
 
-\begin{figure}[h]
-    %\centering
-    \includegraphics[scale=0.35]{documentation/images/detailed-can-data-frame-architecture.jpg}
-    \caption{Structure of a CAN frame}
-    \label{fig:CANframe}
-\end{figure}
-
-The frame uses an identifier to tell which messages goes to which unit. When two messages tries to access the bus, the one with the highest priority, lowest ID, will be granted access to the bus, while the other message has to wait. After the ID comes the RTR bit which determines whether the frame is set to be at sent or received by the node. The control field, sometimes called DLC, tells the amount of bytes used in the following frame field with actual data. The rest of the fields in fig. \ref{fig:CANframe} is not important concerning the nodes ability to communicate across the CAN network.
-
-The CAN bus itself is two twisted wires, CAN High and CAN Low. These control the bits in the CAN message by setting a dominant and recessive voltage, which corresponds to a 0 and 1 respectively. A 1 is seen when the voltage in both wires is 2.5V while a 0 is seen when the CAN High wire is driven by 3.5V and the CAN Low wire is driven at 2.5V. 
 
 Since the most transmitted message in the telemetry system will be CAN messages forwarded from the solar cars CAN bus, it is chosen to build the message protocol around 16 byte packets... \todo{talk about cmd and message types and more}\\
 \todo{Should encryption be included in message protocol or a separate subsection?}
@@ -226,9 +222,11 @@ We performed software validation as we went along with the software coding, to m
 
 Doing this provided us a test bench for our project, which greatly improved the credibility of our work, proving that our design works in general cases and not just the case we represent in our report.
 
+\href{https://youtu.be/-iwST3REn40}{video link}
 \section{Discussion}
 % variable length messages would reduce overhead -> but most messages contain CAN and are optimized
-% 
+% range test
+% throughput limitations
 
 \section{Conclusion}
 The conclusion goes here.
