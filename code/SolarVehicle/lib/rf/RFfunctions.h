@@ -47,7 +47,7 @@ bool RFinit()
     if(!radio.begin()) return false;                            // Begin radio class object, return false if not succeeded. 
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level, choose between MIN, LOW, HIGH, MAX (higher PA level improves range)
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate, choose between RF24_250KBS, RF24_1MBS, RF24_2MBS (higher Data Rates may cause data loss)
-    radio.setPayloadSize(BaseTelemetryMsg::length()<<1);        // Set constant payload size to improve transmission time
+    radio.setPayloadSize(32);                                   // Set constant payload size to improve transmission time
     radio.setAutoAck(true);                                     // RX node sends an automatic ack packet
     if (ack) radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry

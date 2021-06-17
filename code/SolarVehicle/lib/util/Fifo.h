@@ -11,7 +11,6 @@ class Fifo {
         semaphore_t spaceSem, dataSem;
         T *fifo;
         size_t _size, _head, _tail;  
-        uint32_t size;
 
     public: Fifo(uint32_t size){
         this->_size  = size;
@@ -74,9 +73,10 @@ class Fifo {
     // Prints the contents of the fifo buffer for debugging
     public: void printContents(){
         for (int i = 0; i < _size; i++){
-            Serial.print(i + " : " + fifo[i]);
+            char str[64]; 
+            snprintf(str, sizeof(str), "%-2d : %d", i, fifo[i]); 
+            Serial.println(str);
         }
-        Serial.println();
     }
 
     // Returns a pointer to element at head index
