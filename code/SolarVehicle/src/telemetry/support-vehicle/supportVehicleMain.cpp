@@ -5,7 +5,7 @@
  ****************************************************************************************************/
 
 #include <Arduino.h>
-#include "telemetry/support-vehicle/threads.h"
+#include "telemetry/support-vehicle/SystemThds.h"
 
 /*********************************************************
  * @brief Initializes all threads with a working area,   *
@@ -14,9 +14,9 @@
 void chSetup()
 {
   chSysInit();          // Initializes ChibiOS system
-  chThdCreateStatic(WaReceiverThread, sizeof(WaReceiverThread), NORMALPRIO + 1, receiverThread, &sec);
-  threadBundle transmitterBundle = {.security = &sec, .fifo = &TXfifo}; 
-  chThdCreateStatic(waTransmitterThread, sizeof(waTransmitterThread), NORMALPRIO + 1, transmitterThread, &transmitterBundle);
+  chThdCreateStatic(WaReceiverThd, sizeof(WaReceiverThd), NORMALPRIO + 1, receiverThd, &sec);
+  thdBundle transmitterBundle = {.security = &sec, .fifo = &TXfifo}; 
+  chThdCreateStatic(waTransmitterThd, sizeof(waTransmitterThd), NORMALPRIO + 1, transmitterThd, &transmitterBundle);
 }
 
 void setup()
