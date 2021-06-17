@@ -96,6 +96,10 @@ The overall system consists of three separate modules; the Solar Car Unit (SCU) 
 % 
 
 \section{Components}
+
+\subsection{Microcontrollers} % Steffan
+We use Teensy 3.6 and 4.0 microcontrollers as connection hubs in the SCU and SVU respectively. The boards can interact with the various components through an SPI interface to gather, process and transmit large amounts of data. Being based on the Arduino framework, both Teensys offer support for numerous protocols and software libraries to ease the implementation of our design. 
+
 \subsection{CAN bus}
 The CAN network in the SCU enables the all the car's processing nodes to send and receive data without a host computer. This is possible thanks to the special structure of the CAN message.
 
@@ -119,7 +123,7 @@ An advantage of using the off-the-shelf RF module is the automated message proto
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.5\textwidth]{documentation/images/EnhancedShockburst.pdf}
+    \includegraphics[trim={0 2cm 0 0 },clip]{documentation/images/EnhancedShockburst.pdf}
     \caption{The Enhanced Shockburst$^\copyright$ packet structure.}
     \label{fig:shockburst}
 \end{figure}
@@ -127,9 +131,6 @@ An advantage of using the off-the-shelf RF module is the automated message proto
 \subsection{SD card}
 
 We chose a SD card as a permanent local storage solution for the SCU's "black box" due to its ease of use and accesibility through the Teensy 3.6 integrated SD card slot. Furthermore, this solution scales very easily for larger storage capacity, with new SD card sizes exceeding 1 TiB.
-
-\subsection{Microcontrollers} % Steffan
-Finally, Teensy 3.6 and 4.0 microcontrollers are used as connection hubs in the SCU and SVU respectively. The boards can interact with the various components through an SPI interface to gather, process and transmit large amounts of data. Being based on the Arduino framework, both Teensys offer support for numerous protocols and software libraries to ease the implementation of our design. 
 
 \section{Software Stack}
 
@@ -178,7 +179,7 @@ As an extra feature not included in our original specification, we have made an 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{documentation/images/prime_tabel.pdf}
+    \includegraphics[width=\linewidth]{documentation/images/prime_tabel.png}
     \caption{Valid combinations of prime numbers, marked by OOOOOO}
     \label{fig:prime_tabel}
 \end{figure}
