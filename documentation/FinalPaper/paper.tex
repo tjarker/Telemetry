@@ -46,11 +46,11 @@ s194027@student.dtu.dk, s194006@student.dtu.dk, s186083@student.dtu.dk}}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
 \begin{abstract}
-This paper presents the telemetry project for the DTU ROAST Solar car. The development of the module is done through design sprints, where hardware and software is gradually developed along side each other. First a Hardware prototype on breadboards, then the software to run the modules satisfactorily was developed and finally the final product was made when the hardware was soldered to perf boards.
+This paper presents the telemetry project for the DTU ROAST Solar car. The development of the module is done through design sprints, where hardware and software is gradually developed along side each other. First a Hardware prototype on breadboards, then the software to run the modules satisfactorily was developed and finally the final product was made when the hardware was soldered to perf boards. The hardware used is Teensy boards, nRF24 antennas and 
 
 The software developed for the module provided the module to have two-way communication with CAN message structure, encryption of the data during transmission between the module in the solar car and a module in a support car, the ability to give the solar car module commands from the support car and streaming received messages in the support car to Matlab.
 
-The final product supports the features above and a range test of the solar car module and support car module had a succesful and reliable transmission distance up to about 200m.
+The final product supports the features above and a range test of the solar car module and support car module had a successful and reliable transmission distance up to about 200m.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -92,9 +92,13 @@ Remote sensing of data from the solar car will give the ROAST team a competitive
 \end{itemize}
 
 \section{Methodology}
-The project was executed under a sprint methodology where a series of design and implementation sprints were conducted, each resulting in an increasingly finished product. At first a detailed specification was drafted which then served as a reevaluation tool and an overall guidance each time a sprint was completed and when the goal for the next sprint had to be selected. Using the specification, we made a prototype setup of the hardware on breadboards as our first sprint. The following sprints would then mostly have software development objectives, such as achieving a first transmission and receiving of data. Finally, a last hardware sprint was conducted where we soldered our hardware to a perf board.
+The project was executed under a series of design and implementation sprints, each resulting in an increasingly finished product. At first a detailed specification was drafted which then served as a reevaluation tool for future sprint procedures. Using the specification, we made a prototype setup of the hardware on breadboards as our first sprint. The following sprints would then mostly have software development objectives, such as achieving a first transmission and receiving of data. Finally, a last hardware sprint was conducted where we soldered our hardware to a perf board.
 
-During the development of the software functions, we also verified and validated our code design. In verification the code and its functionality was discussed. To validate our code we made unit tests that test the actual behaviour of our code against the intended behaviour.
+Subsequently, we created our first proof of concept (POC) model with the hardware setup on two breadboards and basic software functions. Our aim was to test the basic functionality of the system, such as receiving CAN messages and sending data over the RF channels. 
+
+During the following design sprints we focused mostly on software development objectives, such as multithreading and data handling. developed a minimum viable product (MVP) with support for all the core  
+
+During the development of the system software, we also verified and validated our code design. In verification the code and its functionality was discussed. To validate our code we made unit tests that test the actual behaviour of our code against the intended behaviour.
 
 During the software development phase, we attempted to make our debugging more efficient with the use of a debugger. However, this proved quite troublesome, as the Teensy 3.6 board does not have an on-board debugger and in general is not very suited for debuggers. If we had insisted on using a debugger such as st-link, we would have had to hold or solder wires to the debug ports on the Teensy board's backside, which would complicate our prototype setup. Therefore, we decided not to spent more time on finding a debugger solution. This was a clear setback, as debugging could only be conducted by sending text over the serial connection.
 
@@ -236,7 +240,18 @@ A complete circuit diagram of the SCU is shown in figure \ref{fig:SCU_circuit}. 
 
 On the software side, the SCU is executing four threads to handle its tasks. A diagram of the execution flow of the threads is shown in figure \ref{fig:SCU_threads}. 
 
-There are two threads running at the lowest priority. Since the right to execute is based on priority, the two threads need to use a technique called \textit{cooperative multithreading} to solve the problem of arbitrating execution slots between them. Cooperative multithreading is based on the two threads voluntarily giving up their execution right in reasonable time intervals therby giving the other thread at the same priority the right to execute. This execution flow is coordinated by calling the \texttt{yield} method, which invokes the real time kernel which then switches threads. 
+There are two threads running at the lowest priority. Since the right to execute is based on priority, the two threads need to use a technique called \textit{cooperative multithreading} to solve the problem of arbitrating execution slots between them. Cooperative multithreading is based on the two threads voluntarily giving up their execution right in reasonable time intervals therby giving the other thread at the same priority the right to execute. This execution flow is coordinated by calling the \texttt{yield} method, which invokes the real time kernel which then switches threads \cite{chibiOsYield}.
+
+The system thread and the CAN receiver thread having the lowest priority always run when no other high priority thread wants to execute. In the system thread, messages are received via RF, decoded and the action connected to the message is executed. This includes for instance injecting a message on the CAN bus. The CAN receiver thread tries to receive new messages from the CAN bus. These messages then need to be passed to the two high priority threads, which process them.
+
+This inter-thread communication is performed using two First-In-First-Out (FIFO) buffers, one for each consumer thread, which decouple the producer and the consumer. The two high priority threads only need to execute when new data is written into the buffer. To achieve this, a counting semaphore is used. This construct allows one thread to hand out execution rights by incrementing the semaphore counter. A thread waiting for this execution right can then execute if its priority allows it to \cite{chibiOsSemaphore}. 
+
+This technique is used to let the producer, the can receiver thread, signal to the consumer, the black box thread or the RF thread, that new data is available in the FIFO. The real time kernel then gives the execution right to the consumer threads due to their higher priority.
+
+The black box thread takes a CAN message, converts it into a csv-file line and writes it into a buffer, which is emptied at a certain level to the actual SD card. When a predefined number of CAN messages have been logged to one file, a new file is opened.
+
+The RF thread encrypts the CAN messages and tries to send them to the SVU. If unsuccessful this operation has no effect 
+
 
 % actual circuit
 % - powered through molex connector 12V
@@ -254,7 +269,13 @@ There are two threads running at the lowest priority. Since the right to execute
     \centering
     \includegraphics[width=\linewidth]{documentation/images/SVU_CircuitDiagram.pdf}
     \caption{The circuit diagram for the SVU.}
-    \label{fig:SCU_circuit}
+    \label{fig:SVU_circuit}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[height=4.5cm]{documentation/images/SVU_threads.pdf}
+    \caption{The execution flow of the 2 threads running in the SVU.}
+    \label{fig:SVU_threads}
 \end{figure}
 % threads
 \subsection{\todo{Graphical User Interface}}
