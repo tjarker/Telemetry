@@ -9,6 +9,7 @@
 
 #include <ChRt.h>
 #include "RFfunctions.h"
+#include "TelemetryMessages.h"
 #include "ThreadState.h"
 #include "Fifo.h"
 #include "Encryption.h"
@@ -36,32 +37,32 @@ THD_FUNCTION(receiverThread, arg)
   BaseTelemetryMsg received;                                        // BaseTelemetryMsg object for received messages
   uint16_t encrypted[16];                                           // Buffer to contain encrypted message
   char tempStr[256];                                                // Buffer to print received message to serial
-  chThdSleepMicroseconds(100);                                      // Sleep to allow for creation of secondary thread
+  chThdSleepMicroseconds(100);                                        // Sleep to allow for creation of secondary thread
 
   while (true){
   
-    if (radio.available()){                                         // Check if TX node is transmitting data
-      if (RFreceive(encrypted, BaseTelemetryMsg::length()<<1)){     // Check if message was received
+    if (radio.available()){                                           // Check if TX node is transmitting data
+      if (RFreceive(encrypted, BaseTelemetryMsg::length()<<1)){       // Check if message was received
         Serial.print("Received: ");
-        sec->decrypt(encrypted, (uint8_t*)&received, 16);           // Decrypt received message
-        switch (received.cmd){                                      // Switch based on the message cmd field 
-          case RECEIVED_CAN:{                                       // Standard case, cmd matches RECEIVED_CAN
-            CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received;     // Cast received to CanTelemetryMsg pointer
+        sec->decrypt(encrypted, (uint8_t*)&received, 16);             // Decrypt received message
+        switch (received.cmd){                                        // Switch based on the message cmd field 
+          case RECEIVED_CAN:{                                         // Standard case, cmd matches RECEIVED_CAN
+            CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received;       // Cast received to CanTelemetryMsg pointer
             ptr->toJSON(tempStr, sizeof(tempStr));                  
-            Serial.println(tempStr);                                // Print message formatted as JSON
+            Serial.println(tempStr);                                  // Print message formatted as JSON
           }
             break;
-          default:{                                                 // Default case, cmd does not match RECEIVED_CAN
+          default:{                                                   // Default case, cmd does not match RECEIVED_CAN
             received.toString(tempStr, sizeof(tempStr));            
-            Serial.println(tempStr);                                // Print message formatted as string
+            Serial.println(tempStr);                                  // Print message formatted as string
           }
             break;
         }  
       } else {
-        Serial.println("Could not receive message.");               // Message was not received 
+        Serial.println("Could not receive message.");                 // Message was not received 
       }
     }
-    chThdYield();                                                   // Yield for same-priority thread
+    chThdYield();                                                     // Yield for same-priority thread
   }
 }
 

@@ -10,7 +10,7 @@
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
-#include "TelemetryMessages.h"
+#include "printf.h"
 
 #ifdef TEENSY36_BOARD   // SPI pins are configured differently on Teensy 3.6
 #define IRQ_PIN 2       // SPI interrupt (IRQ) pin
@@ -44,10 +44,10 @@ bool ack = false;                                               // Enable ack pa
 *****************************************************************************/
 bool RFinit()
 { 
-    if(!radio.begin()) return false; 
+    if(!radio.begin()) return false;                            // Begin radio class object, return false if not succeeded. 
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level, choose between MIN, LOW, HIGH, MAX (higher PA level improves range)
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate, choose between RF24_250KBS, RF24_1MBS, RF24_2MBS (higher Data Rates may cause data loss)
-    radio.enableDynamicPayloads();                              // Enable variable data payloads
+    radio.setPayloadSize(BaseTelemetryMsg::length()<<1);        // Set constant payload size to improve transmission time
     radio.setAutoAck(true);                                     // RX node sends an automatic ack packet
     if (ack) radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry

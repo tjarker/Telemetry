@@ -1,7 +1,7 @@
 /****************************************************************************************************
  * @file    supportVehicleMain.cpp                                                                  *
  * @author  Steffan Martin Kunoy                                                                    *
- * @brief   Includes setup() and loop() functions to be run on the support vehicle microcontroller. *
+ * @brief   Includes setup() and loop() functions to be run on the Support Vehicle microcontroller. *
  ****************************************************************************************************/
 
 #include <Arduino.h>
@@ -22,8 +22,11 @@ void chSetup()
 void setup()
 {
   Serial.begin(921600); // Initialize serial port
-  while(!Serial){}      // Wait until serial is available
-  RFinit();             // Initialize RF module
+  while (!Serial){}     // Wait until serial is available
+  if (!RFinit()){       // Initialize and configure RF24 module
+    Serial.println("Radio not working!"); 
+    radio.printDetails(); 
+  }
   sec.encryption_key(); // Create message encryption key
   TXfifo.clear();       // Clears TXfifo 
   chBegin(chSetup);     // Initialize and start all 4 threads
