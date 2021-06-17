@@ -238,6 +238,10 @@ On the software side, the SCU is executing four threads to handle its tasks. A d
 
 There are two threads running at the lowest priority. Since the right to execute is based on priority, the two threads need to use a technique called \textit{cooperative multithreading} to solve the problem of arbitrating execution slots between them. Cooperative multithreading is based on the two threads voluntarily giving up their execution right in reasonable time intervals therby giving the other thread at the same priority the right to execute. This execution flow is coordinated by calling the \texttt{yield} method, which invokes the real time kernel which then switches threads. 
 
+The system thread and the CAN receiver thread having the lowest priority always run when no other high priority thread wants to execute. In the system thread, messages are received via RF, decoded and the action connected to the message is executed. This includes for instance injecting a message on the CAN bus. The CAN receiver thread tries to receive new messages from the CAN bus. These messages then need to be passed to the two high priority threads, which process them.
+
+This inter-thread communication is performe
+
 % actual circuit
 % - powered through molex connector 12V
 % - converted to 5V and teensy internal voltage regulator to 3.3
@@ -254,7 +258,13 @@ There are two threads running at the lowest priority. Since the right to execute
     \centering
     \includegraphics[width=\linewidth]{documentation/images/SVU_CircuitDiagram.pdf}
     \caption{The circuit diagram for the SVU.}
-    \label{fig:SCU_circuit}
+    \label{fig:SVU_circuit}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[height=4.5cm]{documentation/images/SVU_threads.pdf}
+    \caption{The execution flow of the 2 threads running in the SVU.}
+    \label{fig:SVU_threads}
 \end{figure}
 % threads
 \subsection{\todo{Graphical User Interface}}
