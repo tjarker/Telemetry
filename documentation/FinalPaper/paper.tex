@@ -14,13 +14,19 @@
 \usepackage[style=ieee]{biblatex}
 \addbibresource{paper.bib}
 \usepackage{url}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}
+\newcommand{\MYhref}[3][blue]{\href{#2}{\color{#1}{#3}}}
 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 \newcommand{\todo}[1]{{\color{olive} TODO: #1}}
 
-% Regler ti skrivning: 
+% Regler til skrivning: 
 % 1. Altid nutid
 % 2. Brug 1. persons flertal stedord (We/us/our/ours)
 % 3. Skriv formelt og uden sammentrækninger (don't do this) 
@@ -135,7 +141,7 @@ Finally, Teensy 3.6 and 4.0 microcontrollers are used as connection hubs in the 
 Several of the key functionalities of the telemetry module are implemented in software. This together with the aim of designing a system which is easy to extend in the future makes the choice of software frameworks very important, since they affect reusability and maintainability of the developed code.
 
 \subsection{Build system}
-As a build system, PlatformIO \cite{platformIO} was chosen for the project. It is a version control friendly, cross-platform embedded build tool which includes library management and works by defining \textit{environments} to allow development with different embedded platforms on the same code base. Other project groups working on the solar car in parallel integrated their software into the platformIO ecosystem as well, making extensive code reuse in the future possible.
+As a build system, PlatformIO \cite{platformIO} was chosen for the project. It is a version control friendly, cross-platform embedded build tool which includes library management and works by defining \textit{environments} to allow development with different embedded platforms on the same code base. It comes with a VScode plugin for ideal IDE support. Other project groups working on the solar car in parallel integrated their software into the PlatformIO ecosystem as well, making extensive code reuse in the future possible.
 
 \subsection{Real Time Operating System}
 We chose to build the software for the telemetry system on top of a real time operating system. The small kernel running behind the scenes when using a RTOS allows a step up in abstraction from bare metal programming. Different tasks can be spawned as threads running concurrently. These threads get delegated time slices to run on the processor by the real time kernel based on their priority. 
@@ -149,6 +155,8 @@ As a specific RTOS, we chose ChibiOS \cite{chibios}, since it supported both the
 In order to interface with the components presented in the previous section, a set of libraries were used.
 
 The ACAN library by Pierre Molinaro is a CAN network driver for the Teensy 3.6 board, as well as older Teensy series 3 boards. The library has been important for the connection between the CAN network and the ports on the Teensy board. We have only used the classic CAN configuration, but in addition to this, the library supports Flex CAN and CANFD. The driver supports bit rates ranging from 62.5 kbit/s up to 1 Mbit/s\cite{ACAN}.
+
+
 % ACAN.h
 % RF24.h
 % 
@@ -171,7 +179,7 @@ The first byte, the command, always identifies the message type and indicates ho
 
 As an example of a specific message type, figure \ref{fig:messageTypes} shows a message at the bottom with the command \texttt{BROADCAST\_CAN} which is encoded by \texttt{0x01}. This message carries a CAN message as a payload and commands the solar car subsystem to inject the message into the solar car CAN bus. Even though some message types are only sent one direction between the telemetry modules, a unified design was chosen due to the inherent simplicity.
 
-
+As an extra feature not included in our original specification, we have made an encryption protocol for our telemetry module. The encryption is based on the RSA algorithm, which essentially generates an encryption key based on the modulus and totient function of two prime numbers. The pairings of prime numbers suited for the encryption protocol can be seen below in Table \ref{}. When a message is encrypted, each of the 16 bytes is extended to a 16-bit unsigned integer to avoid overflow problems. Once transmitted to the receiving node, the message is then decrypted and converted back to unsigned 8-bit type. This essentially doubles the size of the data payloads being sent in our RF transmission, which is the downside of our encryption solution.
 
 % message protcol
 % command system
@@ -187,34 +195,6 @@ As an example of a specific message type, figure \ref{fig:messageTypes} shows a 
 % GUI 
 
 
-\subsection{Components}
-The primary components for our project has been two Teensy boards, a Teensy 3.6 board and 4.0 board, two nRF24 antennas, and a CAN transceiver. These components make up the chain of communication from reading/writing data from/to the CAN bus, through the Teensy boards CAN ports, to the antenna for transmission to the other antenna and Teensy board.
-
-In addition to these components, we have used a 12V to 5V DC converter, a logic converter from 5V to 3V, a molex board connector, a 100\(\mu\)F capacitor, a coin cell battery holder and a perf board for implementing our solution with the above mentioned components. We have also made use of Arduino Uno boards during the development to generate random CAN data.
-
-
-\subsection{CAN} % Victor
-
-
-Since the most transmitted message in the telemetry system will be CAN messages forwarded from the solar cars CAN bus, it is chosen to build the message protocol around 16 byte packets... \todo{talk about cmd and message types and more}\\
-\todo{Should encryption be included in message protocol or a separate subsection?}
-As an extra feature not included in our original specification, we have made an encryption protocol for our telemetry module. The encryption is based on the RSA encryption method, which essentially generates an encryption key based on the modulus and totient function of two prime numbers. When the message is encrypted, the type is converted from a unsigned 8-bit integer to an unsigned 16-bit integer, to avoid overflow problems. The encrypted message is then decrypted at the other module and converted back to unsigned 8-bit type. This effectively halves the amount of data we can send in our transmissions, which is the downside of our encryption solution.\\
-The combinations of two prime numbers suited for the encryption protocol can be seen in the below table, 
-
-
-
-\section{Implementation}
-
-\subsection{Solar Car} 
-\subsubsection{Black Box} % tjark
-
-The black box functionality in the solar car is implemented using a SD card. The Teensy 3.6 used as a microcontroller in the telemetry module of the solar car already includes a 4-bit 
-
-\subsubsection{CAN transceiver}
-\subsection{Support Vehicle}
-\subsubsection{GUI} % tjark
-\subsubsection{RF transceiver}
-
 \section{Verification and validation} % Victor
 As mentioned in the methodology section, we spent time thoroughly verifying and validating our code design. We undertook the software verification after finishing the prototype and software coding, reviewing the naming, functionality and commenting the code accordingly.
 
@@ -222,14 +202,14 @@ We performed software validation as we went along with the software coding, to m
 
 Doing this provided us a test bench for our project, which greatly improved the credibility of our work, proving that our design works in general cases and not just the case we represent in our report.
 
-\href{https://youtu.be/-iwST3REn40}{video link}
 \section{Discussion}
 % variable length messages would reduce overhead -> but most messages contain CAN and are optimized
 % range test
+In order to test the connection between the Solar Car and Support Vehicle modules we performed a range test in a suitable outdoor environment. In the end, we achieved a transmission range of around 160 m before the connection became too unreliable. This is obviously a big step down from the 1000 m claimed by the manufacturer. However, A video documenting the test can be viewed with \MYhref{https://youtu.be/-iwST3REn40}{this link}. 
 % throughput limitations
 
 \section{Conclusion}
-The conclusion goes here.
+%The conclusion goes here.
 
 
 
