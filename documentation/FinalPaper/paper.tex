@@ -10,6 +10,7 @@
 \usepackage{comment}
 \usepackage{movie15}
 \usepackage{textcomp}
+\usepackage{siunitx}
 \usepackage{xcolor}
 \usepackage[style=ieee]{biblatex}
 \addbibresource{paper.bib}
@@ -45,8 +46,11 @@ s194027@student.dtu.dk, s194006@student.dtu.dk, s186083@student.dtu.dk}}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
 \begin{abstract}
-This paper presents the telemetry project for the DTU ROAST Solar car. The development of the module is done through design sprints, where hardware and software is gradually developed along side each other. First a Hardware prototype on breadboards, then the software to run the modules satisfactorily was developed and finally the final product was made when the hardware was soldered to perf boards.\\
+This paper presents the telemetry project for the DTU ROAST Solar car. The development of the module is done through design sprints, where hardware and software is gradually developed along side each other. First a Hardware prototype on breadboards, then the software to run the modules satisfactorily was developed and finally the final product was made when the hardware was soldered to perf boards.
+
 The software developed for the module provided the module to have two-way communication with CAN message structure, encryption of the data during transmission between the module in the solar car and a module in a support car, the ability to give the solar car module commands from the support car and streaming received messages in the support car to Matlab.
+
+The final product supports the features above and a range test of the solar car module and support car module had a succesful and reliable transmission distance up to about 200m.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -58,9 +62,9 @@ ROAST, telemetry, CAN, RSA encryption, Matlab
 
 \section{Introduction}
 
-\IEEEPARstart{I}{n} 2023, the DTU Roadrunners Solar Team (abbreviated ROAST) is set to participate in the Bridgestone World Solar Challenge, a race spanning over 3000 km across Australia from Darwin in the Northern Territory to Adelaide in South Australia. The solar car has limited opportunities for recharging during the race, so its the main energy source will be the sun. To this end, solar panels will cover the car, however, the solar car is only allowed to have a maximum of 4 square meters of solar panels. This emphasizes the need to create an energy-efficient solar car to win the race \cite{wsc}.
+\IEEEPARstart{I}{n} 2023, the DTU Roadrunners Solar Team (abbreviated ROAST) is set to participate in the Bridgestone World Solar Challenge, a race spanning over 3000 km across Australia from Darwin in the Northern Territory to Adelaide in South Australia. The solar car has limited opportunities for recharging during the race, so its main energy source will be the sun. To this end, solar panels will cover the car, however, the solar car is only allowed to have a maximum of 4 square meters of solar panels. This emphasizes the need to create an energy-efficient solar car to win the race \cite{wsc}.
 
-Throughout the race the solar car will be monitored by a support vehicle, which can monitor the car's condition and should be able to issue commands to the solar cars internal systems. This is a crucial function as the solar car will be navigating Australia's busy highways, where the heat and tire pressure may cause a detriment to the vehicle. The support vehicle will therefore be able to analyze and react to the data stream being transmitted from the solar car, even when the driver is preoccupied with driving the car. 
+Throughout the race the solar car will be monitored by a support vehicle, which can monitor the car's condition and should be able to issue commands to the solar car's internal systems. This is a crucial function as the solar car will be navigating Australia's busy highways, where the heat and tire pressure may cause a detriment to the vehicle. The support vehicle will therefore be able to analyze and react to the data stream being transmitted from the solar car, even when the driver is preoccupied with driving the car. 
 
 Additionally, valuable data can be collected during the race which can help to identify possible areas of improvement of the solar car. Therefore a "black box" system is needed to capture all system activity in a local storage.
 
@@ -75,20 +79,20 @@ These key functionalities require a system which is able to read and write data 
 
 The telemetry system must both serve the purpose of fulfilling the necessary specifications for communication, while also being as energy-efficient as possible. This project aims at implementing a functioning prototype for a telemetry system while mainly focusing on the former of the two objectives, that is, ensuring that the system meets the specifications with a solid solution.
 
-This paper begins with giving a more precise problem statement and introducing the methodology used throughout the project. Thereafter, the overall system design is presented and the following paragraphs discuss the hardware components and software used for these. After this comes a paragraph discussing the implementation of the communication between the two modules, both internal and during transmission. This concludes with a section of the final product, which is followed up by our method method for testing and validating our solution, as well as discussion and conclusion of the solution.
+This paper begins with giving a more precise problem statement and introducing the methodology used throughout the project. Thereafter, the overall system design is presented and the following paragraphs discuss the hardware components and software used for these. After this comes a paragraph discussing the implementation of the communication between the two modules, both internal and during transmission. The paper finishes with a section of the final product, which is followed up by our method for testing and validating our solution, as well as a discussion and conclusion of the solution.
 
 \subsection{Problem Statement}
-Remote sensing of data from the solar car will give the ROAST team a competitive advantage as the support vehicle will be able to take on a more active role in managing and optimising the car's performance. This will ease the burden on the driver and leverage the expertise of the supporting crew. For these reasons we have chosen to focus our project on the following points:
+Remote sensing of data from the solar car will give the ROAST team a competitive advantage as the support vehicle will be able to take on a more active role in managing and optimising the car's performance. This will ease the burden on the driver and leverage the expertise of the supporting crew. For these reasons we have chosen to focus our project on the following guiding questions:
 \begin{itemize}
     \item How can we design a module that can read and write sensor data and commands from a CAN bus network? 
     \item How can CAN data be transmitted securely over a distance of up to one kilometer?
-    \item How does the support-car module process data upon receiving it from the solar car?
+    \item How does the unit sitting in the support vehicle process data upon receiving it from the solar car?
     \item What is the best method for storing data locally (black box) while being accessible at a later time?
     \item How can the CAN data be made accessible in the support vehicle for further processing e.g. in Matlab?
 \end{itemize}
 
 \section{Methodology}
-The project methodology has largely consisted of making a preliminary design to be completed in a series of design sprints. At first a detailed specification was drafted which then served as a reevaluation tool and an overall guidance each time a sprint was completed and when the goal for the next sprint had to be selected. Using the specification, we made a prototype setup of the hardware on breadboards as our first sprint. The following sprints would then mostly have software development objectives, such as achieving a first transmission and receiving of data. Finally, a last hardware sprint was conducted where we soldered our hardware to a perf board.
+The project was executed under a sprint methodology where a series of design and implementation sprints were conducted, each resulting in an increasingly finished product. At first a detailed specification was drafted which then served as a reevaluation tool and an overall guidance each time a sprint was completed and when the goal for the next sprint had to be selected. Using the specification, we made a prototype setup of the hardware on breadboards as our first sprint. The following sprints would then mostly have software development objectives, such as achieving a first transmission and receiving of data. Finally, a last hardware sprint was conducted where we soldered our hardware to a perf board.
 
 During the development of the software functions, we also verified and validated our code design. In verification the code and its functionality was discussed. To validate our code we made unit tests that test the actual behaviour of our code against the intended behaviour.
 
@@ -107,7 +111,7 @@ The overall system consists of three separate modules; the Solar Car Unit (SCU) 
 \section{Components}
 
 \subsection{Microcontrollers} % Steffan
-We use Teensy 3.6 and 4.0 microcontrollers as connection hubs in the SCU and SVU, respectively. The Teensy line-up has been used as the main microcontroller platform in most ecocar projects and we decided to use them as well after considering the performance of newer Teensy boards. The boards can interact with the various components through an SPI interface to gather, process and transmit large amounts of data. Being based on the Arduino framework, both Teensys offer support for numerous protocols and software libraries to ease the implementation of our design. 
+We use Teensy 3.6 and 4.0 microcontrollers as connection hubs in the SCU and SVU, respectively. The Teensy line-up has been used as the main microcontroller platform in most DTU Roadrunners projects and we decided to use them as well after considering the performance of newer Teensy boards. The boards can interact with the various components through an SPI interface to gather, process and transmit large amounts of data. Being based on the Arduino framework, both Teensys offer support for numerous protocols and software libraries to ease the implementation of our design. 
 
 \subsection{CAN bus}
 The CAN network in the SCU enables all the car's processing nodes to send and receive data without a host computer. This is possible thanks to the special structure of the CAN message.
@@ -123,7 +127,7 @@ The frame uses an identifier to tell which messages goes to which unit. When two
 
 The physical CAN bus itself consists of a differential pair of twisted wires, CAN High and CAN Low. These control the bits in the CAN message by setting a dominant and recessive voltage, which corresponds to a 0 and 1 respectively. A 1 is seen when the voltage in both wires is 2.5V while a 0 is seen when the CAN High wire is driven by 3.75V and the CAN Low wire is driven at 1.25V. 
 
-The Teensy 3.6 used in the solar car features a CAN controller handling message assembly and receiving from the CAN bus. In order to interface with the physical CAN bus though, a transceiver is needed. Here the MCP2551 was chosen since it has been used extensively in other ecocar projects. The component maintains one input and one output serial stream to the CAN controller on the Teensy and drives the CAN bus when a message is transmitted.
+The Teensy 3.6 used in the solar car features a CAN controller handling message assembly and receiving from the CAN bus. In order to interface with the physical CAN bus though, a transceiver is needed. Here the MCP2551 was chosen since it has been used extensively in other DTU Roadrunners projects. The component maintains one input and one output serial stream to the CAN controller on the Teensy and drives the CAN bus when a message is transmitted.
 
 \subsection{RF network} % Steffan
 Two radio-frequency (RF) transceivers are required to provide a stable connection between the SCU and SVU at longer distances. There are many options for radio modules supporting long range communication at the expense of achievable data rate. We chose a trade-off between both by selecting the nRF24L01+ operating on the 2.4 GHz ISM band. The module features a detachable antenna, power amplifier and low-noise amplifier to provide a theoretical range in excess of 1000 m and data transfer rates of up to 2 Mbit/s.
@@ -139,17 +143,17 @@ An advantage of using the off-the-shelf RF module is the automated message proto
 
 \subsection{SD card}
 
-We chose a SD card as a permanent local storage solution for the SCU's "black box" due to its ease of use and accesibility through the Teensy 3.6 integrated SD card slot. Furthermore, this solution scales very well and easily in terms storage capacity, with new SD card sizes exceeding 1 TiB.
+We chose a SD card as a permanent local storage solution for the SCU's "black box" due to its ease of use and accesibility through the Teensy 3.6 integrated SD card slot. Furthermore, this solution scales very well and easily in terms of storage capacity, with new SD card sizes exceeding 1 TiB.
 
 \section{Software Stack}
 
 Several of the key functionalities of the telemetry module are implemented in software. This, together with the aim of designing a system to be expanded upon in the future, makes the choice of software frameworks very important. Thus, an emphasis has been placed on the reusability and maintainability of the developed code.
 
 \subsection{Build system}
-As a build system, PlatformIO \cite{platformIO} was chosen for the project. It is a version control friendly, cross-platform embedded build tool which includes library management and works by defining \textit{environments} to allow development with different embedded platforms on the same code base. It comes with a VScode plugin for ideal IDE support. Other project groups working on the solar car in parallel integrated their software into the PlatformIO ecosystem as well, making extensive code reuse in the future possible.
+As a build system, PlatformIO \cite{platformIO} was chosen for the project. It is a version control friendly, cross-platform embedded build tool which includes library management and works by defining \textit{environments} to allow development with different embedded platforms on the same code base. It comes with a VScode plugin for ideal IDE support. Other project groups working on the solar car in parallel integrated their software into the PlatformIO ecosystem as well, easing extensive code reuse in the future.
 
 \subsection{Real Time Operating System}
-We chose to build the software for the telemetry system on top of a real time operating system. The small kernel running behind the scenes when using a RTOS allows a step up in abstraction from bare metal programming. Different tasks can be spawned as threads running concurrently. These threads get delegated time slices to run on the processor by the real time kernel based on their priority. 
+We chose to build the software for the telemetry system on top of a real time operating system. The small kernel running on the microcontroller behind the scenes when using a RTOS allows a step up in abstraction from bare metal programming. Different tasks can be spawned as threads running concurrently. These threads get delegated time slices to run on the processor by the real time kernel based on their priority. 
 
 This comes at the cost of introducing overhead when switching between threads, but the great flexibility in code organization following with an RTOS was evaluated to make the overhead a worthwhile trade-off.
 
@@ -162,10 +166,14 @@ The GUI included in the telemetry system serves a proof-of-concept purpose. Ther
 In order to send and receive data from the SVU via serial connection, the jSerialComm \cite{jSerialComm} library was used.
 
 \subsection{Data Processing} % Steffan
-Due to the wishes of DTU ROAST to use the telemetry data in applications of predictive modelling and performance optimization we decided to implement a simple UDP network stream hosted on the Support Vehicle laptop. This would allow all devices on the local network to monitor the data being sent over the serial connection for use in further data processing. For a proof-of-concept case we created a simple Matlab script to sample CAN messages from the UDP port and print them formatted to the terminal. 
+Due to the wishes of DTU ROAST to use the telemetry data in applications of predictive modelling and performance optimization, we needed a way to retain the data being sent on the CAN bus, both locally via logging and remotely in real time via streaming. 
+
+We log all the messages received on the CAN bus to the external "black box" memory as \texttt{.csv} files. Each line in the file corresponds to a message with date and time stamps, ID, RTR, length and 64-bit data fields.  Log file switching was also implemented. 
+
+For remote access we decided to implement a simple UDP network stream hosted on the Support Vehicle laptop. This would allow all devices on the local network to monitor the data being sent over the serial connection for use in further data processing. For a proof-of-concept case we created a simple Matlab script to sample CAN messages from the UDP port and print them formatted to the terminal. 
 
 \subsection{Other Libraries}
-In order to interface with the components presented in the previous section, a set of libraries were included in the project. These include a CAN network driver to support use of the Teensy 3.6's integrated CAN controller \cite{ACAN}, an RF OSI layer providing seamless integration with the nRF24L01+ modules, and an SD card driver to control data logging in the black box memory. 
+In order to interface with the components presented in the previous section, a set of libraries were included in the project. These include a CAN network driver to support use of the Teensy 3.6's integrated CAN controller \cite{ACAN}, an RF OSI layer providing seamless integration with the nRF24L01+ modules \cite{nrfLib}, and an SD card driver \cite{sdfatlib} to control data logging in the black box memory. 
 
 %In order to interface with the components presented in the previous section, a set of libraries were used.
 
@@ -185,11 +193,9 @@ The majority of messages passed between the two telemetry subsystems will contai
 
 The system is built around \textit{commands} and \textit{message types}. All message types begin with a command byte. The remaining 15 bytes are interpreted based on the message type. As an example, a \texttt{CanTelemetryMsg} message type is shown in figure \ref{fig:messageTypes}. 
 
-One message type can be connected to different commands. For instance, the \texttt{CanTelemetryMsg} message type can be used to send data from the SCU to the SVU as part of the data stream setting the command to \texttt{RECEIVED\_CAN} = \texttt{0x00} or it can be used to inject a CAN message from the SVU into the solar car's CAN bus setting the command to \texttt{BROADCAST\_CAN} = \texttt{0x01}. 
+One message type can be connected to different commands. For instance, the \texttt{CanTelemetryMsg} message type can be used to send data from the SCU to the SVU as part of the data stream setting the command to \texttt{RECEIVED\_CAN} = \texttt{0x00} or it can be used to inject a CAN message from the SVU into the solar car's CAN bus setting the command to \texttt{BROADCAST\_CAN} = \texttt{0x01}. Even though such message type and command combinations are only sent one direction between the telemetry modules, a unified message system for both directions was chosen due to the inherent simplicity.
 
 When decoding messages, only the first byte needs to be considered and it will unambiguously decide how the rest of the message should be interpreted. This eases the decoding of messages on the receiving end and makes for a expandable framework which has enough room for future expansions. 
-
-Even though some message types are only sent one direction between the telemetry modules, a unified design was chosen due to the inherent simplicity.
 
 As an extra feature not included in our original specification, we have made an encryption protocol for our telemetry module. The encryption is based on the RSA algorithm, which essentially generates an encryption key based on the modulus and totient function of two prime numbers. The pairings of prime numbers suited for the encryption protocol can be seen in Fig. \ref{fig:prime_tabel}. 
 
@@ -206,6 +212,32 @@ When a message is encrypted, each of the 16 bytes is extended to a 16-bit unsign
 \section{\todo{Final product}}
 \subsection{Solar Car Unit}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{documentation/images/SCU_CircuitDiagram.pdf}
+    \caption{The circuit diagram for the SCU.}
+    \label{fig:SCU_circuit}
+\end{figure}
+
+The SCU is built around the Teensy 3.6 and includes the before mentioned CAN transceiver and RF module. In the solar car, all modules receive power through a molex connector at $\SI{12}{V}$. The molex connector also includes the differential pair of wires of the CAN bus. 
+
+The Teensy requires a voltage between $\SI{3.6}{V}$ and $\SI{6}{V}$ to be powered, while the CAN transceiver requires $\SI{5}{V}$ and the RF module requires $\SI{3.3}{V}$. Therefore, a linear voltage regulator is chosen to step down the external voltage from $\SI{12}{V}$ to $\SI{5}{V}$ to power the Teensy and the CAN transceiver. The Teensy 3.6 has itself an integrated voltage regulator stepping down the input voltage to $\SI{3.3}{V}$ which we use to power the RF module.
+
+The Teensy 3.6 includes a real time clock (RTC) which can keep the time while the Teensy is powered off by connecting a coin cell battery to the Teensy's $V_{bat}$ terminal. This allows the generated time stamps associated with a received CAN message to always be valid, once the RTC is synchronized. 
+
+A complete circuit diagram of the SCU is shown in figure \ref{fig:SCU_circuit}. The final circuit contains decoupling capacitors for the Teensy as well as the RF module and an optional CAN bus termination which can be seen to the right of the diagram.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{documentation/images/SCU_threads.pdf}
+    \caption{The execution flow of the 4 threads running in the SCU.}
+    \label{fig:SCU_threads}
+\end{figure}
+
+On the software side, the SCU is executing four threads to handle its tasks. A diagram of the execution flow of the threads is shown in figure \ref{fig:SCU_threads}. 
+
+There are two threads running at the lowest priority. Since the right to execute is based on priority, the two threads need to use a technique called \textit{cooperative multithreading} to solve the problem of arbitrating execution slots between them. Cooperative multithreading is based on the two threads voluntarily giving up their execution right in reasonable time intervals therby giving the other thread at the same priority the right to execute. This execution flow is coordinated by calling the \texttt{yield} method, which invokes the real time kernel which then switches threads. 
+
 % actual circuit
 % - powered through molex connector 12V
 % - converted to 5V and teensy internal voltage regulator to 3.3
@@ -215,12 +247,7 @@ When a message is encrypted, each of the 16 bytes is extended to a 16-bit unsign
 % - threads:
 %  - 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{documentation/images/SCU_CircuitDiagram.pdf}
-    \caption{The circuit diagram for the SCU.}
-    \label{fig:SCU_circuit}
-\end{figure}
+
 % threads 
 \subsection{Support Vehicle Unit}
 \begin{figure}
