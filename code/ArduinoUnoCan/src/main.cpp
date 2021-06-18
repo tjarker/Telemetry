@@ -58,7 +58,7 @@ THD_FUNCTION(canSenderThd, arg){
             }
         }
         
-        chThdSleepMilliseconds(random(3,4));
+        chThdSleepMilliseconds(random(500,1000));
     }
 
 }

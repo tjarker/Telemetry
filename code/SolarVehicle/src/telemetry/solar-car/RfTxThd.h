@@ -64,7 +64,9 @@ THD_FUNCTION(rfWorker, arg){
         msg->toMessage()->toString(tempString,sizeof(tempString));
         Serial.println(tempString);
       }*/
-      sec->encrypt((uint8_t*)msg,encrypted,BaseTelemetryMsg::length());
+      
+      
+      
 
       /*WITH_MTX(serialMtx){
 
@@ -75,13 +77,23 @@ THD_FUNCTION(rfWorker, arg){
         Serial.println();
       }*/
       WITH_MTX(rfMTX){
-        if(!RFtransmit(encrypted,BaseTelemetryMsg::length()<<1)){
-          Serial.println("RfTxThd:\tMessage not send or incorrect ACK");
+        bool success;
+
+        if(sec->activate) {
+          sec->encrypt((uint8_t*)msg,encrypted,BaseTelemetryMsg::length());
+          success = RFtransmit(encrypted,BaseTelemetryMsg::length()<<1);
         } else {
+          success = RFtransmit(encrypted,BaseTelemetryMsg::length());
+        }
+
+        if(success){
           fifo->signalSpace();
           fifo->moveHead();
           Serial.println("RfTxThd:\tMessage sent successfully");
+        } else {
+          Serial.println("RfTxThd:\tMessage not send or incorrect ACK");
         }
+        
       }
       /*WITH_MTX(serialMtx){
         BaseTelemetryMsg decryptedMsg;

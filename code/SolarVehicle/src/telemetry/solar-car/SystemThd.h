@@ -49,106 +49,127 @@ THD_FUNCTION(systemThd, arg){
   while(true){
    
     radio.startListening();
+    
     if(radio.available()){
-      uint16_t encrypted[16];
-      RFreceive(encrypted,BaseTelemetryMsg::length()<<1);
-      sec->decrypt(encrypted,(uint8_t*)&msg,32);
-      uint32_t count = 0;
-      for(uint32_t i = 0; i < 32; i++) {
-        count += ((uint8_t*)&msg)[i];
-      }
-      if(!count) {
-        RFinit();
+      if(sec->activate) {
+        uint16_t encrypted[16];
+        RFreceive(encrypted,BaseTelemetryMsg::length()<<1);
+        sec->decrypt(encrypted,(uint8_t*)&msg,32);
       } else {
-        char str[64];
-        switch(msg.cmd){
-          case BROADCAST_CAN:
-          {
-            Serial.print("SystemThd:\tReceived Rf: ");
-            CanTelemetryMsg *ptr = (CanTelemetryMsg*)&msg;
-            ptr->toString(str,64);
-            Serial.println(str);
-            CANMessage canMsg;
-            ptr->toCanFrame(&canMsg);
-            ACAN::can0.tryToSend(canMsg);
-          }
-            break;
-          case START_LOGGING:
-          {
-            if(blackBoxWorkerState->pause){
-              Serial.println("SystemThd:\tResuming BlackBox Thread");
-              blackBoxWorkerState->wakeUp();
-            } else {
-              Serial.println("SystemThd:\tBlackBox Thread already running");
-            }
-          }
-            break;
-          case STOP_LOGGING:
-          {
-            if(!blackBoxWorkerState->pause){
-              Serial.println("SystemThd:\tPausing BlackBox Thread");
-              blackBoxWorkerState->pause = true;
-            } else {
-              Serial.println("SystemThd:\tBlackBox Thread already paused");
-            }
-          }
-            break;
-          case START_STREAMING:
-          {
-            if(rfWorkerState->pause){
-              Serial.println("SystemThd:\tResuming streaming of CAN data");
-              //radio.powerUp(); 
-              rfWorkerState->wakeUp();
-            } else {
-              Serial.println("SystemThd:\tCAN data is already being streamed");
-            }
-          }
-            break;
-          case STOP_STREAMING:
-          {
-            if(!rfWorkerState->pause){
-              Serial.println("SystemThd:\tPausing streaming of CAN data");
-              //radio.powerDown(); 
-              rfWorkerState->pause = true;
-            } else {
-              Serial.println("SystemThd:\tStreaming of CAN data is already paused");
-            }
-          }
-            break;
-          case SLEEP:
-          {
-            if(!canReceiverState->pause){
-              Serial.println("SystemThd:\tPutting system to sleep");
-              canReceiverState->pause = true;
-              oldBlackBoxState = !blackBoxWorkerState->pause;
-              oldRfTxState = !rfWorkerState->pause;
-              rfWorkerState->pause = true;
-              blackBoxWorkerState->pause = true;
-            } else {
-              Serial.println("SystemThd:\tSystem is already asleep");
-            }
-          }
-            break;
-          case WAKE_UP:
-          {
-            if(canReceiverState->pause){
-              Serial.println("SystemThd:\tWaking up the system");
-              canReceiverState->wakeUp();
-              if(oldBlackBoxState) blackBoxWorkerState->wakeUp();
-              if(oldRfTxState) rfWorkerState->wakeUp();
-            } else {
-              Serial.println("SystemThd:\tThe system is already awake");
-            }
-          }
-            break;
-          default:
-          {
-            Serial.print("SystemThd:\tReceived Rf: ");
-            msg.toString(str,64);
-            Serial.println(str);
+        RFreceive(&msg,BaseTelemetryMsg::length());
+      }
+      
+      char str[64];
+      switch(msg.cmd){
+        case BROADCAST_CAN:
+        {
+          Serial.print("SystemThd:\tReceived Rf: ");
+          CanTelemetryMsg *ptr = (CanTelemetryMsg*)&msg;
+          ptr->toString(str,64);
+          Serial.println(str);
+          CANMessage canMsg;
+          ptr->toCanFrame(&canMsg);
+          ACAN::can0.tryToSend(canMsg);
+        }
+          break;
+        case START_LOGGING:
+        {
+          if(blackBoxWorkerState->pause){
+            Serial.println("SystemThd:\tResuming BlackBox Thread");
+            blackBoxWorkerState->wakeUp();
+          } else {
+            Serial.println("SystemThd:\tBlackBox Thread already running");
           }
         }
+          break;
+        case STOP_LOGGING:
+        {
+          if(!blackBoxWorkerState->pause){
+            Serial.println("SystemThd:\tPausing BlackBox Thread");
+            blackBoxWorkerState->pause = true;
+          } else {
+            Serial.println("SystemThd:\tBlackBox Thread already paused");
+          }
+        }
+          break;
+        case START_STREAMING:
+        {
+          if(rfWorkerState->pause){
+            Serial.println("SystemThd:\tResuming streaming of CAN data");
+            //radio.powerUp(); 
+            rfWorkerState->wakeUp();
+          } else {
+            Serial.println("SystemThd:\tCAN data is already being streamed");
+          }
+        }
+          break;
+        case STOP_STREAMING:
+        {
+          if(!rfWorkerState->pause){
+            Serial.println("SystemThd:\tPausing streaming of CAN data");
+            //radio.powerDown(); 
+            rfWorkerState->pause = true;
+          } else {
+            Serial.println("SystemThd:\tStreaming of CAN data is already paused");
+          }
+        }
+          break;
+        case SLEEP:
+        {
+          if(!canReceiverState->pause){
+            Serial.println("SystemThd:\tPutting system to sleep");
+            canReceiverState->pause = true;
+            oldBlackBoxState = !blackBoxWorkerState->pause;
+            oldRfTxState = !rfWorkerState->pause;
+            rfWorkerState->pause = true;
+            blackBoxWorkerState->pause = true;
+          } else {
+            Serial.println("SystemThd:\tSystem is already asleep");
+          }
+        }
+          break;
+        case WAKE_UP:
+        {
+          if(canReceiverState->pause){
+            Serial.println("SystemThd:\tWaking up the system");
+            canReceiverState->wakeUp();
+            if(oldBlackBoxState) blackBoxWorkerState->wakeUp();
+            if(oldRfTxState) rfWorkerState->wakeUp();
+          } else {
+            Serial.println("SystemThd:\tThe system is already awake");
+          }
+        }
+          break;
+        case ENABLE_ENCRYPTION:
+        {
+          if(!sec->activate){
+            Serial.println("SystemThd:\tEnabling Encryption");
+            WITH_MTX(rfMTX){sec->activate = true;}
+            radio.setPayloadSize(BaseTelemetryMsg::length()<<1);
+          } else {
+            Serial.println("SystemThd:\tEncryption already enabled");
+          }
+        }
+          break;
+        case DISABLE_ENCRYPTION:
+        {
+          if(sec->activate){
+            Serial.println("SystemThd:\tDisabling Encryption");
+            WITH_MTX(rfMTX){sec->activate = false;}
+            radio.setPayloadSize(BaseTelemetryMsg::length());
+          } else {
+            Serial.println("SystemThd:\tEncryption already enabled");
+          }
+        }
+          break;
+        default:
+        {
+          Serial.print("SystemThd:\tReceived Rf: ");
+          msg.toString(str,64);
+          Serial.println(str);
+        }
       }
+      
     }
 
     if(Serial.available()){
