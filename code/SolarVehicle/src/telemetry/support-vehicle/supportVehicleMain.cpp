@@ -35,5 +35,7 @@ void setup()
 
 void loop()
 {
+  /*Serial.println(radio.available());
+  delay(1000);
   /* Not used */
 }

@@ -54,56 +54,29 @@ THD_FUNCTION(rfWorker, arg){
     MEASURE("RfTxThd:\t"){
 
       msg = fifo->head();
-      
-      chSysLock();
-      uint16_t encrypted[16];
-      //char tempString[128];
+    
+      bool success;
+      do {
+        WITH_MTX(rfMTX){
+         
+          if(sec->activate) {
+            uint16_t encrypted[16];
+            sec->encrypt((uint8_t*)msg,encrypted,BaseTelemetryMsg::length());
+            success = RFtransmit(encrypted,BaseTelemetryMsg::length()<<1);
+          } else {
+            success = RFtransmit(msg,BaseTelemetryMsg::length());
+          }
 
-      /*WITH_MTX(serialMtx){
-        Serial.print("RfTxThd:\t");
-        msg->toMessage()->toString(tempString,sizeof(tempString));
-        Serial.println(tempString);
-      }*/
-      
-      
-      
-
-      /*WITH_MTX(serialMtx){
-
-        Serial.print("RfTxThd:\t");
-        for(uint32_t i = 0; i < BaseTelemetryMsg::length(); i++) {
-          Serial.print(encrypted[i],HEX); Serial.print(" ");
+          if(success){
+            fifo->signalSpace();
+            fifo->moveHead();
+            Serial.println("RfTxThd:\tMessage sent successfully");
+          } else {
+            Serial.println("RfTxThd:\tMessage not send or incorrect ACK");
+            chThdSleepMilliseconds(500);
+          }
         }
-        Serial.println();
-      }*/
-      WITH_MTX(rfMTX){
-        bool success;
-
-        if(sec->activate) {
-          sec->encrypt((uint8_t*)msg,encrypted,BaseTelemetryMsg::length());
-          success = RFtransmit(encrypted,BaseTelemetryMsg::length()<<1);
-        } else {
-          success = RFtransmit(encrypted,BaseTelemetryMsg::length());
-        }
-
-        if(success){
-          fifo->signalSpace();
-          fifo->moveHead();
-          Serial.println("RfTxThd:\tMessage sent successfully");
-        } else {
-          Serial.println("RfTxThd:\tMessage not send or incorrect ACK");
-        }
-        
-      }
-      /*WITH_MTX(serialMtx){
-        BaseTelemetryMsg decryptedMsg;
-        sec->decrypt(encrypted,(uint8_t*)&decryptedMsg,BaseTelemetryMsg::length()<<1);
-
-        Serial.print("RfTxThd:\t");
-        decryptedMsg.toString(tempString,sizeof(tempString));
-        Serial.println(tempString);
-      }*/
-      chSysUnlock();
+      } while(!success);
 
     }
         

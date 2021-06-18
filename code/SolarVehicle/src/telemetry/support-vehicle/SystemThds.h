@@ -116,15 +116,14 @@ THD_FUNCTION(transmitterThd, arg)
       }
       if (transmitterFifo->head()->cmd == ENABLE_ENCRYPTION){
         transmitterSecurity->activate = true; 
-        radio.setPayloadSize(BaseTelemetryMsg::length()<<1); 
+        //radio.setPayloadSize(BaseTelemetryMsg::length()<<1); 
       } else if (transmitterFifo->head()->cmd == DISABLE_ENCRYPTION){
         transmitterSecurity->activate = false; 
-        radio.setPayloadSize(BaseTelemetryMsg::length()); 
+        //radio.setPayloadSize(BaseTelemetryMsg::length()); 
       }
     }
     chThdYield();                                                     // Yield for same-priority thread                       
   }
-
 } 
 
 #endif
