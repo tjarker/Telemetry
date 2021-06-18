@@ -22,7 +22,7 @@
 #define CSN_PIN 10      // SPI chip-select (CSN) pin
 #endif
 
-#define COUNT 0     // Number of transmission retries
+#define COUNT 2     // Number of transmission retries
 #define DELAY 5    // Delay between retries (= DELAY * 250 us + 250 us)
 
 #ifdef TEENSY40_BOARD
