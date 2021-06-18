@@ -65,8 +65,9 @@ class MultiReaderFifo {
     public: void moveTail() {
         writeIndex = advance(writeIndex); // TODO: push read indices when they are overtaken
         for(uint32_t i = 0; i < readers; i++) {
-            if(writeIndex == readIndices[i])
+            if(writeIndex == readIndices[i]) {
                 readIndices[i] = advance(readIndices[i]);
+            }
         }
     }
 

@@ -22,7 +22,7 @@
  * A bundle used for passsing all relevant resources to the radio thread
  */
 struct rfTxWorkerBundle{
-    MultiReaderFifo<CanTelemetryMsg> *fifo;
+    Fifo<CanTelemetryMsg> *fifo;
     ThreadState *state;
     Security *sec;
 };
@@ -34,20 +34,18 @@ THD_FUNCTION(rfWorker, arg){
 
   rfTxWorkerBundle *bundle = (rfTxWorkerBundle*) arg;
   ThreadState *state = bundle->state;
-  MultiReaderFifo<CanTelemetryMsg> *fifo = bundle->fifo;
+  Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
   Security *sec = bundle->sec;
 
   CanTelemetryMsg *msg;
 
 
-  uint8_t readerId = 1;
-
   WITH_MTX(serialMtx){Serial.println("RfTxThd:\tStarting");}
 
   while(!state->terminate){
-   
+
     //Serial.println("RFTxThd:\tWaiting for data");
-    fifo->waitForData(readerId);
+    fifo->waitForData();
 
     if(state->pause){
       state->suspend();
@@ -55,45 +53,45 @@ THD_FUNCTION(rfWorker, arg){
 
     MEASURE("RfTxThd:\t"){
 
-      msg = fifo->head(readerId);
+      msg = fifo->head();
       
       chSysLock();
       uint16_t encrypted[16];
       char tempString[128];
 
-      WITH_MTX(serialMtx){
+      /*WITH_MTX(serialMtx){
         Serial.print("RfTxThd:\t");
         msg->toMessage()->toString(tempString,sizeof(tempString));
         Serial.println(tempString);
+      }*/
+      sec->encrypt((uint8_t*)msg,encrypted,BaseTelemetryMsg::length());
 
-        sec->encrypt((uint8_t*)msg,encrypted,BaseTelemetryMsg::length());
+      /*WITH_MTX(serialMtx){
 
         Serial.print("RfTxThd:\t");
         for(uint32_t i = 0; i < BaseTelemetryMsg::length(); i++) {
           Serial.print(encrypted[i],HEX); Serial.print(" ");
         }
         Serial.println();
-
-        
-      }
+      }*/
       WITH_MTX(rfMTX){
         if(!RFtransmit(encrypted,BaseTelemetryMsg::length()<<1)){
           Serial.println("RfTxThd:\tMessage not send or incorrect ACK");
         } else {
+          fifo->signalSpace();
+          fifo->moveHead();
           Serial.println("RfTxThd:\tMessage sent successfully");
         }
       }
-      WITH_MTX(serialMtx){
+      /*WITH_MTX(serialMtx){
         BaseTelemetryMsg decryptedMsg;
         sec->decrypt(encrypted,(uint8_t*)&decryptedMsg,BaseTelemetryMsg::length()<<1);
 
         Serial.print("RfTxThd:\t");
         decryptedMsg.toString(tempString,sizeof(tempString));
         Serial.println(tempString);
-      }
+      }*/
       chSysUnlock();
-      
-      fifo->moveHead(readerId);
 
     }
         

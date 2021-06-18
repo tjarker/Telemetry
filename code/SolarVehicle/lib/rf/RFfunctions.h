@@ -22,8 +22,8 @@
 #define CSN_PIN 10  // SPI chip-select (CSN) pin
 #endif
 
-#define COUNT 5     // Number of transmission retries
-#define DELAY 15    // Delay between retries (= DELAY * 250 us + 250 us)
+#define COUNT 0     // Number of transmission retries
+#define DELAY 5    // Delay between retries (= DELAY * 250 us + 250 us)
 
 #ifdef TEENSY40_BOARD
 bool radioNumber = 0;       
@@ -41,18 +41,22 @@ bool ack = false;
  * @brief   Initializes and configures RF24 class object. *
  * @param   None                                          *
 ***********************************************************/
-void RFinit()
+bool RFinit()
 { 
-    if(!radio.begin()){Serial.println("Radio not working!");}
+    if(!radio.begin()){
+        Serial.println("Radio not working!");
+        return false;
+    }
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level, choose between MIN, LOW, HIGH, MAX (higher PA level improves range)
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate, choose between RF24_250KBS, RF24_1MBS, RF24_2MBS (higher Data Rates may cause data loss)
-    radio.enableDynamicPayloads();                              // Enable variable data payloads
-    radio.setAutoAck(true);                                     // RX node sends an automatic ack packet
+    radio.disableDynamicPayloads();                              // Enable variable data payloads
+    radio.setAutoAck(false);                                     // RX node sends an automatic ack packet
     if (ack) radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
     radio.openWritingPipe(address[!radioNumber]);               // Open writing pipe at address 
     radio.openReadingPipe(1, address[radioNumber]);             // Open reading pipe at address
     radio.startListening();                                     // Starts RX mode
+    return true;
 }
 
 /********************************************************************************

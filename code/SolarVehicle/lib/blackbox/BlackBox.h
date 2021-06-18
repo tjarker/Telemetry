@@ -22,14 +22,17 @@ class BlackBox: public SdFs
         FsFile file; // the current file
 
         RingBuf<FsFile, 1024> sdBuffer; // a ring buffer to buffer writes to the SD card
-
+        uint32_t switchTrigger, logsWritten = 0;
+        char str[128];
     //----------------------------------------------------------------------------------------------------------------------
     /* Setup functions */
     
     /**
      * @brief   For now the constructor does nothing
      */
-    public: BlackBox(){}
+    public: BlackBox(uint32_t switchTrigger){
+        this->switchTrigger = switchTrigger;
+    }
 
     /**
      * @brief   Synchronizes remaining logs in buffer to SD and uninitializes it
@@ -88,39 +91,48 @@ class BlackBox: public SdFs
      * @note    If a file is already open, the unprocessed contents of the buffer are written to it and it is closed.
      */
     public: void startNewLogFile(){
-        MEASURE("startNewLogFile"){
-            if(file.isOpen()){
-                sdBuffer.sync();
-                file.close();
-            }
-
-            updateFileName();
-            file.open(fileName, O_RDWR | O_CREAT | O_TRUNC);
-            
-            sdBuffer.begin(&file);
-            sdBuffer.println(CanTelemetryMsg::getHeader());
+        logsWritten = 0;
+        if(file.isOpen()){
+            sdBuffer.sync();
+            file.close();
         }
+
+        updateFileName();
+        file.open(fileName, O_RDWR | O_CREAT | O_TRUNC);
+        
+        sdBuffer.begin(&file);
+        sdBuffer.println(CanTelemetryMsg::getHeader());
     }
 
     /**
      * @brief   Writes all unprocessed contents in the buffer to the currently open file and closes it.
      */
     public: void endLogFile(){
+        logsWritten = 0;
         sdBuffer.sync();
         file.truncate();
+        /*
         file.rewind();
         while(file.available()){
             Serial.print(file.readString());
-        }
+        }*/
         file.close();
     }
 
-    public: void addNewLogStr(CanTelemetryMsg *log){
-        char str[64];
-        MEASURE("Printing to buffer"){sdBuffer.println(log->toString(str,sizeof(str)));}
+    public: bool addNewLogStr(CanTelemetryMsg *log){
+        log->toString(str,sizeof(str));
+        sdBuffer.println(str);
         if(sdBuffer.bytesUsed() >= 800){
-            MEASURE("Write to SD"){sdBuffer.writeOut(sdBuffer.bytesUsed());}
+            sdBuffer.writeOut(sdBuffer.bytesUsed());
         }
+        logsWritten++;
+        if(logsWritten >= switchTrigger){
+            endLogFile();
+            startNewLogFile();
+            logsWritten = 0;
+            return true;
+        }
+        return false;
     }
 
     public: void printLogFiles(){

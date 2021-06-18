@@ -42,10 +42,6 @@ THD_FUNCTION(systemThd, arg){
 
   Serial.println("SystemThd:\tStarting");
 
-  blackBoxWorkerState->pause = true;
-  rfWorkerState->pause = false;
-  canReceiverState->pause = false;
-
   uint8_t oldBlackBoxState = 0, oldRfTxState = 0;
 
   chThdSleepMicroseconds(100); // release in order to allow creation of other threads
@@ -124,8 +120,8 @@ THD_FUNCTION(systemThd, arg){
             if(!canReceiverState->pause){
               Serial.println("SystemThd:\tPutting system to sleep");
               canReceiverState->pause = true;
-              oldBlackBoxState = blackBoxWorkerState->pause;
-              oldRfTxState = rfWorkerState->pause;
+              oldBlackBoxState = !blackBoxWorkerState->pause;
+              oldRfTxState = !rfWorkerState->pause;
               rfWorkerState->pause = true;
               blackBoxWorkerState->pause = true;
             } else {

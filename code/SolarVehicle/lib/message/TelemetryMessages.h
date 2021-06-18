@@ -38,7 +38,9 @@ typedef enum CMD: uint8_t {
   START_STREAMING = 0x04, 
   STOP_STREAMING = 0x05,
   SLEEP = 0x06,
-  WAKE_UP = 0x07
+  WAKE_UP = 0x07,
+  ENABLE_ENCRYPTION = 0x08,
+  DISABLE_ENCRYPTION = 0x09
 } cmd_t;
 
 /**
@@ -129,7 +131,7 @@ class CanTelemetryMsg {
     }
 
     public: uint32_t toString(char *buf, uint32_t len){
-        return snprintf(buf,len,"\"%02d-%02d-%02d\",%u,%u,%u,%llu",h,m,s,id,rtr,this->len,data64);
+        return snprintf(buf,len,"\"%02d/%02d/%4d %02d-%02d-%02d\",%u,%u,%u,%llu",day(),month(),year(),h,m,s,id,rtr,this->len,data64);
     }
 
     static const String getHeader(){

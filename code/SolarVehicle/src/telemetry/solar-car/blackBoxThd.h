@@ -18,7 +18,7 @@
  * A bundle used for passsing all relevant resources to the radio thread
  */
 struct BlackboxWorkerBundle{
-    MultiReaderFifo<CanTelemetryMsg> *fifo;
+    Fifo<CanTelemetryMsg> *fifo;
     ThreadState *state;
     BlackBox *bb;
 };
@@ -30,27 +30,27 @@ THD_FUNCTION(canWorkerFunc, arg){
 
   BlackboxWorkerBundle *bundle = (BlackboxWorkerBundle*) arg;
   ThreadState *state = bundle->state;
-  MultiReaderFifo<CanTelemetryMsg> *fifo = bundle->fifo;
+  Fifo<CanTelemetryMsg> *fifo = bundle->fifo;
   BlackBox *bb = bundle->bb;
 
   CanTelemetryMsg *msg;
-
-  uint8_t readerId = 0;
 
   WITH_MTX(serialMtx){Serial.println("BBThd:\t\tStarting");}
 
   while(!state->terminate){
 
     //Serial.println("BBThd:\t\tWaiting for data");
-    fifo->waitForData(readerId);
+    fifo->waitForData();
 
     if(state->pause){
+      bb->endLogFile();
       state->suspend();
+      bb->startNewLogFile();
     }
 
     MEASURE("BBThd:\t\t"){
 
-      msg = fifo->head(readerId);
+      msg = fifo->head();
 
 
       if(Serial){
@@ -62,9 +62,12 @@ THD_FUNCTION(canWorkerFunc, arg){
         }
       }
 
-      fifo->signalSpace();
-      fifo->moveHead(readerId);
+      if(bb->addNewLogStr(msg)){
+        Serial.println("BBThd:\t\tStarting new log file");
+      }
 
+      fifo->signalSpace();
+      fifo->moveHead();
     }
         
   }
