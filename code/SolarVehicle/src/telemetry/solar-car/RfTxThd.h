@@ -57,7 +57,7 @@ THD_FUNCTION(rfWorker, arg){
       
       chSysLock();
       uint16_t encrypted[16];
-      char tempString[128];
+      //char tempString[128];
 
       /*WITH_MTX(serialMtx){
         Serial.print("RfTxThd:\t");

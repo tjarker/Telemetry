@@ -72,7 +72,7 @@ class Fifo {
     
     // Prints the contents of the fifo buffer for debugging
     public: void printContents(){
-        for (int i = 0; i < size; i++){
+        for (int i = 0; i < _size; i++){
             Serial.print(i);
             Serial.print(" : ");
             char str[64];
