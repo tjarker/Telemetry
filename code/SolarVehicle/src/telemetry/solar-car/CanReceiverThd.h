@@ -18,7 +18,8 @@
  * A bundle used for passsing all relevant resources to the thread
  */
 struct CanReceiverBundle{
-    MultiReaderFifo<CanTelemetryMsg> *fifo;
+    Fifo<CanTelemetryMsg> *bbFifo;
+    Fifo<CanTelemetryMsg> *rfFifo;
     ThreadState *state;
 };
 
@@ -29,10 +30,10 @@ THD_FUNCTION(canReceiverThd, arg){
 
   CanReceiverBundle *bundle = (CanReceiverBundle*) arg;
   ThreadState *state = bundle->state;
-  MultiReaderFifo<CanTelemetryMsg> *fifo = bundle->fifo;
+  Fifo<CanTelemetryMsg> *bbFifo = bundle->bbFifo;
+  Fifo<CanTelemetryMsg> *rfFifo = bundle->rfFifo;
 
   CANMessage frame;
-  CanTelemetryMsg *msg;
 
   WITH_MTX(serialMtx){Serial.println("CanReceiverThd:\tStarting");}
 
@@ -41,19 +42,21 @@ THD_FUNCTION(canReceiverThd, arg){
     if(state->pause){
       state->suspend();
     }
-
-    
     
     if(ACAN::can0.available()){
       MEASURE("CanReceiverThd:\t"){
+
         ACAN::can0.receive(frame);
-        chSysLock();
-        msg = fifo->tail();
-        msg->update(&frame);
-        fifo->signalData();
-        fifo->moveTail();
-        //ACAN::can0.tryToSend(frame);
-        chSysUnlock();
+
+
+        bbFifo->tail()->update(&frame);
+        bbFifo->moveTail();
+        bbFifo->signalData();
+
+        rfFifo->tail()->update(&frame);
+        rfFifo->moveTail();
+        rfFifo->signalData();
+
       }
     }
 

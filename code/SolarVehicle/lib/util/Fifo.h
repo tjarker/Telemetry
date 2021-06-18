@@ -16,9 +16,9 @@ class Fifo {
         this->_size  = size;
         this->_head   = 0;
         this->_tail   = 0;
-        spaceSem    = _SEMAPHORE_DATA(spaceSem,(cnt_t)_size);
-        dataSem     = _SEMAPHORE_DATA(dataSem,0);
-        fifo        = new T[_size];
+        spaceSem    = _SEMAPHORE_DATA(spaceSem,(cnt_t)size);
+        dataSem     = _SEMAPHORE_DATA(dataSem,(cnt_t)0);
+        fifo        = new T[size];
     }
 
     public: ~Fifo(){
@@ -73,8 +73,10 @@ class Fifo {
     // Prints the contents of the fifo buffer for debugging
     public: void printContents(){
         for (int i = 0; i < _size; i++){
-            char str[64]; 
-            snprintf(str, sizeof(str), "%-2d : %d", i, fifo[i]); 
+            Serial.print(i);
+            Serial.print(" : ");
+            char str[64];
+            fifo[i].toString(str,64);
             Serial.println(str);
         }
     }
@@ -97,6 +99,9 @@ class Fifo {
     // Increments tail pointer
     public: void moveTail(){
         _tail = advance(_tail);
+        if(_tail == _head){
+            _head = advance(_head);
+        }
     }
 
     // Used to check whether fifo is full

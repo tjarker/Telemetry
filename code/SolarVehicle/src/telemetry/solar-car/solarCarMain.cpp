@@ -33,8 +33,8 @@
 #define CH_CFG_TIME_QUANTUM 0
 #endif
 
-MultiReaderFifo<CanTelemetryMsg> canFifo(64,2);
-BlackBox bb;
+Fifo<CanTelemetryMsg> bbFifo(16), rfFifo(64);
+BlackBox bb(50);
 ThreadState blackBoxWorkerState;
 ThreadState canReceiverState;
 ThreadState rfWorkerState;
@@ -45,28 +45,40 @@ void setup(){
   
   // initialize serial port
   Serial.begin(921600);
-  //while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
+  while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
 
   // setup built in LED
   pinMode(LED_BUILTIN,OUTPUT);
 
-  Serial.println("Initializing...");
+  Serial.println("System Status:\n");
 
   // setup CAN bus
   ACANSettings settings(125 * 1000);
-  if(ACAN::can0.begin(settings) != 0){Serial.println("CAN setup failed!");}
+  if(ACAN::can0.begin(settings) != 0){
+    Serial.println("\tCAN:\t\t Failure");
+  } else {
+    Serial.println("\tCAN:\t\tOK");
+  }
 
   // setup radio module
-  Serial.println(radio.begin());
-  RFinit();
+  if(RFinit()){
+    Serial.println("\tRF:\t\tOK");
+  } else {
+    Serial.println("\tRF:\t\tFailure");
+  }
 
-  bb.init();
+  if(bb.init()) {
+    Serial.println("\tSD card:\tOK");
+  } else {
+    Serial.println("\tSD card:\tFailure");
+  }
 
   security.encryption_key();
 
-  canFifo.clear();
+  bbFifo.clear();
+  rfFifo.clear();
 
-  Serial.println("Starting...");
+  Serial.println("\nStarting Threads:\n");
 
   chBegin(chSetup);
 }
@@ -74,15 +86,19 @@ void setup(){
 void chSetup(){
 
   chSysInit();
+
+  blackBoxWorkerState.pause = true;
+  rfWorkerState.pause = true;
+  canReceiverState.pause = false;
   
   // create the three worker threads
-  BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &canFifo, .state = &blackBoxWorkerState, .bb = &bb};
+  BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &bbFifo, .state = &blackBoxWorkerState, .bb = &bb};
   chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO + 3, canWorkerFunc, &blackBoxWorkerBundle);
-  rfTxWorkerBundle rfWorkerBundle = {.fifo = &canFifo, .state = &rfWorkerState, .sec = &security};
+  rfTxWorkerBundle rfWorkerBundle = {.fifo = &rfFifo, .state = &rfWorkerState, .sec = &security};
   chThdCreateStatic(waRfWorker,sizeof(waRfWorker),NORMALPRIO + 2, rfWorker, &rfWorkerBundle);
   systemThdBundle systemThdBundle = {.canReceiverState = &canReceiverState, .blackBoxWorkerState = &blackBoxWorkerState, .rfWorkerState = &rfWorkerState, .sec = &security};
   chThdCreateStatic(waSystemThd, sizeof(waSystemThd), NORMALPRIO + 1, systemThd, &systemThdBundle);
-  CanReceiverBundle canReceiverBundle = {.fifo = &canFifo, .state = &canReceiverState};
+  CanReceiverBundle canReceiverBundle = {.bbFifo = &bbFifo, .rfFifo = &rfFifo, .state = &canReceiverState};
   chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO + 1, canReceiverThd, &canReceiverBundle);
   
 }

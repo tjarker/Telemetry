@@ -25,7 +25,7 @@ THD_FUNCTION(canSenderThd, arg){
     while(true){
 
         if(sending){
-            canMsg.can_id  = random(0,0x1000);
+            canMsg.can_id  = random(0,0x800);
             canMsg.can_dlc = random(1,9);
             for(int i = 0; i < canMsg.can_dlc; i++){
                 canMsg.data[i] = random(0,0x100);
@@ -58,7 +58,7 @@ THD_FUNCTION(canSenderThd, arg){
             }
         }
         
-        chThdSleepMilliseconds(random(50,1500));
+        chThdSleepMilliseconds(random(3,4));
     }
 
 }
