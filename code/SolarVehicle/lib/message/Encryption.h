@@ -22,7 +22,7 @@ class Security {
         int n = pub_key * prv_key;                             // Modulus of prime numbers
         long int i, flag;                             
         long int e[256], d[256], temp[256];
-
+        bool activate = false; 
     /**
      * @brief Function to check for prime number
      * @param Integer under test
