@@ -12,6 +12,8 @@ object CMD {
   val STOP_STREAMING = 5
   val SLEEP = 6
   val WAKE_UP = 7
+  val ENABLE_ENCRYPTION = 8
+  val DISABLE_ENCRYPTION = 9
 }
 
 case class TelemetryMessage(cmd: Int, can: Option[CanFrame]){

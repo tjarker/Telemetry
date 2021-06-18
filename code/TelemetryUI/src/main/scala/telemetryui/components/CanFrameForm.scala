@@ -17,7 +17,7 @@ class CanFrameForm(title: String, sender: CanFrame => Unit) extends GridBagPanel
   try {
     UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
   } catch {
-    case e: Throwable =>
+    case e: Throwable => println("Could not set GTK look and feel")
   }
 
   val c = new Constraints()

@@ -15,7 +15,7 @@ class CanFrameLabel(title: String) extends GridBagPanel {
   try {
     UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
   } catch {
-    case e: Throwable =>
+    case e: Throwable => println("Could not set GTK look and feel")
   }
 
   private var lastCanMsg: Option[CanFrame] = None

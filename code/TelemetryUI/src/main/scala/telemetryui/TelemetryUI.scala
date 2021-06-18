@@ -74,7 +74,14 @@ object TelemetryUI extends SimpleSwingApplication {
         loggingBtn.selected = oldStateLoggingButton
         streamingBtn.selected = oldStateStreamingButton
       }
-      contents ++= Seq(sleepBtn,streamingBtn,loggingBtn)
+      val encryptionBtn = ToggleCommandButton("Encryption"){
+        serialWorker.get.send(TelemetryMessage(ENABLE_ENCRYPTION, None))
+        println("Enable encryption")
+      }{
+        serialWorker.get.send(TelemetryMessage(DISABLE_ENCRYPTION, None))
+        println("Disable encyrption")
+      }
+      contents ++= Seq(sleepBtn,streamingBtn,loggingBtn,encryptionBtn)
     }
   }
 
@@ -83,7 +90,7 @@ object TelemetryUI extends SimpleSwingApplication {
     try {
       UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")
     } catch {
-      case e: Throwable =>
+      case e: Throwable => println("Could not set GTK look and feel")
     }
     title = "TelemetryUI"
     contents = ui
