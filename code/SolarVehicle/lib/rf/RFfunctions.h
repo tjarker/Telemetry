@@ -10,16 +10,16 @@
 #include <SPI.h>
 #include <RF24.h>
 #include <nRF24L01.h>
-#include "TelemetryMessages.h"
+#include "printf.h"
 
-#ifdef TEENSY36_BOARD
-#define IRQ_PIN 2   // SPI interrupt pin
-#define CE_PIN 10    // SPI chip-enable (CE) pin
-#define CSN_PIN 9  // SPI chip-select (CSN) pin
+#ifdef TEENSY36_BOARD   // SPI pins are configured differently on Teensy 3.6
+#define IRQ_PIN 2       // SPI interrupt (IRQ) pin
+#define CE_PIN 10       // SPI chip-enable (CE) pin
+#define CSN_PIN 9       // SPI chip-select (CSN) pin
 #else
-#define IRQ_PIN 2   // SPI interrupt pin
-#define CE_PIN 9    // SPI chip-enable (CE) pin
-#define CSN_PIN 10  // SPI chip-select (CSN) pin
+#define IRQ_PIN 2       // SPI interrupt (IRQ) pin 
+#define CE_PIN 9        // SPI chip-enable (CE) pin
+#define CSN_PIN 10      // SPI chip-select (CSN) pin
 #endif
 
 #define COUNT 0     // Number of transmission retries
@@ -33,30 +33,28 @@ bool radioNumber = 1;
 bool radioNumber = 1;
 #endif
 
-RF24 radio(CE_PIN, CSN_PIN);                                    // CE and CSN pins
-static const byte address[][6] = {"00001", "00002"};            // TX/RX byte addresses
-bool ack = false; 
+RF24 radio(CE_PIN, CSN_PIN);                                    // RF24 global variable declaration
+static const byte address[][6] = {"00001", "00002"};            // Byte addresses for reading/writing pipes
+bool ack = false;                                               // Enable ack packages by setting this true
 
-/**********************************************************
- * @brief   Initializes and configures RF24 class object. *
- * @param   None                                          *
-***********************************************************/
+/****************************************************************************
+ * @brief   Initializes and configures RF24 class object.                   *
+ * @param   None                                                            *
+ * @return  True if radio object was properly initialized, otherwise false. *
+*****************************************************************************/
 bool RFinit()
 { 
-    if(!radio.begin()){
-        Serial.println("Radio not working!");
-        return false;
-    }
+    if(!radio.begin()) return false;                            // Begin radio class object, return false if not succeeded. 
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level, choose between MIN, LOW, HIGH, MAX (higher PA level improves range)
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate, choose between RF24_250KBS, RF24_1MBS, RF24_2MBS (higher Data Rates may cause data loss)
-    radio.disableDynamicPayloads();                              // Enable variable data payloads
-    radio.setAutoAck(false);                                     // RX node sends an automatic ack packet
+    radio.setPayloadSize(32);                                   // Set constant payload size to improve transmission time
+    radio.setAutoAck(true);                                     // RX node sends an automatic ack packet
     if (ack) radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
     radio.openWritingPipe(address[!radioNumber]);               // Open writing pipe at address 
     radio.openReadingPipe(1, address[radioNumber]);             // Open reading pipe at address
     radio.startListening();                                     // Starts RX mode
-    return true;
+    return true; 
 }
 
 /********************************************************************************

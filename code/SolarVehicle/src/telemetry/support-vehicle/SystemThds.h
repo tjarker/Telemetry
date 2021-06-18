@@ -1,5 +1,5 @@
 /**************************************************************
- * @file    threads.h                                         *
+ * @file    SystemThds.h                                      *
  * @author  Steffan Martin Kunoy                              *
  * @brief   ChibiOS threads to be run on the Support Vehicle. *
  **************************************************************/
@@ -9,6 +9,7 @@
 
 #include <ChRt.h>
 #include "RFfunctions.h"
+#include "TelemetryMessages.h"
 #include "ThreadState.h"
 #include "Fifo.h"
 #include "Encryption.h"
@@ -16,65 +17,65 @@
 Security sec;                       // Security global variable
 Fifo<BaseTelemetryMsg> TXfifo(32);  // Fifo global variable
 
-// A struct used to pass arguments to transmitterThread
-struct threadBundle 
+// A struct used to pass arguments to transmitterThd
+struct thdBundle 
 {
   Security *security;             // Security class member
   Fifo<BaseTelemetryMsg> *fifo;   // Fifo class member
 };
 
-// 2048 byte working stack for receiverThread
-THD_WORKING_AREA(WaReceiverThread, 2048);
+// 2048 byte working stack for receiverThd
+THD_WORKING_AREA(WaReceiverThd, 2048);
 
 /*****************************************************
- * @brief   Thread function for receiverThread.      *
+ * @brief   Thread function for receiverThd.      *
  * @param   arg, typecast to Security class pointer. *
 ******************************************************/
-THD_FUNCTION(receiverThread, arg)
+THD_FUNCTION(receiverThd, arg)
 {
   Security *sec = (Security*)arg;                                   // Cast input argument to Security class pointer
   BaseTelemetryMsg received;                                        // BaseTelemetryMsg object for received messages
   uint16_t encrypted[16];                                           // Buffer to contain encrypted message
   char tempStr[256];                                                // Buffer to print received message to serial
-  chThdSleepMicroseconds(100);                                      // Sleep to allow for creation of secondary thread
+  chThdSleepMicroseconds(100);                                        // Sleep to allow for creation of secondary thread
 
   while (true){
   
-    if (radio.available()){                                         // Check if TX node is transmitting data
-      if (RFreceive(encrypted, BaseTelemetryMsg::length()<<1)){     // Check if message was received
+    if (radio.available()){                                           // Check if TX node is transmitting data
+      if (RFreceive(encrypted, BaseTelemetryMsg::length()<<1)){       // Check if message was received
         Serial.print("Received: ");
-        sec->decrypt(encrypted, (uint8_t*)&received, 16);           // Decrypt received message
-        switch (received.cmd){                                      // Switch based on the message cmd field 
-          case RECEIVED_CAN:{                                       // Standard case, cmd matches RECEIVED_CAN
-            CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received;     // Cast received to CanTelemetryMsg pointer
+        sec->decrypt(encrypted, (uint8_t*)&received, 16);             // Decrypt received message
+        switch (received.cmd){                                        // Switch based on the message cmd field 
+          case RECEIVED_CAN:{                                         // Standard case, cmd matches RECEIVED_CAN
+            CanTelemetryMsg *ptr = (CanTelemetryMsg*)&received;       // Cast received to CanTelemetryMsg pointer
             ptr->toJSON(tempStr, sizeof(tempStr));                  
-            Serial.println(tempStr);                                // Print message formatted as JSON
+            Serial.println(tempStr);                                  // Print message formatted as JSON
           }
             break;
-          default:{                                                 // Default case, cmd does not match RECEIVED_CAN
+          default:{                                                   // Default case, cmd does not match RECEIVED_CAN
             received.toString(tempStr, sizeof(tempStr));            
-            Serial.println(tempStr);                                // Print message formatted as string
+            Serial.println(tempStr);                                  // Print message formatted as string
           }
             break;
         }  
       } else {
-        Serial.println("Could not receive message.");               // Message was not received 
+        Serial.println("Could not receive message.");                 // Message was not received 
       }
     }
-    chThdYield();                                                   // Yield for same-priority thread
+    chThdYield();                                                     // Yield for same-priority Thd
   }
 }
 
-// 2048 byte working stack for transmitterThread
-THD_WORKING_AREA(waTransmitterThread, 2048);
+// 2048 byte working stack for transmitterThd
+THD_WORKING_AREA(waTransmitterThd, 2048);
 
 /*****************************************************
- * @brief   Thread function for transmitterThread.   *
- * @param   arg, typecast to threadBundle pointer.   *
+ * @brief   Thread function for transmitterThd.   *
+ * @param   arg, typecast to thdBundle pointer.   *
 ******************************************************/
-THD_FUNCTION(transmitterThread, arg)
+THD_FUNCTION(transmitterThd, arg)
 {
-  threadBundle *transmitterBundle = (threadBundle*)arg;               // Cast input argument to threadBundle pointer
+  thdBundle *transmitterBundle = (thdBundle*)arg;               // Cast input argument to threadBundle pointer
   Security *transmitterSecurity = transmitterBundle->security;        // Extract bundle Security member variable
   Fifo<BaseTelemetryMsg> *transmitterFifo = transmitterBundle->fifo;  // Extract bundle Fifo member variable
   uint16_t encrypted[16];                                             // Buffer to contain encrypted message

@@ -10,11 +10,10 @@ class Fifo {
     private: 
         semaphore_t spaceSem, dataSem;
         T *fifo;
-        size_t _head, _tail;  
-        uint32_t size;
+        size_t _size, _head, _tail;  
 
     public: Fifo(uint32_t size){
-        this->size  = size;
+        this->_size  = size;
         this->_head   = 0;
         this->_tail   = 0;
         spaceSem    = _SEMAPHORE_DATA(spaceSem,(cnt_t)size);
@@ -43,12 +42,12 @@ class Fifo {
 
     // returns a pointer index to the next fifo slot
     public: uint32_t advance(uint32_t index){
-        return index < (size - 1) ? index + 1 : 0;  
+        return index < (_size - 1) ? index + 1 : 0;  
     }
 
     // advances the index pointer to the next fifo slot
     public: void advance(uint32_t *index){
-        *index = *index < (size - 1) ? *index + 1 : 0;
+        *index = *index < (_size - 1) ? *index + 1 : 0;
     }
 
     // signals that an element has been read and that the slot is free for new data
@@ -63,12 +62,12 @@ class Fifo {
     
     // returns the size of the fifo
     public: uint32_t getSize(){
-        return size;
+        return _size;
     }
 
     // set all fifo entries to 0
     public: void clear(){
-        memset(fifo,0,size*sizeof(T));
+        memset(fifo, 0, _size * sizeof(T));
     }
     
     // Prints the contents of the fifo buffer for debugging
@@ -80,7 +79,6 @@ class Fifo {
             fifo[i].toString(str,64);
             Serial.println(str);
         }
-        Serial.println();
     }
 
     // Returns a pointer to element at head index
