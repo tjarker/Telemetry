@@ -130,10 +130,6 @@ class CanTelemetryMsg {
         return strLength;
     }
 
-    public: uint32_t toString(char *buf, uint32_t len){
-        return snprintf(buf,len,"\"%02d/%02d/%4d %02d-%02d-%02d\",%u,%u,%u,%llu",day(),month(),year(),h,m,s,id,rtr,this->len,data64);
-    }
-
     static const String getHeader(){
         return "\"time\",\"id\",\"rtr\",\"len\",\"data\"";
     }
