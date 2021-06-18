@@ -22,8 +22,8 @@
 #define CSN_PIN 10      // SPI chip-select (CSN) pin
 #endif
 
-#define COUNT 0     // Number of transmission retries
-#define DELAY 5    // Delay between retries (= DELAY * 250 us + 250 us)
+#define COUNT 2         // Number of transmission retries
+#define DELAY 5         // Delay between retries (= DELAY * 250 us + 250 us)
 
 #ifdef TEENSY40_BOARD
 bool radioNumber = 0;       
@@ -47,7 +47,8 @@ bool RFinit()
     if(!radio.begin()) return false;                            // Begin radio class object, return false if not succeeded. 
     radio.setPALevel(RF24_PA_LOW);                              // Set Power Amplifier level, choose between MIN, LOW, HIGH, MAX (higher PA level improves range)
     radio.setDataRate(RF24_1MBPS);                              // Set Data Rate, choose between RF24_250KBS, RF24_1MBS, RF24_2MBS (higher Data Rates may cause data loss)
-    radio.setPayloadSize(16);                                   // Set constant payload size to improve transmission time
+    //radio.setPayloadSize(32);                                   // Set constant payload size to improve transmission time
+    radio.enableDynamicPayloads(); 
     radio.setAutoAck(true);                                     // RX node sends an automatic ack packet
     if (ack) radio.enableAckPayload();
     radio.setRetries(DELAY, COUNT);                             // Sets number of retries and delay between each retry
