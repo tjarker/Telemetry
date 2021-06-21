@@ -23,6 +23,8 @@
 CANMessage frame;
 CanTelemetryMsg CANmsg;
 Security security;
+ThreadState thrd;
+Fifo<CanTelemetryMsg> testFifo(4);
 
 void test_sanity(void) {
     TEST_ASSERT_EQUAL(32, 25 + 7);
@@ -128,6 +130,63 @@ void test_update(void){
 
 // Should set correct time in seconds, minutes and hours
 //void stamp()
+
+// ----------------------------- ThreadState.h ----------------------------- //
+
+// Should test that a thread can be suspended
+// void suspend()
+void test_suspend(void){
+    // Hvordan testes dette
+}
+
+// Should test that a thread is no longer paused
+// void wakeUp()
+void test_wakeUp(void){
+    thrd.pause = true;
+    thrd.wakeUp();
+    TEST_ASSERT_FALSE(thrd.pause);
+}
+
+// --------------------------------- Fifo.h -------------------------------- //
+
+// 
+// void advance(uint32_t *index)
+void test_advance(void){
+    uint32_t *index;
+    index = 0;
+    testFifo.advance(index);
+    TEST_ASSERT_EQUAL_INT(index, 1);
+}
+
+//
+// uint32_t getSize()
+void test_getSize(void){
+    
+}
+
+// Should test that the fifos data is set to 0 at all indexes
+// void clear()
+void test_clear(void){
+    testFifo.clear();
+    for (int i = 0; i < sizeof(testFifo); i++){
+        /*uint8_t j = testFifo;
+        TEST_ASSERT_EQUAL_INT(j, 0);
+        testFifo.advance(i);*/
+    }
+}
+
+// Should test that the fifo is full
+// bool full()
+void test_full(void){
+    //TEST_ASSERT_FALSE(testFifo.full); a pointer to a bound function may only be used to call the function
+}
+
+// Should test that the fifo is empty           Skal gøres bedre
+// bool empty()
+void test_empty(void){
+    TEST_ASSERT_TRUE(testFifo.empty());
+
+}
 
 // ------------------------------ Encryption.h ----------------------------- //
 
