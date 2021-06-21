@@ -21,6 +21,7 @@
 #include <ctime>
 #include <fstream>
 #include <ChRt.h>
+#include <ACAN.h>
 
 #include "TelemetryMessages.h"
 #include "Encryption.h"
@@ -87,17 +88,11 @@ void test_encrypt_decrypt(void){
         }
     }
     // Edge case test
-    uint8_t msg2[16], msgcon2[16];
-    uint16_t array2[16]; 
-    memset(msg2, 0, sizeof(msg2)); 
-    memset(msgcon2, 0, sizeof(msgcon2)); 
-    security.encrypt(msg2, array2, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){
             cnten++;
         }
     }
-    // Takes into account that a data value might not be changed after encryption process.
     // The integer used for comparison is the desired minimum amount of changed values.
     TEST_ASSERT_TRUE(cnten > 13);
     security.decrypt(array, msg, 16);
@@ -105,9 +100,11 @@ void test_encrypt_decrypt(void){
         TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
     }
 
-    uint8_t msg3[16] = {[0 ... 15] = 255};
+    uint8_t msg3[16];
+    memset(msg3,255,sizeof(msg3));
     uint16_t array3[16];
-    uint8_t msgcon3[16] = {[0 ... 15] = 255};
+    uint8_t msgcon3[16];
+    memset(msgcon3,255,sizeof(msgcon3));
     security.encrypt(msg3, array3, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){

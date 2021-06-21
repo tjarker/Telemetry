@@ -7,7 +7,7 @@
 
 #include <ChRt.h>
 
-#include "MultiReaderFifo.h"
+#include "Fifo.h"
 #include "ThreadState.h"
 #include "MutexLocker.h"
 #include "TelemetryMessages.h"

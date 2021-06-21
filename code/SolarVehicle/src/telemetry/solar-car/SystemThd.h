@@ -49,14 +49,14 @@ THD_FUNCTION(systemThd, arg){
   while(true){
    
     radio.startListening();
-    
+
     if(radio.available()){
       if(sec->activate) {
         uint16_t encrypted[16];
         RFreceive(encrypted,BaseTelemetryMsg::length()<<1);
-        sec->decrypt(encrypted,(uint8_t*)&msg,32);
+        sec->decrypt(encrypted,(uint8_t*)&msg,BaseTelemetryMsg::length());
       } else {
-        RFreceive(&msg,BaseTelemetryMsg::length());
+        RFreceive(&msg,BaseTelemetryMsg::length()<<1);
       }
       
       char str[64];
@@ -145,7 +145,6 @@ THD_FUNCTION(systemThd, arg){
           if(!sec->activate){
             Serial.println("SystemThd:\tEnabling Encryption");
             WITH_MTX(rfMTX){sec->activate = true;}
-            radio.setPayloadSize(BaseTelemetryMsg::length()<<1);
           } else {
             Serial.println("SystemThd:\tEncryption already enabled");
           }
@@ -156,9 +155,8 @@ THD_FUNCTION(systemThd, arg){
           if(sec->activate){
             Serial.println("SystemThd:\tDisabling Encryption");
             WITH_MTX(rfMTX){sec->activate = false;}
-            radio.setPayloadSize(BaseTelemetryMsg::length());
           } else {
-            Serial.println("SystemThd:\tEncryption already enabled");
+            Serial.println("SystemThd:\tEncryption already disabled");
           }
         }
           break;
