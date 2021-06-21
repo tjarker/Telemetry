@@ -9,7 +9,7 @@
 
 #include "ThreadState.h"
 #include "BlackBox.h"
-#include "MultiReaderFifo.h"
+#include "Fifo.h"
 #include "MutexLocker.h"
 
 #include "telemetry/solar-car/Mutexes.h"

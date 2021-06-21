@@ -9,7 +9,7 @@
 #include <ChRt.h>
 
 #include "ThreadState.h"
-#include "MultiReaderFifo.h"
+#include "Fifo.h"
 #include "RFfunctions.h"
 #include "MutexLocker.h"
 #include "Measure.h"
@@ -64,7 +64,7 @@ THD_FUNCTION(rfWorker, arg){
             sec->encrypt((uint8_t*)msg,encrypted,BaseTelemetryMsg::length());
             success = RFtransmit(encrypted,BaseTelemetryMsg::length()<<1);
           } else {
-            success = RFtransmit(msg,BaseTelemetryMsg::length());
+            success = RFtransmit(msg,BaseTelemetryMsg::length()<<1);
           }
 
           if(success){

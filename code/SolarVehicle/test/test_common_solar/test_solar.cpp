@@ -31,13 +31,12 @@
 
 CANMessage frame;
 CanTelemetryMsg CANmsg;
-BlackBox box;
-Security security;
-MultiReaderFifo<CanTelemetryMsg> canFifo(64,2);
+Fifo<CanTelemetryMsg> bbFifo(16), rfFifo(64);
+BlackBox bb(500);
 ThreadState blackBoxWorkerState;
 ThreadState canReceiverState;
 ThreadState rfWorkerState;
-
+Security security;
 // void setUp(void) {
 // // set stuff up here
 // }
@@ -178,9 +177,11 @@ void test_encrypt_decrypt(void){
         }
     }
     // Edge case test
-    uint8_t msg2[16] = {[0 ... 15] = 0};
+    uint8_t msg2[16];
+    memset(msg2,0,sizeof(msg2));
     uint16_t array2[16];
-    uint8_t msgcon2[16] = {[0 ... 15] = 0};
+    uint8_t msgcon2[16];
+    memset(msgcon2,0,sizeof(msgcon2));
     security.encrypt(msg2, array2, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){
@@ -195,9 +196,11 @@ void test_encrypt_decrypt(void){
         TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
     }
 
-    uint8_t msg3[16] = {[0 ... 15] = 255};
+    uint8_t msg3[16];
+    memset(msg3,255,sizeof(msg3));
     uint16_t array3[16];
-    uint8_t msgcon3[16] = {[0 ... 15] = 255};
+    uint8_t msgcon3[16];
+    memset(msgcon3,255,sizeof(msgcon3));
     security.encrypt(msg3, array3, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){
@@ -305,15 +308,19 @@ void process() {
 void chSetup(){
 
   chSysInit();
+
+  blackBoxWorkerState.pause = true;
+  rfWorkerState.pause = true;
+  canReceiverState.pause = false;
   
   // create the three worker threads
-  BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &canFifo, .state = &blackBoxWorkerState, .bb = &box};
+  BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &bbFifo, .state = &blackBoxWorkerState, .bb = &bb};
   chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO + 3, canWorkerFunc, &blackBoxWorkerBundle);
-  rfTxWorkerBundle rfWorkerBundle = {.fifo = &canFifo, .state = &rfWorkerState, .sec = &security};
+  rfTxWorkerBundle rfWorkerBundle = {.fifo = &rfFifo, .state = &rfWorkerState, .sec = &security};
   chThdCreateStatic(waRfWorker,sizeof(waRfWorker),NORMALPRIO + 2, rfWorker, &rfWorkerBundle);
   systemThdBundle systemThdBundle = {.canReceiverState = &canReceiverState, .blackBoxWorkerState = &blackBoxWorkerState, .rfWorkerState = &rfWorkerState, .sec = &security};
   chThdCreateStatic(waSystemThd, sizeof(waSystemThd), NORMALPRIO + 1, systemThd, &systemThdBundle);
-  CanReceiverBundle canReceiverBundle = {.fifo = &canFifo, .state = &canReceiverState};
+  CanReceiverBundle canReceiverBundle = {.bbFifo = &bbFifo, .rfFifo = &rfFifo, .state = &canReceiverState};
   chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO + 1, canReceiverThd, &canReceiverBundle);
   
 }

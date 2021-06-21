@@ -18,7 +18,6 @@
 #include "RFfunctions.h"
 #include "TelemetryMessages.h"
 #include "Fifo.h"
-#include "MultiReaderFifo.h"
 #include "ThreadState.h"
 
 #include "telemetry/solar-car/blackBoxThd.h"
@@ -34,7 +33,7 @@
 #endif
 
 Fifo<CanTelemetryMsg> bbFifo(16), rfFifo(64);
-BlackBox bb(50);
+BlackBox bb(500);
 ThreadState blackBoxWorkerState;
 ThreadState canReceiverState;
 ThreadState rfWorkerState;
