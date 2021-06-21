@@ -21,7 +21,7 @@ class Security {
         int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
         int n = pub_key * prv_key;                             // Modulus of prime numbers
         long int i, flag;                             
-        long int e[256], d[256], temp[256];
+        long int e[256], d[256];
         bool activate = false; 
     /**
      * @brief Function to check for prime number
@@ -78,7 +78,9 @@ class Security {
 
         /**
          * @brief Encrypts input message
-         * @param Message as char pointer array
+         * @param message message pointer to be encrypted
+         * @param array outgoing encrypted message pointer
+         * @param len length of message
         */
         void encrypt(uint8_t *message, uint16_t *array, int len){
             long int pt, k, enkey = e[0];
@@ -91,12 +93,7 @@ class Security {
                     k = k * pt;
                     k = k % n;
                 }
-                //temp[i] = k;                       // Array used for encryption and decryption
-                //ct = k + 96;
                 ct = k + 2*96;
-                /*while (ct < 0){
-                    ct += 96;
-                }*/
                 array[i] = ct;
                 i++;
             }
@@ -104,18 +101,16 @@ class Security {
 
         /**
          * @brief Decrypts input message
-         * @param Message as char pointer array
+         * @param array incoming encrypted message pointer
+         * @param message the decrypted message pointer
+         * @param len length of message
         */
         void decrypt(uint16_t *array, uint8_t *message, int len){
             long int ct, dekey = d[0], k;
             uint8_t pt;
             i = 0;
             while(i < len){
-                //ct = temp[i];                      // Array used for encryption and decryption
                 ct = array[i] - 2*96;
-                /*while (ct > 255){
-                    ct -= 96;
-                }*/
                 k = 1;
                 for (int j = 0; j < dekey; j++){
                     k = k * ct;
