@@ -70,7 +70,7 @@ void test_RFreceive(void){
 
 // Should a string with CAN data in the format hour, minutes, seconds, id, rtr, len data
 // Due to lack of support, only base 16 (hexadecimal) is tested and expected to pass, other tests will fail
-//uint32_t toString(char *buf, uint32_t len, uint8_t base)
+// uint32_t toString(char *buf, uint32_t len, uint8_t base)
 void test_toString(void){
     CANmsg.randomize();
     char *testbuf;
@@ -95,12 +95,14 @@ void test_toString(void){
 
 //uint32_t toString(char *buf, uint32_t len)
 void test_toString2(void){
-    CANmsg.randomize();
     char *testbuf;
     // Hexadecimal test
-    CANmsg.toString(testbuf, CANmsg.len);
-    TEST_ASSERT_EQUAL_STRING(("\"%02d-%02d-%02d\",%u,%u,%u,%llu", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf);
+    for (int i = 0; i < 100; i++){
+        CANmsg.randomize();
+        CANmsg.toString(testbuf, CANmsg.len);
+        TEST_ASSERT_EQUAL_STRING(("\"%02d-%02d-%02d\",%u,%u,%u,%llu", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+            CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf);
+    }
 }
 
 // Should test that a string header is returned in the format \"time\",\"id\",\"rtr\",\"len\",\"data\"
@@ -111,6 +113,20 @@ void test_getHeader(void){
 
 // Should set data in CAN frame
 //void toCanFrame(CANMessage *msg)
+void test_toCanFrame(void){
+    CANMessage *testmsg;
+    for (int i = 0; i < 100; i++){
+        testmsg->id = random(0, 256);
+        testmsg->rtr = rand()%2;
+        testmsg->len = 8;
+        testmsg->data64 = random(0, 0xFFFFFFFFFFFFFFFF);
+        CANmsg.toCanFrame(testmsg);
+        TEST_ASSERT_EQUAL_INT(testmsg->id, CANmsg.id);
+        TEST_ASSERT_EQUAL_INT(testmsg->rtr, CANmsg.rtr);
+        TEST_ASSERT_EQUAL_INT(testmsg->len, CANmsg.len);
+        TEST_ASSERT_EQUAL_INT(testmsg->data64, CANmsg.data64);
+    }
+}
 
 // Should update time stamp on CAN message
 // void update(CANMessage *msg)
@@ -161,7 +177,7 @@ void test_advance(void){
 //
 // uint32_t getSize()
 void test_getSize(void){
-    
+    TEST_ASSERT_EQUAL_INT32(testFifo.getSize(), 4);
 }
 
 // Should test that the fifos data is set to 0 at all indexes

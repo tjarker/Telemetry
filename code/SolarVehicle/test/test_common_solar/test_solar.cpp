@@ -37,6 +37,7 @@ ThreadState blackBoxWorkerState;
 ThreadState canReceiverState;
 ThreadState rfWorkerState;
 Security security;
+ThreadState thrd;
 // void setUp(void) {
 // // set stuff up here
 // }
@@ -108,6 +109,21 @@ void test_getHeader(void){
 
 // Should set data in CAN frame
 //void toCanFrame(CANMessage *msg)
+void test_toCanFrame(void){
+    CANMessage *testmsg;
+    for (int i = 0; i < 100; i++){
+        testmsg->id = random(0, 256);
+        testmsg->rtr = rand()%2;
+        testmsg->len = 8;
+        testmsg->data64 = random(0, 0xFFFFFFFFFFFFFFFF);
+        CANmsg.toCanFrame(testmsg);
+        TEST_ASSERT_EQUAL_INT(testmsg->id, CANmsg.id);
+        TEST_ASSERT_EQUAL_INT(testmsg->rtr, CANmsg.rtr);
+        TEST_ASSERT_EQUAL_INT(testmsg->len, CANmsg.len);
+        TEST_ASSERT_EQUAL_INT(testmsg->data64, CANmsg.data64);
+    }
+}
+
 
 // Should update time stamp on CAN message
 // void update(CANMessage *msg)
@@ -218,20 +234,58 @@ void test_encrypt_decrypt(void){
 
 // ----------------------------- RFfunctions.h ----------------------------- //
 
-// Should test that the RF module is initialized
-// void RFinit()
+// Should test that RF is initialized
+// bool RFinit()
+void test_RFinit(void){
+    RFinit();
+    TEST_ASSERT_TRUE(RFinit());
+}
 
-// Should test that the RF module is transmitting
+// Should return true when passed a message and false when not passed a message
 // bool RFtransmit(void *buf, uint8_t len)
+void test_RFtransmit(void){
+    RFinit();
+    void *truebuf;
+    void *falsebuf = '\0';
+    TEST_ASSERT_FALSE(RFtransmit(truebuf, 0));
+    TEST_ASSERT_FALSE(RFtransmit(falsebuf, 0));
+    for (int i = 1; i < 33; i++){
+        TEST_ASSERT_TRUE(RFtransmit(truebuf, i));
+        TEST_ASSERT_FALSE(RFtransmit(falsebuf, i));
+    }
+}
 
-// Should test that the RF module is receiving
-//bool RFreceive(void *buf, uint8_t len)
+// Should
+// bool RFreceive(void *buf, uint8_t len)
+void test_RFreceive(void){
+    RFinit();
+    void *truebuf;
+    TEST_ASSERT_TRUE(RFreceive(truebuf, 32));
+    RFtransmit(truebuf, 32); // Triggers transmitter on pipe
+    TEST_ASSERT_FALSE(RFreceive(truebuf, 32));
+}
+
+// ----------------------------- ThreadState.h ----------------------------- //
+
+// Should test that a thread can be suspended
+// void suspend()
+void test_suspend(void){
+    // Hvordan testes dette
+}
+
+// Should test that a thread is no longer paused
+// void wakeUp()
+void test_wakeUp(void){
+    thrd.pause = true;
+    thrd.wakeUp();
+    TEST_ASSERT_FALSE(thrd.pause);
+}
 
 // ------------------------------- BlackBox.h ------------------------------ //
 
 // Should test that the blackbox initializes
 void test_init(void){
-    bool t = box.init();
+    bool t = bb.init();
     TEST_ASSERT_TRUE(t);
 }
 
@@ -242,19 +296,19 @@ void test_getTeensy3Time(void){
     day(), month(), year(), hour(), minute(), second(), frame.id, frame.rtr, frame.len, 
     frame.data64);
     // Forkerte typer, men basale princip er nedenstående
-    TEST_ASSERT_INT_WITHIN(1, test_str, box.getTeensy3Time);
+    TEST_ASSERT_INT_WITHIN(1, test_str, bb.getTeensy3Time);
 }
 
 // Should test that a new log file is started
 void test_startNewLogFile(void){
-    box.startNewLogFile();
+    bb.startNewLogFile();
     struct stat buffer;
     TEST_ASSERT_TRUE((stat ("Tjark, hvor ligger filen?", &buffer) == 0));
 }
 
 // Should test that the current log file is ended
 void test_endLogFile(void){
-    box.endLogFile();
+    bb.endLogFile();
     //TEST_ASSERT_TRUE(box.sdBuffer.bytesFree()); // bytesFree should return 0
 }
 
@@ -346,11 +400,11 @@ void setup() {
     // setup radio module
     RFinit();
 
-    box.init();
+    bb.init();
 
     security.encryption_key();
 
-    canFifo.clear();
+    rfFifo.clear();
 
     Serial.println("Starting...");
 
