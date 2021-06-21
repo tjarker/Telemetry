@@ -87,9 +87,10 @@ void test_encrypt_decrypt(void){
         }
     }
     // Edge case test
-    uint8_t msg2[16] = {[0 ... 15] = 0};
-    uint16_t array2[16];
-    uint8_t msgcon2[16] = {[0 ... 15] = 0};
+    uint8_t msg2[16], msgcon2[16];
+    uint16_t array2[16]; 
+    memset(msg2, 0, sizeof(msg2)); 
+    memset(msgcon2, 0, sizeof(msgcon2)); 
     security.encrypt(msg2, array2, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){
