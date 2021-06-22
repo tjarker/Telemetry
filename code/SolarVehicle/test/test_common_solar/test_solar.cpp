@@ -359,6 +359,7 @@ void setup() {
       // initialize serial port
     delay(2000);
     
+    #ifndef UNIT_TEST
     Serial.begin(921600);
     while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
 
@@ -383,6 +384,7 @@ void setup() {
     Serial.println("Starting...");
 */
     process();
+    #endif
 }
 
 void loop() {
