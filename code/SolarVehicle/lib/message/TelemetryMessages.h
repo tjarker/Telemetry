@@ -253,12 +253,6 @@ class CanTelemetryMsg
   {
     return snprintf(buf,len,"\"%02d/%02d/%4d %02d-%02d-%02d\",%u,%u,%u,%llu",day(),month(),year(),h,m,s,id,rtr,this->len,data64);
   }
-    #else
-
-    public: uint32_t toString(char *buf, uint32_t len){
-        return snprintf(buf,len,"\"%02d-%02d-%02d\",%u,%u,%u,%llu",h,m,s,id,rtr,this->len,data64);
-    }
-
   #else
   
   /**

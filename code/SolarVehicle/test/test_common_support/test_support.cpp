@@ -28,7 +28,7 @@ void test_toJSON(void){
     char testbuf[128];
     char shouldBe[128];
     snprintf(shouldBe,sizeof(shouldBe),"{\"cmd\":%d,\"can\":{\"id\":%d,\"rtr\":%s,\"len\":%d,\"data\":%llu,\"stamp\":{\"hour\":%d,\"minute\":%d,\"second\":%d}}}\n",CANmsg.cmd,CANmsg.id,CANmsg.rtr ? "true" : "false", CANmsg.len,CANmsg.data64,CANmsg.h,CANmsg.m,CANmsg.s);
-    CANmsg.toString(testbuf, sizeof(testbuf), 16);
+    CANmsg.toJSON(testbuf, sizeof(testbuf));
     TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
 }
 
