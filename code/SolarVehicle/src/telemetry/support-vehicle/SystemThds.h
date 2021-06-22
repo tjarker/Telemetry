@@ -6,7 +6,6 @@
 
 #ifndef __RF_THD_H__
 #define __RF_THD_H__        
-
 #include <ChRt.h>
 #include "RFfunctions.h"
 #include "TelemetryMessages.h"
@@ -17,7 +16,9 @@
 Security sec;                       // Security global variable
 Fifo<BaseTelemetryMsg> TXfifo(16);  // Fifo global variable
 
-// A struct used to pass arguments to transmitterThd
+/**
+ * @brief A struct used to pass arguments to transmitterThd. 
+*/
 struct thdBundle 
 {
   Security *security;             // Security class member
@@ -27,10 +28,10 @@ struct thdBundle
 // 2048 byte working stack for receiverThd
 THD_WORKING_AREA(WaReceiverThd, 2048);
 
-/*****************************************************
- * @brief   Thread function for receiverThd.         *
- * @param   arg, typecast to Security class pointer. *
-******************************************************/
+/**
+ * @brief   Thread function for receiverThd.         
+ * @param   arg, typecast to Security class pointer. 
+*/
 THD_FUNCTION(receiverThd, arg)
 {
   Security *sec = (Security*)arg;                                   // Cast input argument to Security class pointer
@@ -73,10 +74,10 @@ THD_FUNCTION(receiverThd, arg)
 // 2048 byte working stack for transmitterThd
 THD_WORKING_AREA(waTransmitterThd, 2048);
 
-/************************************************
- * @brief   Thread function for transmitterThd. *
- * @param   arg, typecast to thdBundle pointer. *
-*************************************************/
+/**
+ * @brief   Thread function for transmitterThd. 
+ * @param   arg, typecast to thdBundle pointer. 
+*/
 THD_FUNCTION(transmitterThd, arg)
 {
   thdBundle *transmitterBundle = (thdBundle*)arg;                       // Cast input argument to thdBundle pointer

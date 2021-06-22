@@ -7,15 +7,15 @@
 #include <Arduino.h>
 #include "telemetry/support-vehicle/SystemThds.h"
 
-/*********************************************************
- * @brief Initializes all threads with a working area,   *
- * priority level, thread function and initial argument. *
- *********************************************************/  
+/**
+ * @brief   Initializes all threads with a working area, priority level, thread function and initial argument. 
+ * @return  Should never return. 
+*/  
 void chSetup()
 {
   chSysInit();          // Initializes ChibiOS system
   chThdCreateStatic(WaReceiverThd, sizeof(WaReceiverThd), NORMALPRIO + 1, receiverThd, &sec);
-  thdBundle transmitterBundle = {.security = &sec, .fifo = &TXfifo}; 
+  thdBundle transmitterBundle = {.security = &sec, .fifo = &TXfifo};  // thdBundle passed to transmitterThd
   chThdCreateStatic(waTransmitterThd, sizeof(waTransmitterThd), NORMALPRIO + 1, transmitterThd, &transmitterBundle);
 }
 
@@ -35,7 +35,5 @@ void setup()
 
 void loop()
 {
-  /*Serial.println(radio.available());
-  delay(1000);
   /* Not used */
 }
