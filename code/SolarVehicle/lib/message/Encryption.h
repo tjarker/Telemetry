@@ -1,8 +1,12 @@
-/** 
- * Encryption and decryption of char array message using the RSA algorithm.
- * Two prime numbers must be chosen, one for the public key and one for the private key.
- * For more information, see http://www.trytoprogram.com/cpp-examples/cplusplus-program-encrypt-decrypt-string/
-*/
+/****************************************************************************************************
+ * @file    Encryption.h                                                                            *
+ * @author  Victor Alexander Hansen                                                                 *
+ * @brief   Encryption and decryption of message array of type message using the RSA algorithm.     *
+ *                                                                                                  *
+ * Two prime numbers must be chosen and set in the public class value. Suitable combinations of     *
+ * prime numbers can be seen marked with green fields in the figure at                              *
+ * https://bitbucket.org/dtucar/ecocar-solar/src/master/Telemetry/prime_tabel.png                   *
+ ****************************************************************************************************/
 
 
 #ifndef __ENCRYPTION_H__
