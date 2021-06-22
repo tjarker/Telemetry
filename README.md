@@ -9,11 +9,7 @@ This project presents a telemetry system for the DTU Roadrunners solar car. The 
 
 A provisional hardware setup of the solar car and support vehicle modules was implemented using two Teensy microcontrollers on perfboards. A range test of the two modules had a successful and reliable transmission distance of up to around 160 m. While this does not satisfy the original goal of 400 m - 1000 m, the final solution is concluded to have a good communication chain design between the solar car and support vehicle modules, and can be readily improved upon to support a longer transmission distance. 
 
----
-
-![](documentation/images/SystemSchematic.png)
-
----
+# Resources
 
 The code for the two microcontrollers can be found in the [Firmware](Firmware) folder. The code for the user interface is located in the [TelemetryUI](TelemetryUI) folder.
 
@@ -28,6 +24,17 @@ The paper connected to the project can be found [here](documentation/DTU_Roadrun
 |:-:|:-:|:-:|:-:|
 |[<img src="https://static.thenounproject.com/png/251053-200.png" width="50">](documentation/literature.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJIyUJLYjAW1EF-5cv5lt_mT8VVFh0rgjwmA&usqp=CAU" width="50">](documentation/components.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDNgciuROD6Bc5aQ3lTapXG5fSUVKS6mcZlQ&usqp=CAU" width="50">](https://bitbucket.org/dtucar/)|[<img src="documentation/resources/wikipedia_PNG35.png" width="50">](https://dtucar.com/wiki/index.php?title=Main_Page)|
 |**Implementations**|**Specifications**|**Shopping List**|**Meeting Notes**|
-|[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)|[<img src="https://image.flaticon.com/icons/png/512/263/263142.png" width="50">](documentation/shoppingList.md)|[<img src="http://simpleicon.com/wp-content/uploads/meeting.png" width="50">](documentation/meetingNotes.md)
+|[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)|[<img src="https://image.flaticon.com/icons/png/512/263/263142.png" width="50">](documentation/shoppingList.md)|[<img src="https://www.pngjoy.com/pngm/805/9538805_meeting-icon-sala-de-reuniones-icono-png-download.png" width="50">](documentation/meetingNotes.md)
 ---
+
+# Pictures
+
+![](documentation/images/SystemSchematic.png)
+
+![](documentation/images/HardwareSetup.JPEG)
+---
+
+
+
+
 
