@@ -30,4 +30,4 @@ jobs:
     - name: Run PlatformIO
       run: |
         cd Firmware
-        pio run -e <ID_1> -e <ID_2> -e <ID_N>
+        pio run
