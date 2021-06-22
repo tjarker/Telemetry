@@ -7,6 +7,10 @@ import telemetryui.types.CanFrame
 import scala.swing.Dialog.{Message, showInput}
 import scala.swing.Swing
 
+/**
+ * A pop up window to choose a serial port
+ */
+
 object SerialPortSelector {
   def apply(): Option[SerialPort] = {
     val ports = SerialPort.getCommPorts

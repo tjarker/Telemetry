@@ -7,6 +7,17 @@ import java.util.concurrent.Semaphore
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
+/**
+ * Thread responsible for broadcasting commands, messages and errors
+ *
+ * Can be used to send a telemetry message to the SCU using [[send]]
+ *
+ * takes Telemetry messages formatted as JSON strings as input via serial
+ *
+ * outputs Telemetry messages as bytes. See [[CanFrame.toByteArray]] for the byte layout
+ *
+ */
+
 class SerialWorker(port: SerialPort,
                    canListener: Seq[CanFrame => Unit],
                    cmdListener: Seq[Int => Unit],

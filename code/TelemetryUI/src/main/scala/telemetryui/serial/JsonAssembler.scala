@@ -2,6 +2,10 @@ package telemetryui.serial
 
 import telemetryui.types.{CanFrame, TelemetryMessage}
 
+/**
+ * A very simple JSON parser, ensuring basic integrity of a JSON string
+ */
+
 class JsonAssembler {
 
   private val charBuf = new StringBuilder

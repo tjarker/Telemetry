@@ -18,6 +18,14 @@ import scala.swing._
 import scala.swing.event.ButtonClicked
 import scala.sys.exit
 
+/**
+ * Main object for the GUI
+ *
+ * All UI elements are instantiated here and connected to the serial worker.
+ *
+ * The serial port selector is invoked and used to open a serial connection which is passed to the serial worker
+ */
+
 object TelemetryUI extends SimpleSwingApplication {
   implicit val formats = DefaultFormats
 

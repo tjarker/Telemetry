@@ -11,6 +11,10 @@ import telemetryui.util.Timer
 import java.util.Date
 import javax.swing.UIManager
 
+/**
+ * A UI element for the user to enter ID and data of a CAN message and send it using the passed sender function
+ */
+
 class CanFrameForm(title: String, sender: CanFrame => Unit) extends GridBagPanel {
   border = CompoundBorder(TitledBorder(EtchedBorder,title),EmptyBorder(5,5,5,5))
 

@@ -8,6 +8,11 @@ import scala.swing.Swing.{CompoundBorder, EmptyBorder, EtchedBorder, TitledBorde
 import scala.swing._
 import scala.swing.event.{ButtonClicked, SelectionChanged}
 
+/**
+ * A UI element to show a can message
+ *
+ * can be updated by passing a new CAN message to [[update]]
+ */
 
 class CanFrameLabel(title: String) extends GridBagPanel {
   border = CompoundBorder(TitledBorder(EtchedBorder,title),EmptyBorder(5,5,5,5))

@@ -4,6 +4,15 @@ import telemetryui.types.{CanFrame, TimeStamp}
 
 import java.net.{DatagramPacket, DatagramSocket, SocketException}
 
+/**
+ * A UDP server thread broadcasting on port 4445 on the local host ip address
+ *
+ * A connection is established by sending "start" and ended by sending "end"
+ *
+ * The server sends 16 byte packages which contain CAN messages with a time stamp
+ * see [[CanFrame.toByteArray]] for the byte layout
+ */
+
 class UdpServer extends Thread {
   val socket = new DatagramSocket(4445)
 
