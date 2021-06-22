@@ -32,7 +32,7 @@ void test_can_x_begin(void) {
 }
 
 // -------------------------- TelemetryMessages.h -------------------------- //
-/*
+
 // Should a string with CAN data in the format hour, minutes, seconds, id, rtr, len data
 // Due to lack of support, only base 16 (hexadecimal) is tested and expected to pass, other tests will fail
 //uint32_t toString(char *buf, uint32_t len, uint8_t base)
@@ -40,23 +40,28 @@ void test_toString(void){
     CanTelemetryMsg CANmsg;
     CANmsg.randomize();
     char testbuf[128];
+    char shouldBe[128];
     // Hexadecimal test
+    snprintf(shouldBe,sizeof(shouldBe),"\"%02d/%02d/%4d %02d-%02d-%02d\",%X,%X,%X,%llX", day(), month(), year(), CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64);
     CANmsg.toString(testbuf, sizeof(testbuf), 16);
-    TEST_ASSERT_EQUAL_STRING(("\"%02d-%02d-%02d\",%X,%X,%X,%llX", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf);
+    TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
     // Decimal test
+    snprintf(shouldBe,sizeof(shouldBe),"\"%02d/%02d/%4d %02d-%02d-%02d\",%D,%D,%D,%llD", day(), month(), year(), CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64);
     CANmsg.toString(testbuf, sizeof(testbuf), 10);
-    TEST_ASSERT_EQUAL_STRING(("\"%02d-%02d-%02d\",%D,%D,%D,%llD", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf);
+    TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
     // Octal
+    snprintf(shouldBe,sizeof(shouldBe),"\"%02d/%02d/%4d %02d-%02d-%02d\",%0,%0,%0,%ll0", day(), month(), year(), CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64);
     CANmsg.toString(testbuf, sizeof(testbuf), 8);
-    TEST_ASSERT_EQUAL_STRING_MESSAGE(("\"%02d-%02d-%02d\",%0,%0,%0,%ll0", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf, "Not yet implemented");
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(shouldBe, testbuf, "Not yet implemented");
     // Binary
+    snprintf(shouldBe,sizeof(shouldBe),"\"%02d/%02d/%4d %02d-%02d-%02d\",%B,%B,%B,%llB", day(), month(), year(), CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
+        CANmsg.rtr, CANmsg.len, CANmsg.data64);
     CANmsg.toString(testbuf, sizeof(testbuf), 2);
-    TEST_ASSERT_EQUAL_STRING_MESSAGE(("\"%02d-%02d-%02d\",%B,%B,%B,%llB", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64), testbuf, "Not yet implemented");
-}*/
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(shouldBe, testbuf, "Not yet implemented");
+}
 
 //uint32_t toString(char *buf, uint32_t len)
 void test_toString2(void){
@@ -162,7 +167,7 @@ void test_encrypt_decrypt(void){
         }
         // Takes into account that a data value might not be changed after encryption process.
         // The integer used for comparison is the desired minimum amount of changed values.
-        TEST_ASSERT_TRUE(cnten > 10);
+        TEST_ASSERT_TRUE(cnten > 13);
         security.decrypt(array, msg, 16);
         for(int i = 0; i < 16; i++){
             TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
@@ -175,15 +180,16 @@ void test_encrypt_decrypt(void){
     uint8_t msgcon2[16];
     memset(msgcon2,0,sizeof(msgcon2));
     security.encrypt(msg2, array2, 16);
+    cnten = 0;
     for (int i = 0; i < 16; i++){
-        if (msg2[i] != msgcon2[i]){
+        if (array2[i] != msgcon2[i]){
             cnten++;
         }
     }
     // Takes into account that a data value might not be changed after encryption process.
     // The integer used for comparison is the desired minimum amount of changed values.
     TEST_ASSERT_TRUE(cnten > 13);
-    security.decrypt(array, msg, 16);
+    security.decrypt(array2, msg2, 16);
     for(int i = 0; i < 16; i++){
         TEST_ASSERT_TRUE(msg2[i] == msgcon2[i]);
     }
@@ -194,8 +200,9 @@ void test_encrypt_decrypt(void){
     uint8_t msgcon3[16];
     memset(msgcon3,255,sizeof(msgcon3));
     security.encrypt(msg3, array3, 16);
+    cnten = 0;
     for (int i = 0; i < 16; i++){
-        if (msg3[i] != msgcon3[i]){
+        if (array3[i] != msgcon3[i]){
             cnten++;
         }
     }
