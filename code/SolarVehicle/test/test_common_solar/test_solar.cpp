@@ -359,56 +359,13 @@ void process() {
 
 #ifdef ARDUINO
 
-void chSetup(){
-
-  chSysInit();
-
-  blackBoxWorkerState.pause = true;
-  rfWorkerState.pause = true;
-  canReceiverState.pause = false;
-  
-  // create the three worker threads
-  BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &bbFifo, .state = &blackBoxWorkerState, .bb = &bb};
-  chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO + 3, canWorkerFunc, &blackBoxWorkerBundle);
-  rfTxWorkerBundle rfWorkerBundle = {.fifo = &rfFifo, .state = &rfWorkerState, .sec = &security};
-  chThdCreateStatic(waRfWorker,sizeof(waRfWorker),NORMALPRIO + 2, rfWorker, &rfWorkerBundle);
-  systemThdBundle systemThdBundle = {.canReceiverState = &canReceiverState, .blackBoxWorkerState = &blackBoxWorkerState, .rfWorkerState = &rfWorkerState, .sec = &security};
-  chThdCreateStatic(waSystemThd, sizeof(waSystemThd), NORMALPRIO + 1, systemThd, &systemThdBundle);
-  CanReceiverBundle canReceiverBundle = {.bbFifo = &bbFifo, .rfFifo = &rfFifo, .state = &canReceiverState};
-  chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO + 1, canReceiverThd, &canReceiverBundle);
-  
-}
-
 #include <Arduino.h>
 void setup() {
     // NOTE!!! Wait for >2 secs
     // if board doesn't support software reset via Serial.DTR/RTS
       // initialize serial port
     
-    Serial.begin(921600);
-    while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
-
-    // setup built in LED
-    pinMode(LED_BUILTIN,OUTPUT);
-
-    Serial.println("Initializing...");
-
-    // setup CAN bus
-    ACANSettings settings(125 * 1000);
-    if(ACAN::can0.begin(settings) != 0){Serial.println("CAN setup failed!");}
-
-    // setup radio module
-    RFinit();
-
-    bb.init();
-
-    security.encryption_key();
-
-    rfFifo.clear();
-
-    Serial.println("Starting...");
-
-    chBegin(chSetup);
+    process();
 }
 
 void loop() {
