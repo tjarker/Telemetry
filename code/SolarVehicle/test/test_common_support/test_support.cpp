@@ -19,21 +19,7 @@
 #include <ChRt.h>
 
 #include "telemetry/support-vehicle/SystemThds.h"
-class CANMessage {
-  public : uint32_t id = 0 ;  // Frame identifier
-  public : bool ext = false ; // false -> standard frame, true -> extended frame
-  public : bool rtr = false ; // false -> data frame, true -> remote frame
-  public : uint8_t idx = 0 ;  // This field is used by the driver
-  public : uint8_t len = 0 ;  // Length of data (0 ... 8)
-  public : union {
-    uint64_t data64        ; // Caution: subject to endianness
-    uint32_t data32 [2]    ; // Caution: subject to endianness
-    uint16_t data16 [4]    ; // Caution: subject to endianness
-    float    dataFloat [2] ; // Caution: subject to endianness
-    uint8_t  data   [8] = {0, 0, 0, 0, 0, 0, 0, 0} ;
-  } ;
-} ;
-CANMessage frame;
+
 CanTelemetryMsg CANmsg;
 Security security;
 ThreadState thrd;
@@ -45,13 +31,12 @@ void test_sanity(void) {
     TEST_ASSERT_EQUAL(50, 25 * 2);
     TEST_ASSERT_EQUAL(32, 96 / 3);
 }
-/*
+
 // ----------------------------- RFfunctions.h ----------------------------- //
 
 // Should test that RF is initialized
 // bool RFinit()
 void test_RFinit(void){
-    RFinit();
     TEST_ASSERT_TRUE(RFinit());
 }
 
@@ -124,41 +109,6 @@ void test_getHeader(void){
     //TEST_ASSERT_EQUAL_STRING(CANmsg.getHeader(), const String("\"time\",\"id\",\"rtr\",\"len\",\"data\""));
 }
 
-// Should set data in CAN frame
-//void toCanFrame(CANMessage *msg)
-void test_toCanFrame(void){
-    CANMessage *testmsg;
-    for (int i = 0; i < 100; i++){
-        testmsg->id = random(0, 256);
-        testmsg->rtr = rand()%2;
-        testmsg->len = 8;
-        testmsg->data64 = random(0, 0xFFFFFFFFFFFFFFFF);
-        CANmsg.toCanFrame(testmsg);
-        TEST_ASSERT_EQUAL_INT(testmsg->id, CANmsg.id);
-        TEST_ASSERT_EQUAL_INT(testmsg->rtr, CANmsg.rtr);
-        TEST_ASSERT_EQUAL_INT(testmsg->len, CANmsg.len);
-        TEST_ASSERT_EQUAL_INT(testmsg->data64, CANmsg.data64);
-    }
-}
-
-// Should update time stamp on CAN message
-// void update(CANMessage *msg)
-void test_update(void){
-    CANMessage MsgTest;
-    CANmsg.randomize();
-        /*char tmp[200]; // Debug lines
-    snprintf(tmp,200,"%d,%d,%d,%llu",test_msg.id,test_msg.rtr,test_msg.len,test_msg.data64);
-    Serial.println(tmp);
-    CANmsg.update(&MsgTest);
-    char test_str[200];
-    /*snprintf(test_str,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx16 ",%d,%d,%" PRIx64 "", 
-        day(), month(), year(), hour(), minute(), second(), test_msg.id, test_msg.rtr, test_msg.len, 
-        test_msg.data64);
-    TEST_ASSERT_EQUAL_STRING(test_str, CANMessage.toString());
-}
-
-// Should set correct time in seconds, minutes and hours
-//void stamp()
 
 // ----------------------------- ThreadState.h ----------------------------- //
 
@@ -198,7 +148,7 @@ void test_getSize(void){
 void test_clear(void){
     testFifo.clear();
     for (int i = 0; i < sizeof(testFifo); i++){
-        /*uint8_t j = testFifo;
+        uint8_t j = (uint8_t)testFifo.head();
         TEST_ASSERT_EQUAL_INT(j, 0);
         testFifo.advance(i);
     }
@@ -303,7 +253,7 @@ void test_encrypt_decrypt(void){
         TEST_ASSERT_TRUE(msg3[i] == msgcon3[i]);
     }
 }
-*/
+
 void test_fail(void) {
     TEST_ASSERT_TRUE(false);
 }

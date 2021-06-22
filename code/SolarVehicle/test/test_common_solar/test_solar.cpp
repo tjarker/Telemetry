@@ -94,7 +94,7 @@ void test_toString(void){
 //uint32_t toString(char *buf, uint32_t len)
 void test_toString2(void){
     CANmsg.randomize();
-    char *testbuf;
+    char testbuf[128];
     // Hexadecimal test
     CANmsg.toString(testbuf, CANmsg.len);
     TEST_ASSERT_EQUAL_STRING(("\"%02d-%02d-%02d\",%u,%u,%u,%llu", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
@@ -110,17 +110,17 @@ void test_getHeader(void){
 // Should set data in CAN frame
 //void toCanFrame(CANMessage *msg)
 void test_toCanFrame(void){
-    CANMessage *testmsg;
+    CANMessage testmsg;
     for (int i = 0; i < 100; i++){
-        testmsg->id = random(0, 256);
-        testmsg->rtr = rand()%2;
-        testmsg->len = 8;
-        testmsg->data64 = random(0, 0xFFFFFFFFFFFFFFFF);
-        CANmsg.toCanFrame(testmsg);
-        TEST_ASSERT_EQUAL_INT(testmsg->id, CANmsg.id);
-        TEST_ASSERT_EQUAL_INT(testmsg->rtr, CANmsg.rtr);
-        TEST_ASSERT_EQUAL_INT(testmsg->len, CANmsg.len);
-        TEST_ASSERT_EQUAL_INT(testmsg->data64, CANmsg.data64);
+        testmsg.id = random(0, 256);
+        testmsg.rtr = rand()%2;
+        testmsg.len = 8;
+        testmsg.data64 = random(0, 0xFFFFFFFFFFFFFFFFUL);
+        CANmsg.toCanFrame(&testmsg);
+        TEST_ASSERT_EQUAL_INT(testmsg.id, CANmsg.id);
+        TEST_ASSERT_EQUAL_INT(testmsg.rtr, CANmsg.rtr);
+        TEST_ASSERT_EQUAL_INT(testmsg.len, CANmsg.len);
+        TEST_ASSERT_EQUAL_INT(testmsg.data64, CANmsg.data64);
     }
 }
 
@@ -408,7 +408,8 @@ void setup() {
 
     Serial.println("Starting...");
 
-    chBegin(chSetup);
+    //chBegin(chSetup);
+    process();
 }
 
 void loop() {
