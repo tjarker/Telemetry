@@ -5,7 +5,6 @@
 #include <TelemetryMessages.h>
 #include <Encryption.h>
 #include <RFfunctions.h>
-#include <BlackBox.h>
 
 void test_sanity(void) {
     TEST_ASSERT_EQUAL(32, 25 + 7);
@@ -23,33 +22,13 @@ void test_fail(void) {
 // Should a string with CAN data in the format hour, minutes, seconds, id, rtr, len data
 // Due to lack of support, only base 16 (hexadecimal) is tested and expected to pass, other tests will fail
 //uint32_t toString(char *buf, uint32_t len, uint8_t base)
-void test_toString(void){
+void test_toJSON(void){
     CanTelemetryMsg CANmsg;
     CANmsg.randomize();
     char testbuf[128];
     char shouldBe[128];
-    // Hexadecimal test
-    snprintf(shouldBe,sizeof(shouldBe),"\"%02d-%02d-%02d\",%X,%X,%X,%llX", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64);
+    snprintf(shouldBe,sizeof(shouldBe),"{\"cmd\":%d,\"can\":{\"id\":%d,\"rtr\":%s,\"len\":%d,\"data\":%llu,\"stamp\":{\"hour\":%d,\"minute\":%d,\"second\":%d}}}\n",CANmsg.cmd,CANmsg.id,CANmsg.rtr ? "true" : "false", CANmsg.len,CANmsg.data64,CANmsg.h,CANmsg.m,CANmsg.s);
     CANmsg.toString(testbuf, sizeof(testbuf), 16);
-    TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
-    // Decimal test
-    snprintf(shouldBe,sizeof(shouldBe),"\"%02d-%02d-%02d\",%d,%d,%d,%lld", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64);
-    CANmsg.toString(testbuf, sizeof(testbuf), 10);
-    TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
-}
-
-//uint32_t toString(char *buf, uint32_t len)
-void test_toString2(void){
-    CanTelemetryMsg CANmsg;
-    CANmsg.randomize();
-    char testbuf[128];
-    // Hexadecimal test
-    CANmsg.toString(testbuf, sizeof(testbuf));
-    char shouldBe[128];
-    snprintf(shouldBe,sizeof(shouldBe),"\"%02d/%02d/%4d %02d-%02d-%02d\",%u,%u,%u,%llu", day(), month(), year(), CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64);
     TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
 }
 
@@ -157,8 +136,7 @@ void test_RFinit(void){
 void process() {
     UNITY_BEGIN();
     RUN_TEST(test_sanity);
-    RUN_TEST(test_toString);
-    RUN_TEST(test_toString2);
+    RUN_TEST(test_toJSON);
     RUN_TEST(test_encryption_key);
     RUN_TEST(test_encrypt_decrypt);
     RUN_TEST(test_RFinit);
