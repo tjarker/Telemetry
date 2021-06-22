@@ -1,3 +1,13 @@
+/****************************************************************************************************
+ * @file    test_support.cpp                                                                        *
+ * @author  Victor Alexander Hansen                                                                 *
+ * @author  Tjark Petersen                                                                          *
+ * @author  Steffan Martin Kunoy                                                                    *
+ * @brief   Test of various functions in the library depency folder "lib"                           *
+ * @note    File must be located in the folder test/test_common_support                             *
+ *                                                                                                  *
+ * To run the tests, open a new PlatformIO terminal and type "pio test"                             *
+ ****************************************************************************************************/
 
 #include <unity.h>
 #include <Arduino.h>
@@ -6,6 +16,7 @@
 #include <Encryption.h>
 #include <RFfunctions.h>
 
+// Should do a simple sanity test check
 void test_sanity(void) {
     TEST_ASSERT_EQUAL(32, 25 + 7);
     TEST_ASSERT_EQUAL(20, 23 - 3);
@@ -13,15 +24,18 @@ void test_sanity(void) {
     TEST_ASSERT_EQUAL(32, 96 / 3);
 }
 
+// Should test that a test can fail
 void test_fail(void) {
     TEST_ASSERT_TRUE(false);
 }
 
+// ------------------------------------------------------------------------- //
 // -------------------------- TelemetryMessages.h -------------------------- //
+// ------------------------------------------------------------------------- //
 
 // Should a string with CAN data in the format hour, minutes, seconds, id, rtr, len data
 // Due to lack of support, only base 16 (hexadecimal) is tested and expected to pass, other tests will fail
-//uint32_t toString(char *buf, uint32_t len, uint8_t base)
+// uint32_t toString(char *buf, uint32_t len, uint8_t base)
 void test_toJSON(void){
     CanTelemetryMsg CANmsg;
     CANmsg.randomize();
@@ -32,7 +46,9 @@ void test_toJSON(void){
     TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
 }
 
-//------------------------------ Encryption.h ----------------------------- //
+// ------------------------------------------------------------------------- //
+//------------------------------ Encryption.h ------------------------------ //
+// ------------------------------------------------------------------------- //
 
 // Should test that an encryption array from Security class is made
 // Test does not take into account that an encryption key could be all zero
@@ -53,10 +69,9 @@ void test_encryption_key(void){
     TEST_ASSERT_TRUE(cntd);
 }
 
-//TODO: fix with new encryption stuff
 // Should test that an input message is encrypted
-//void encrypt(uint16_t *message, int len)
-//void decrypt(uint16_t *message, int len)
+// void encrypt(uint16_t *message, int len)
+// void decrypt(uint16_t *message, int len)
 void test_encrypt_decrypt(void){
     Security security;
     security.encryption_key();
@@ -125,7 +140,9 @@ void test_encrypt_decrypt(void){
     }
 }
 
+// ------------------------------------------------------------------------- //
 // ----------------------------- RFfunctions.h ----------------------------- //
+// ------------------------------------------------------------------------- //
 
 // Should test that RF is initialized
 // bool RFinit()
@@ -133,6 +150,7 @@ void test_RFinit(void){
     TEST_ASSERT_TRUE(RFinit());
 }
 
+// Function that calls the tests defined above
 void process() {
     UNITY_BEGIN();
     RUN_TEST(test_sanity);

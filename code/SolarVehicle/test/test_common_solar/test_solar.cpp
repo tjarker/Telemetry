@@ -1,3 +1,13 @@
+/****************************************************************************************************
+ * @file    test_solar.cpp                                                                          *
+ * @author  Victor Alexander Hansen                                                                 *
+ * @author  Tjark Petersen                                                                          *
+ * @author  Steffan Martin Kunoy                                                                    *
+ * @brief   Test of various functions in the library depency folder "lib"                           *
+ * @note    File must be located in the folder test/test_common_solar                               *
+ *                                                                                                  *
+ * To run the tests, open a new PlatformIO terminal and type "pio test"                             *
+ ****************************************************************************************************/
 
 #include <unity.h>
 #include <ACAN.h>
@@ -13,6 +23,9 @@
 #include <RFfunctions.h>
 #include <BlackBox.h>
 
+BlackBox bb(50);
+
+// Should do a simple sanity test check
 void test_sanity(void) {
     TEST_ASSERT_EQUAL(32, 25 + 7);
     TEST_ASSERT_EQUAL(20, 23 - 3);
@@ -20,11 +33,14 @@ void test_sanity(void) {
     TEST_ASSERT_EQUAL(32, 96 / 3);
 }
 
+// Should test that a test can fail
 void test_fail(void) {
     TEST_ASSERT_TRUE(false);
 }
 
+// ------------------------------------------------------------------------- //
 // --------------------------------- setup --------------------------------- //
+// ------------------------------------------------------------------------- //
 
 // Should test that both CAN0 port and CAN1 port is active
 void test_can_x_begin(void) {
@@ -33,8 +49,11 @@ void test_can_x_begin(void) {
     TEST_ASSERT_TRUE(!ACAN::can1.begin (settings));
 }
 
+// ------------------------------------------------------------------------- //
 // -------------------------- TelemetryMessages.h -------------------------- //
+// ------------------------------------------------------------------------- //
 
+// Should test that the content of the CAN message is converted to a string
 //uint32_t toString(char *buf, uint32_t len)
 void test_toString2(void){
     CanTelemetryMsg CANmsg;
@@ -94,7 +113,9 @@ void test_update(void){
     }
 }
 
-//------------------------------ Encryption.h ----------------------------- //
+// ------------------------------------------------------------------------- //
+//------------------------------ Encryption.h ------------------------------ //
+// ------------------------------------------------------------------------- //
 
 // Should test that an encryption array from Security class is made
 // Test does not take into account that an encryption key could be all zero
@@ -115,10 +136,9 @@ void test_encryption_key(void){
     TEST_ASSERT_TRUE(cntd);
 }
 
-//TODO: fix with new encryption stuff
 // Should test that an input message is encrypted
-//void encrypt(uint16_t *message, int len)
-//void decrypt(uint16_t *message, int len)
+// void encrypt(uint16_t *message, int len)
+// void decrypt(uint16_t *message, int len)
 void test_encrypt_decrypt(void){
     Security security;
     security.encryption_key();
@@ -187,7 +207,9 @@ void test_encrypt_decrypt(void){
     }
 }
 
+// ------------------------------------------------------------------------- //
 // ----------------------------- RFfunctions.h ----------------------------- //
+// ------------------------------------------------------------------------- //
 
 // Should test that RF is initialized
 // bool RFinit()
@@ -195,15 +217,19 @@ void test_RFinit(void){
     TEST_ASSERT_TRUE(RFinit());
 }
 
+// ------------------------------------------------------------------------- //
 // ------------------------------- BlackBox.h ------------------------------ //
-BlackBox bb(50);
+// ------------------------------------------------------------------------- //
+
 // Should test that the blackbox initializes
+// bool init()
 void test_init(void){
     bool t = bb.init();
     TEST_ASSERT_TRUE(t);
 }
 
 // Should test that a new log file is started
+// void startNewLogFile()
 void test_startNewLogFile(void){
     bb.startNewLogFile();
     char fileName[64];
@@ -212,6 +238,7 @@ void test_startNewLogFile(void){
 }
 
 // Should test that the current log file is ended
+// void endLogFile()
 void test_endLogFile(void){
     bb.startNewLogFile();
     bb.endLogFile();
@@ -219,6 +246,7 @@ void test_endLogFile(void){
 }
 
 // Should test that a new line is added in .csv log
+// bool addNewLogStr(CanTelemetryMsg *log)
 void test_addNewLogStr(void){
     bb.startNewLogFile();
     CanTelemetryMsg msg;
@@ -232,6 +260,7 @@ void test_addNewLogStr(void){
     TEST_ASSERT_EQUAL_STRING(shouldBe,is);
 }
 
+// Function that calls the tests defined above
 void process() {
     UNITY_BEGIN();
     RUN_TEST(test_sanity);

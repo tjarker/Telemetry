@@ -8,7 +8,6 @@
  * https://bitbucket.org/dtucar/ecocar-solar/src/master/Telemetry/prime_tabel.png                   *
  ****************************************************************************************************/
 
-
 #ifndef __ENCRYPTION_H__
 #define __ENCRYPTION_H__
 
@@ -20,15 +19,15 @@
 class Security {
     public:
         int pub_key = 11;                                       // Public key
-        int prv_key = 17;                                      // Private key
+        int prv_key = 17;                                       // Private key
 
-        int t = (pub_key - 1)*(prv_key - 1);                   // Totient function
-        int n = pub_key * prv_key;                             // Modulus of prime numbers
+        int t = (pub_key - 1)*(prv_key - 1);                    // Totient function
+        int n = pub_key * prv_key;                              // Modulus of prime numbers
         long int i, flag;                             
         long int e[256], d[256];
         bool activate = false; 
     /**
-     * @brief Function to check for prime number
+     * @brief Function to check is passed integer is a prime number
      * @param Integer under test
     */
     private: int prime(int pr){
