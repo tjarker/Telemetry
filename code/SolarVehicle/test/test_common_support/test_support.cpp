@@ -1,12 +1,6 @@
 
 #include <unity.h>
-#include <ACAN.h>
-#include <sys/stat.h>
-#include <ctime>
-#include <fstream>
 #include <Arduino.h>
-
-#include <ACAN.h>
 
 #include <TelemetryMessages.h>
 #include <Encryption.h>
@@ -22,15 +16,6 @@ void test_sanity(void) {
 
 void test_fail(void) {
     TEST_ASSERT_TRUE(false);
-}
-
-// --------------------------------- setup --------------------------------- //
-
-// Should test that both CAN0 port and CAN1 port is active
-void test_can_x_begin(void) {
-    ACANSettings settings (125 * 1000); // Sets wished bitrate
-    TEST_ASSERT_TRUE(!ACAN::can0.begin (settings));
-    TEST_ASSERT_TRUE(!ACAN::can1.begin (settings));
 }
 
 // -------------------------- TelemetryMessages.h -------------------------- //
@@ -66,52 +51,6 @@ void test_toString2(void){
     snprintf(shouldBe,sizeof(shouldBe),"\"%02d/%02d/%4d %02d-%02d-%02d\",%u,%u,%u,%llu", day(), month(), year(), CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
         CANmsg.rtr, CANmsg.len, CANmsg.data64);
     TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
-}
-
-// Should test that a string header is returned in the format \"time\",\"id\",\"rtr\",\"len\",\"data\"
-//static const String getHeader()
-void test_getHeader(void){
-    char shouldBe[64] = "\"time\",\"id\",\"rtr\",\"len\",\"data\"", is[64];
-    CanTelemetryMsg::getHeader().toCharArray(is,sizeof(is));
-    TEST_ASSERT_EQUAL_STRING(shouldBe,is);
-}
-
-// Should set data in CAN frame
-//void toCanFrame(CANMessage *msg)
-void test_toCanFrame(void){
-    CanTelemetryMsg CANmsg;
-    CANMessage testmsg;
-    for (int i = 0; i < 100; i++){
-        CANmsg.randomize();
-        CANmsg.toCanFrame(&testmsg);
-        TEST_ASSERT_EQUAL_INT(testmsg.id, CANmsg.id);
-        TEST_ASSERT_EQUAL_INT(testmsg.rtr, CANmsg.rtr);
-        TEST_ASSERT_EQUAL_INT(testmsg.len, CANmsg.len);
-        TEST_ASSERT_EQUAL_INT(testmsg.data64, CANmsg.data64);
-    }
-}
-
-// Should update time stamp on CAN message
-// void update(CANMessage *msg)
-void test_update(void){
-    CanTelemetryMsg CANmsg;
-    CANMessage testmsg;
-    for (int i = 0; i < 100; i++){
-        testmsg.id = random(0, 2048);
-        testmsg.rtr = rand()%2;
-        testmsg.len = 8;
-        for(uint32_t i = 0; i < 8; i++) {
-            testmsg.data[i] = random(0,0x100);
-        }
-        CANmsg.update(&testmsg);
-        TEST_ASSERT_EQUAL_INT(testmsg.id, CANmsg.id);
-        TEST_ASSERT_EQUAL_INT(testmsg.rtr, CANmsg.rtr);
-        TEST_ASSERT_EQUAL_INT(testmsg.len, CANmsg.len);
-        TEST_ASSERT_EQUAL_INT(testmsg.data64, CANmsg.data64);
-        TEST_ASSERT_INT16_WITHIN(1,second(),CANmsg.s);
-        TEST_ASSERT_EQUAL(minute(),CANmsg.m);
-        TEST_ASSERT_EQUAL(hour(),CANmsg.h);
-    }
 }
 
 //------------------------------ Encryption.h ----------------------------- //
@@ -215,60 +154,14 @@ void test_RFinit(void){
     TEST_ASSERT_TRUE(RFinit());
 }
 
-// ------------------------------- BlackBox.h ------------------------------ //
-BlackBox bb(50);
-// Should test that the blackbox initializes
-void test_init(void){
-    bool t = bb.init();
-    TEST_ASSERT_TRUE(t);
-}
-
-// Should test that a new log file is started
-void test_startNewLogFile(void){
-    bb.startNewLogFile();
-    char fileName[64];
-    bb.getCurrentFileName(fileName,sizeof(fileName));
-    TEST_ASSERT_TRUE(bb.exists(fileName));
-}
-
-// Should test that the current log file is ended
-void test_endLogFile(void){
-    bb.startNewLogFile();
-    bb.endLogFile();
-    TEST_ASSERT_TRUE(bb.getBytesInBuffer() == 0);
-}
-
-// Should test that a new line is added in .csv log
-void test_addNewLogStr(void){
-    bb.startNewLogFile();
-    CanTelemetryMsg msg;
-    msg.randomize();
-    bb.addNewLogStr(&msg);
-    char shouldBe[128], is[128];
-    uint32_t pos = snprintf(shouldBe,sizeof(shouldBe),"\"time\",\"id\",\"rtr\",\"len\",\"data\"\r\n");
-    pos += msg.toString(shouldBe+pos,sizeof(shouldBe)-pos);
-    snprintf(shouldBe+pos,sizeof(shouldBe)-pos,"\r\n");
-    bb.cpyFromBuffer(is,sizeof(is));
-    TEST_ASSERT_EQUAL_STRING(shouldBe,is);
-}
-
 void process() {
     UNITY_BEGIN();
     RUN_TEST(test_sanity);
-    //RUN_TEST(test_fail);
-    RUN_TEST(test_can_x_begin);
     RUN_TEST(test_toString);
     RUN_TEST(test_toString2);
-    RUN_TEST(test_getHeader);
-    RUN_TEST(test_toCanFrame);
-    RUN_TEST(test_update);
     RUN_TEST(test_encryption_key);
     RUN_TEST(test_encrypt_decrypt);
     RUN_TEST(test_RFinit);
-    RUN_TEST(test_init);
-    RUN_TEST(test_startNewLogFile);
-    RUN_TEST(test_endLogFile);
-    RUN_TEST(test_addNewLogStr);
     UNITY_END();
 }
 

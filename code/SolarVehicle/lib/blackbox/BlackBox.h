@@ -68,7 +68,7 @@ class BlackBox: public SdFs
      * 
      * @return              accessor to the RTC time
      */
-    public: static time_t getTeensy3Time(){
+    private: static time_t getTeensy3Time(){
         return Teensy3Clock.get();
     }
 
@@ -83,6 +83,18 @@ class BlackBox: public SdFs
      */
     private: void updateFileName(){
         snprintf(fileName,64,"log__%02d_%02d_%02d__%02d_%02d_%04d.csv",hour(),minute(),second(),day(),month(),year());
+    }
+
+    public: void getCurrentFileName(char *buf, uint32_t len) {
+        memcpy(buf, fileName, len);
+    }
+
+    public: uint32_t getBytesInBuffer() {
+        return sdBuffer.bytesUsed();
+    }
+
+    public: uint32_t cpyFromBuffer(void *buf, uint32_t len) {
+        return sdBuffer.memcpyOut(buf,len);
     }
 
     /**
