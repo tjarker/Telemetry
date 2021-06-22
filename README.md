@@ -19,7 +19,7 @@ The code for the two microcontrollers can be found in the [Firmware](Firmware) f
 
 An example showing how to access the UDP stream in Matlab is shown [here](matlab/udpClient.m).
 
-The paper connected to the project can be found [here](documentation/DTU_Roadrunners_Solar_Car_Telemetry_Paper.pdf) and the project poster can be found [here](documentation/DTU_Roadrunners_Solar_Car_Telemetry_Poster.pdf).
+The paper connected to the project can be found [here](documentation/DTU_Roadrunners_Solar_Car_Telemetry_Paper.pdf) and a project poster can be found [here](documentation/DTU_Roadrunners_Solar_Car_Telemetry_Poster.pdf).
 
 # Links
 
@@ -27,7 +27,7 @@ The paper connected to the project can be found [here](documentation/DTU_Roadrun
 |<div style="width:200px">Literature & Links</div>|<div style="width:200px">Components & Software</div>|<div style="width:200px">BitBucket</div>|<div style="width:200px">EcoCar Wiki</div>|
 |:-:|:-:|:-:|:-:|
 |[<img src="https://static.thenounproject.com/png/251053-200.png" width="50">](documentation/literature.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJIyUJLYjAW1EF-5cv5lt_mT8VVFh0rgjwmA&usqp=CAU" width="50">](documentation/components.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDNgciuROD6Bc5aQ3lTapXG5fSUVKS6mcZlQ&usqp=CAU" width="50">](https://bitbucket.org/dtucar/)|[<img src="documentation/resources/wikipedia_PNG35.png" width="50">](https://dtucar.com/wiki/index.php?title=Main_Page)|
-|**Implementations**|**Specifications**|**Shopping List**|
-|[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)|[<img src="https://image.flaticon.com/icons/png/512/263/263142.png" width="50">](documentation/shoppingList.md)
+|**Implementations**|**Specifications**|**Shopping List**|**Meeting Notes**|
+|[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)|[<img src="https://image.flaticon.com/icons/png/512/263/263142.png" width="50">](documentation/shoppingList.md)|[<img src="http://simpleicon.com/wp-content/uploads/meeting.png" width="50">](documentation/meetingNotes.md)
 ---
 
