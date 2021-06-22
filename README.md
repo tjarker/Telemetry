@@ -1,5 +1,7 @@
 # Telemetry Module for DTU Roadrunners Solar Car
 
+![example workflow](https://github.com/tjarker/FagProjekt/workflows/platformioCI.yml/badge.svg)
+
 The repository of a project conducted at DTU in course 31015 by:
 - Tjark Petersen
 - Steffan Martin Kunoy
