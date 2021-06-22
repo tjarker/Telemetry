@@ -35,26 +35,6 @@ void test_can_x_begin(void) {
 
 // -------------------------- TelemetryMessages.h -------------------------- //
 
-// Should a string with CAN data in the format hour, minutes, seconds, id, rtr, len data
-// Due to lack of support, only base 16 (hexadecimal) is tested and expected to pass, other tests will fail
-//uint32_t toString(char *buf, uint32_t len, uint8_t base)
-void test_toString(void){
-    CanTelemetryMsg CANmsg;
-    CANmsg.randomize();
-    char testbuf[128];
-    char shouldBe[128];
-    // Hexadecimal test
-    snprintf(shouldBe,sizeof(shouldBe),"\"%02d-%02d-%02d\",%X,%X,%X,%llX", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64);
-    CANmsg.toString(testbuf, sizeof(testbuf), 16);
-    TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
-    // Decimal test
-    snprintf(shouldBe,sizeof(shouldBe),"\"%02d-%02d-%02d\",%d,%d,%d,%lld", CANmsg.h, CANmsg.m, CANmsg.s, CANmsg.id,
-        CANmsg.rtr, CANmsg.len, CANmsg.data64);
-    CANmsg.toString(testbuf, sizeof(testbuf), 10);
-    TEST_ASSERT_EQUAL_STRING(shouldBe, testbuf);
-}
-
 //uint32_t toString(char *buf, uint32_t len)
 void test_toString2(void){
     CanTelemetryMsg CANmsg;
@@ -257,7 +237,6 @@ void process() {
     RUN_TEST(test_sanity);
     //RUN_TEST(test_fail);
     RUN_TEST(test_can_x_begin);
-    RUN_TEST(test_toString);
     RUN_TEST(test_toString2);
     RUN_TEST(test_getHeader);
     RUN_TEST(test_toCanFrame);
@@ -279,7 +258,7 @@ void setup() {
     Serial.begin(921600);
     while(!Serial){}
 
-    Serial.println("Hello world!!!!!!!!");
+    Serial.println("Executing tests...");
 
     process();
 }

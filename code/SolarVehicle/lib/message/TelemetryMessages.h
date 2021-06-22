@@ -165,24 +165,6 @@ class CanTelemetryMsg
   }
 
   /**
-   * @brief   Function used to represent CanTelemetryMsg as formatted string. ?
-   * @param   buf ?
-   * @param   len ?
-   * @param   base ?
-   * @return  CanTelemetryMsg formatted string. ?
-  */ 
-  public: uint32_t toString(char *buf, uint32_t len, uint8_t base)
-  {
-    uint32_t strLength;
-    if(base == 16){
-      strLength = snprintf(buf,len,"\"%02d-%02d-%02d\",%X,%X,%X,%llX",h,m,s,id,rtr,this->len,data64);
-    } else {
-      strLength = snprintf(buf,len,"\"%02d-%02d-%02d\",%d,%d,%d,%lld",h,m,s,id,rtr,this->len,data64);
-    }
-     return strLength;
-  }
-
-  /**
    * @return  CanTelemetryMsg header string.  
   */ 
   static const String getHeader()

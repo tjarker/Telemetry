@@ -150,7 +150,7 @@ void setup() {
     Serial.begin(921600);
     while(!Serial){}
 
-    Serial.println("Hello world!!!!!!!!");
+    Serial.println("Executing tests...");
 
     process();
 }
