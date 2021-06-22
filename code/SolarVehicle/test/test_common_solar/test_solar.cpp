@@ -200,7 +200,7 @@ void test_encrypt_decrypt(void){
     memset(msgcon2,0,sizeof(msgcon2));
     security.encrypt(msg2, array2, 16);
     for (int i = 0; i < 16; i++){
-        if (msg[i] != msgcon[i]){
+        if (msg2[i] != msgcon2[i]){
             cnten++;
         }
     }
@@ -209,7 +209,7 @@ void test_encrypt_decrypt(void){
     TEST_ASSERT_TRUE(cnten > 13);
     security.decrypt(array, msg, 16);
     for(int i = 0; i < 16; i++){
-        TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
+        TEST_ASSERT_TRUE(msg2[i] == msgcon2[i]);
     }
 
     uint8_t msg3[16];
@@ -219,7 +219,7 @@ void test_encrypt_decrypt(void){
     memset(msgcon3,255,sizeof(msgcon3));
     security.encrypt(msg3, array3, 16);
     for (int i = 0; i < 16; i++){
-        if (msg[i] != msgcon[i]){
+        if (msg3[i] != msgcon3[i]){
             cnten++;
         }
     }
@@ -228,7 +228,7 @@ void test_encrypt_decrypt(void){
     TEST_ASSERT_TRUE(cnten > 13);
     security.decrypt(array3, msg3, 16);
     for(int i = 0; i < 16; i++){
-        TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
+        TEST_ASSERT_TRUE(msg3[i] == msgcon3[i]);
     }
 }
 
@@ -358,26 +358,6 @@ void process() {
 }
 
 #ifdef ARDUINO
-
-void chSetup(){
-
-  chSysInit();
-
-  blackBoxWorkerState.pause = true;
-  rfWorkerState.pause = true;
-  canReceiverState.pause = false;
-  
-  // create the three worker threads
-  BlackboxWorkerBundle blackBoxWorkerBundle = {.fifo = &bbFifo, .state = &blackBoxWorkerState, .bb = &bb};
-  chThdCreateStatic(blackBoxWorker, sizeof(blackBoxWorker), NORMALPRIO + 3, canWorkerFunc, &blackBoxWorkerBundle);
-  rfTxWorkerBundle rfWorkerBundle = {.fifo = &rfFifo, .state = &rfWorkerState, .sec = &security};
-  chThdCreateStatic(waRfWorker,sizeof(waRfWorker),NORMALPRIO + 2, rfWorker, &rfWorkerBundle);
-  systemThdBundle systemThdBundle = {.canReceiverState = &canReceiverState, .blackBoxWorkerState = &blackBoxWorkerState, .rfWorkerState = &rfWorkerState, .sec = &security};
-  chThdCreateStatic(waSystemThd, sizeof(waSystemThd), NORMALPRIO + 1, systemThd, &systemThdBundle);
-  CanReceiverBundle canReceiverBundle = {.bbFifo = &bbFifo, .rfFifo = &rfFifo, .state = &canReceiverState};
-  chThdCreateStatic(waCanReceiver, sizeof(waCanReceiver), NORMALPRIO + 1, canReceiverThd, &canReceiverBundle);
-  
-}
 
 #include <Arduino.h>
 void setup() {
