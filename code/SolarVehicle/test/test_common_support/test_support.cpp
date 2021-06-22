@@ -257,7 +257,7 @@ void test_encrypt_decrypt(void){
     uint8_t msgcon2[16] = {[0 ... 15] = 0};
     security.encrypt(msg2, array2, 16);
     for (int i = 0; i < 16; i++){
-        if (msg[i] != msgcon[i]){
+        if (msg2[i] != msgcon2[i]){
             cnten++;
         }
     }
@@ -266,7 +266,7 @@ void test_encrypt_decrypt(void){
     TEST_ASSERT_TRUE(cnten > 13);
     security.decrypt(array, msg, 16);
     for(int i = 0; i < 16; i++){
-        TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
+        TEST_ASSERT_TRUE(msg2[i] == msgcon2[i]);
     }
 
     uint8_t msg3[16] = {[0 ... 15] = 255};
@@ -274,7 +274,7 @@ void test_encrypt_decrypt(void){
     uint8_t msgcon3[16] = {[0 ... 15] = 255};
     security.encrypt(msg3, array3, 16);
     for (int i = 0; i < 16; i++){
-        if (msg[i] != msgcon[i]){
+        if (msg3[i] != msgcon3[i]){
             cnten++;
         }
     }
@@ -283,7 +283,7 @@ void test_encrypt_decrypt(void){
     TEST_ASSERT_TRUE(cnten > 13);
     security.decrypt(array3, msg3, 16);
     for(int i = 0; i < 16; i++){
-        TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
+        TEST_ASSERT_TRUE(msg3[i] == msgcon3[i]);
     }
 }
 
