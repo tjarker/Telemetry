@@ -174,7 +174,14 @@ class CanTelemetryMsg {
     }
 
     #else
-
+    public: void update(CANMessage *msg){
+      chSysLock();
+      this->id = msg->id;
+      this->rtr = msg->rtr;
+      this->len = msg->len;
+      this->data64 = msg->data64;
+      chSysUnlock();
+    }
     public: uint32_t toString(char *buf, uint32_t len){
         return snprintf(buf,len,"\"%02d-%02d-%02d\",%u,%u,%u,%llu",h,m,s,id,rtr,this->len,data64);
     }

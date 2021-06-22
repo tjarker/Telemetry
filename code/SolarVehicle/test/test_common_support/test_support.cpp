@@ -19,7 +19,20 @@
 #include <ChRt.h>
 
 #include "telemetry/support-vehicle/SystemThds.h"
-
+class CANMessage {
+  public : uint32_t id = 0 ;  // Frame identifier
+  public : bool ext = false ; // false -> standard frame, true -> extended frame
+  public : bool rtr = false ; // false -> data frame, true -> remote frame
+  public : uint8_t idx = 0 ;  // This field is used by the driver
+  public : uint8_t len = 0 ;  // Length of data (0 ... 8)
+  public : union {
+    uint64_t data64        ; // Caution: subject to endianness
+    uint32_t data32 [2]    ; // Caution: subject to endianness
+    uint16_t data16 [4]    ; // Caution: subject to endianness
+    float    dataFloat [2] ; // Caution: subject to endianness
+    uint8_t  data   [8] = {0, 0, 0, 0, 0, 0, 0, 0} ;
+  } ;
+} ;
 CANMessage frame;
 CanTelemetryMsg CANmsg;
 Security security;
@@ -32,7 +45,7 @@ void test_sanity(void) {
     TEST_ASSERT_EQUAL(50, 25 * 2);
     TEST_ASSERT_EQUAL(32, 96 / 3);
 }
-
+/*
 // ----------------------------- RFfunctions.h ----------------------------- //
 
 // Should test that RF is initialized
@@ -135,13 +148,13 @@ void test_update(void){
     CANmsg.randomize();
         /*char tmp[200]; // Debug lines
     snprintf(tmp,200,"%d,%d,%d,%llu",test_msg.id,test_msg.rtr,test_msg.len,test_msg.data64);
-    Serial.println(tmp);*/
+    Serial.println(tmp);
     CANmsg.update(&MsgTest);
     char test_str[200];
     /*snprintf(test_str,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx16 ",%d,%d,%" PRIx64 "", 
         day(), month(), year(), hour(), minute(), second(), test_msg.id, test_msg.rtr, test_msg.len, 
         test_msg.data64);
-    TEST_ASSERT_EQUAL_STRING(test_str, CANMessage.toString());*/
+    TEST_ASSERT_EQUAL_STRING(test_str, CANMessage.toString());
 }
 
 // Should set correct time in seconds, minutes and hours
@@ -187,7 +200,7 @@ void test_clear(void){
     for (int i = 0; i < sizeof(testFifo); i++){
         /*uint8_t j = testFifo;
         TEST_ASSERT_EQUAL_INT(j, 0);
-        testFifo.advance(i);*/
+        testFifo.advance(i);
     }
 }
 
@@ -252,9 +265,11 @@ void test_encrypt_decrypt(void){
         }
     }
     // Edge case test
-    uint8_t msg2[16] = {[0 ... 15] = 0};
+    uint8_t msg2[16]; 
     uint16_t array2[16];
-    uint8_t msgcon2[16] = {[0 ... 15] = 0};
+    uint8_t msgcon2[16];
+    memset(msg2, 0, sizeof(msg2)); 
+    memset(msgcon2, 0, sizeof(msgcon2)); 
     security.encrypt(msg2, array2, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){
@@ -269,9 +284,11 @@ void test_encrypt_decrypt(void){
         TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
     }
 
-    uint8_t msg3[16] = {[0 ... 15] = 255};
+    uint8_t msg3[16];
     uint16_t array3[16];
-    uint8_t msgcon3[16] = {[0 ... 15] = 255};
+    uint8_t msgcon3[16]; 
+    memset(msg3, 255, sizeof(msg3)); 
+    memset(msgcon3, 255, sizeof(msgcon3)); 
     security.encrypt(msg3, array3, 16);
     for (int i = 0; i < 16; i++){
         if (msg[i] != msgcon[i]){
@@ -286,7 +303,7 @@ void test_encrypt_decrypt(void){
         TEST_ASSERT_TRUE(msg[i] == msgcon[i]);
     }
 }
-
+*/
 void test_fail(void) {
     TEST_ASSERT_TRUE(false);
 }
@@ -294,11 +311,11 @@ void test_fail(void) {
 void process() {
     UNITY_BEGIN();
     RUN_TEST(test_sanity);
-    RUN_TEST(test_RFinit);
+    /*RUN_TEST(test_RFinit);
     RUN_TEST(test_RFtransmit);
     RUN_TEST(test_RFreceive);
     RUN_TEST(test_encryption_key);
-    RUN_TEST(test_encrypt_decrypt);
+    RUN_TEST(test_encrypt_decrypt);*/
     RUN_TEST(test_fail);
     UNITY_END();
 }
