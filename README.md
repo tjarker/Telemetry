@@ -1,6 +1,6 @@
 # Telemetry Module for DTU Roadrunners Solar Car
 
-A project conducted by:
+The repository of a project conducted at DTU in course 31015 by:
 - Tjark Petersen
 - Steffan Martin Kunoy
 - Victor Alexander Hansen
@@ -9,11 +9,15 @@ This project presents a telemetry system for the DTU Roadrunners solar car. The 
 
 A provisional hardware setup of the solar car and support vehicle modules was implemented using two Teensy microcontrollers on perfboards. A range test of the two modules had a successful and reliable transmission distance of up to around 160 m. While this does not satisfy the original goal of 400 m - 1000 m, the final solution is concluded to have a good communication chain design between the solar car and support vehicle modules, and can be readily improved upon to support a longer transmission distance. 
 
+---
+
 ![](documentation/images/SystemSchematic.png)
 
 ---
 
 The code for the two microcontrollers can be found in the [Firmware](Firmware) folder. The code for the user interface is located in the [TelemetryUI](TelemetryUI) folder.
+
+An example showing how to access the UDP stream in Matlab is shown [here](matlab/udpClient.m).
 
 The paper connected to the project can be found [here](documentation/DTU_Roadrunners_Solar_Car_Telemetry_Paper.pdf) and the project poster can be found [here](documentation/DTU_Roadrunners_Solar_Car_Telemetry_Poster.pdf).
 
@@ -23,17 +27,7 @@ The paper connected to the project can be found [here](documentation/DTU_Roadrun
 |<div style="width:200px">Literature & Links</div>|<div style="width:200px">Components & Software</div>|<div style="width:200px">BitBucket</div>|<div style="width:200px">EcoCar Wiki</div>|
 |:-:|:-:|:-:|:-:|
 |[<img src="https://static.thenounproject.com/png/251053-200.png" width="50">](documentation/literature.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJIyUJLYjAW1EF-5cv5lt_mT8VVFh0rgjwmA&usqp=CAU" width="50">](documentation/components.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDNgciuROD6Bc5aQ3lTapXG5fSUVKS6mcZlQ&usqp=CAU" width="50">](https://bitbucket.org/dtucar/)|[<img src="documentation/resources/wikipedia_PNG35.png" width="50">](https://dtucar.com/wiki/index.php?title=Main_Page)|
-|**Implementations**|**Specifications**|**Code**|**Shopping List**|
-|[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)|[<img src="https://cdn2.iconfinder.com/data/icons/font-awesome/1792/code-512.png" width="50">](code)|[<img src="https://image.flaticon.com/icons/png/512/263/263142.png" width="50">](documentation/shoppingList.md)
+|**Implementations**|**Specifications**|**Shopping List**|
+|[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)|[<img src="https://image.flaticon.com/icons/png/512/263/263142.png" width="50">](documentation/shoppingList.md)
 ---
-
-
-
-# Documentation
-
-- [Solar Car Unit](documentation/SolarCarUnit.md)
-- [Support Vehicle Unit](documentation/supportVehicleUnit.md)
-- [Message Protocols](documentation/messageProtocol.md)
-- [SCU Commands](documentation/scuCommands.md)
-- [Throughput analysis](documentation/throughputAnalysis.md)
 
