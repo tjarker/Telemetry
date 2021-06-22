@@ -1,14 +1,33 @@
-# 31015 Fagprojekt - ROAST Telemetry
+# Telemetry Module for DTU Roadrunners Solar Car
 
+A project conducted by:
+- Tjark Petersen
+- Steffan Martin Kunoy
+- Victor Alexander Hansen
 
-|<div style="width:200px">Overleaf</div>|<div style="width:200px">Trello</div>|<div style="width:200px">BitBucket</div>|<div style="width:200px">Jira</div>|
-|:-:|:-:|:-:|:-:|
-|[<img src="https://cdn.overleaf.com/img/ol-brand/overleaf_og_logo.png" width="50">](https://www.overleaf.com/project/602635b948e4260c4d50d582)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJHNFZpUwJriI-BJL8yI4ND9OfW6uAEWvz0A&usqp=CAU" width="50">](https://trello.com/31015fagprojektelektroteknologigroup7/home)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDNgciuROD6Bc5aQ3lTapXG5fSUVKS6mcZlQ&usqp=CAU" width="50">](https://bitbucket.org/dtucar/)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzVSXn5Ra-QlTUKpbRqWyiRDBx1aJV0lKfwg&usqp=CAU" width="50">](https://jira.dtucar.com/secure/Dashboard.jspa)|
-|**Literature & Links**|**Components & Software**|**EcoCar Wiki**|**Shopping List**|
-|[<img src="https://static.thenounproject.com/png/251053-200.png" width="50">](documentation/literature.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJIyUJLYjAW1EF-5cv5lt_mT8VVFh0rgjwmA&usqp=CAU" width="50">](documentation/components.md)|[<img src="documentation/resources/wikipedia_PNG35.png" width="50">](https://dtucar.com/wiki/index.php?title=Main_Page)|[<img src="https://image.flaticon.com/icons/png/512/263/263142.png" width="50">](documentation/shoppingList.md)
-|**Implementations**|**Specifications**|**Code**||
-|[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)|[<img src="https://cdn2.iconfinder.com/data/icons/font-awesome/1792/code-512.png" width="50">](code)
+This project presents a telemetry system for the DTU Roadrunners solar car. The software and hardware developed for the telemetry system provides a two-way communication between the solar car and a support vehicle. The solar car module can read data from the CAN bus, store it locally in a black box and stream it to the support vehicle. In return the support vehicle can send commands to the solar car. All messages are secured with an RSA encryption. A graphical user interface enables the user to stream the CAN data and send commands. In addition, support for a simple UDP network stream was also implemented which can for instance be accessed in Matlab.
+
+A provisional hardware setup of the solar car and support vehicle modules was implemented using two Teensy microcontrollers on perfboards. A range test of the two modules had a successful and reliable transmission distance of up to around 160 m. While this does not satisfy the original goal of 400 m - 1000 m, the final solution is concluded to have a good communication chain design between the solar car and support vehicle modules, and can be readily improved upon to support a longer transmission distance. 
+
+![](documentation/images/SystemSchematic.png)
+
 ---
+
+The code for the two microcontrollers can be found in the [Firmware](Firmware) folder. The code for the user interface is located in the [TelemetryUI](TelemetryUI) folder.
+
+The paper connected to the project can be found [here](documentation/DTU_Roadrunners_Solar_Car_Telemetry_Paper.pdf) and the project poster can be found [here](documentation/DTU_Roadrunners_Solar_Car_Telemetry_Poster.pdf).
+
+# Links
+
+
+|<div style="width:200px">Literature & Links</div>|<div style="width:200px">Components & Software</div>|<div style="width:200px">BitBucket</div>|<div style="width:200px">EcoCar Wiki</div>|
+|:-:|:-:|:-:|:-:|
+|[<img src="https://static.thenounproject.com/png/251053-200.png" width="50">](documentation/literature.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJIyUJLYjAW1EF-5cv5lt_mT8VVFh0rgjwmA&usqp=CAU" width="50">](documentation/components.md)|[<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDNgciuROD6Bc5aQ3lTapXG5fSUVKS6mcZlQ&usqp=CAU" width="50">](https://bitbucket.org/dtucar/)|[<img src="documentation/resources/wikipedia_PNG35.png" width="50">](https://dtucar.com/wiki/index.php?title=Main_Page)|
+|**Implementations**|**Specifications**|**Code**|**Shopping List**|
+|[<img src="https://static.thenounproject.com/png/712681-200.png" width="50">](documentation/implementations.md)|[<img src="https://image.flaticon.com/icons/png/512/1541/1541514.png" width="50">](documentation/specification.md)|[<img src="https://cdn2.iconfinder.com/data/icons/font-awesome/1792/code-512.png" width="50">](code)|[<img src="https://image.flaticon.com/icons/png/512/263/263142.png" width="50">](documentation/shoppingList.md)
+---
+
+
 
 # Documentation
 
@@ -18,96 +37,3 @@
 - [SCU Commands](documentation/scuCommands.md)
 - [Throughput analysis](documentation/throughputAnalysis.md)
 
-
-# TODO
-
-## Implementation and Test
-- [x] TelemetryUI: implement command buttons (e.g. start/stop logging)
-- [x] fix uno CAN generator
-- [x] solder on perfboard
-- [x] Test RF modules over long distance >100 m (basic range test)
-- [x] implement log file switching (open a new log file, when another is filled (?)) in SCU (4GiB-1 is theoretical limit)
-- [x] command system
-- [x] MultiReaderFifo needs to push reader when overtaken by writer
-- [x] add state to remember config before sleep
-- [x] Improve thread stability
--  http://www.java2s.com/Tutorial/Java/0260__Swing-Event/CreatingaCustomEvent.htm
--  https://docs.oracle.com/javase/tutorial/uiswing/concurrency/interim.html
--  [x] Measure energy consumption -> draws 77mA at 12V
-
-## Organization
-- [x] ask other groups about their CAN bus usage (how many messages per sec?) -> right now very limited. Speeder sends updates in fixed intervals 
-- [ ] put code into bitbucket and merge with code from other groups in one pio project
-- [x] write out to other groups for a big test setup in the end
-- [ ] Define big test date
-
-## Documentation
-- [x] revisit problem description (include sending data to matlab?)
-- [x] stitch some holes in the meeting notes
-- [ ] throughput analysis
-- [x] message protocol
-
-## Hand-ins
-- [ ] Final paper, due 21/06/21
-- [ ] Poster, due 23/06/21
-- [ ] Process description (Individual), due 21/06/21
-- [ ] wiki ? -> upload paper
-
-
-
-
-# Meeting Notes
-
-<table>
-<tr><th style='text-align:center'>
-February 
-</th><th style='text-align:center'> 
-March
-</th><th style='text-align:center'>
-April
-</th><th style='text-align:center'>
-May
-</th><th style='text-align:center'>
-June
-</th></tr style='text-align:center'>
-<tr><td>
-
-- [Meeting 12.02.](documentation/meetingnotes/meeting12_02.md)
-
-- [Meeting 15.02.](documentation/meetingnotes/meeting15_02.md)
-
-- [Meeting 19.02.](documentation/meetingnotes/meeting19_02.md)
-
-- [Meeting 22.02.](documentation/meetingnotes/meeting22_02.md)
-
-- [Meeting 26.02. Group](documentation/meetingnotes/meeting26_02group.md)
-
-- [Meeting 26.02. ROAST](documentation/meetingnotes/meeting26_02roast.md)
-
-- [Meeting 26.02. Martin](documentation/meetingnotes/meeting26_02martin.md)
-
-</td><td>
-  
-- [Meeting 05.03. ROAST](documentation/meetingnotes/meeting05_03roast.md)
-
-- [Meeting 05.03. Martin](documentation/meetingnotes/meeting05_03martin.md)
-
-- [Meeting 12.03. ROAST](documentation/meetingnotes/meeting12_03roast.md)
-
-- [Meeting 19.03. ROAST](documentation/meetingnotes/meeting19_03roast.md)
-
-- [Meeting 19.03. Martin](documentation/meetingnotes/meeting19_03martin.md)
-
-- [Meeting 26.03. ROAST](documentation/meetingnotes/meeting26_03roast.md)
-
-</td><td>
- 
-- [Meeting 09.04. ROAST](documentation/meetingnotes/meeting09_04roast.md)
-
-- [Meeting 09.04. Martin](documentation/meetingnotes/meeting09_04martin.md)
-
-</td><td>
-
-</td><td>
-
-</td></tr> </table>

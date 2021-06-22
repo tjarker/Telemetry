@@ -1,4 +1,4 @@
-[back to README](../../README.md)
+[back to overview](../meetingNotes.md)
 # Meeting Friday 09.04.2021 ROAST
 
 ## Where: Online

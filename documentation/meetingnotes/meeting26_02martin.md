@@ -1,4 +1,4 @@
-[back to README](../../README.md)
+[back to overview](../meetingNotes.md)
 # Meeting Friday 26.02.2021 with Martin
 
 ## Where: Online
