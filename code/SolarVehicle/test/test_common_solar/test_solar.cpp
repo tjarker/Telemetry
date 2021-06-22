@@ -365,6 +365,7 @@ void setup() {
     // if board doesn't support software reset via Serial.DTR/RTS
       // initialize serial port
     
+    #ifndef UNIT_TEST
     Serial.begin(921600);
     while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
 
@@ -390,6 +391,7 @@ void setup() {
 
     //chBegin(chSetup);
     process();
+    #endif
 }
 
 void loop() {
