@@ -1,4 +1,4 @@
-[back to README](../../README.md)
+[back to overview](../meetingNotes.md)
 # Meeting Friday 12.02.2020
 
 ## Sted: Online

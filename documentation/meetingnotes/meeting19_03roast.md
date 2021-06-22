@@ -1,4 +1,4 @@
-[back to README](../../README.md)
+[back to overview](../meetingNotes.md)
 # Meeting 19.03.2021
 
 ## Place: Online

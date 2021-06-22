@@ -1,4 +1,4 @@
-[back to README](../../README.md)
+[back to overview](../meetingNotes.md)
 # Meeting 22.02.2021
 
 ## Dagsorden:
