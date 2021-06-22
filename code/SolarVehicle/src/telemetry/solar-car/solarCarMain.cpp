@@ -32,7 +32,7 @@
 #define CH_CFG_TIME_QUANTUM 0
 #endif
 
-Fifo<CanTelemetryMsg> bbFifo(16), rfFifo(64);
+Fifo<CanTelemetryMsg> bbFifo(64), rfFifo(1024);
 BlackBox bb(500);
 ThreadState blackBoxWorkerState;
 ThreadState canReceiverState;

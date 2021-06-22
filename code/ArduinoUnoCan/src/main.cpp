@@ -26,10 +26,11 @@ THD_FUNCTION(canSenderThd, arg){
 
         if(sending){
             canMsg.can_id  = random(0,0x800);
-            canMsg.can_dlc = random(1,9);
-            for(int i = 0; i < canMsg.can_dlc; i++){
+            canMsg.can_dlc = 8;//random(1,9)
+            /*for(int i = 0; i < canMsg.can_dlc; i++){
                 canMsg.data[i] = random(0,0x100);
-            }
+            }*/
+            *((uint64_t*)canMsg.data) = msgCount;
             
             chMtxLock(&mcpMutex);
             mcp2515.sendMessage(&canMsg);
@@ -58,7 +59,7 @@ THD_FUNCTION(canSenderThd, arg){
             }
         }
         
-        chThdSleepMilliseconds(random(500,1000));
+        chThdSleepMicroseconds(random(4000,50000));
     }
 
 }

@@ -73,7 +73,7 @@ THD_FUNCTION(rfWorker, arg){
             Serial.println("RfTxThd:\tMessage sent successfully");
           } else {
             Serial.println("RfTxThd:\tMessage not send or incorrect ACK");
-            chThdSleepMilliseconds(500);
+            chThdSleepMicroseconds(500);
           }
         }
       } while(!success);

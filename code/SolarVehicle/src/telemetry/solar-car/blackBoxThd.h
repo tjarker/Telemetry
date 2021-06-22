@@ -39,6 +39,8 @@ THD_FUNCTION(canWorkerFunc, arg){
   BlackBox *bb = bundle->bb;
   CanTelemetryMsg *msg;
 
+  uint32_t lastNum = 0;
+
   WITH_MTX(serialMtx){Serial.println("BBThd:\t\tStarting");}
 
   while(!state->terminate){
@@ -55,6 +57,11 @@ THD_FUNCTION(canWorkerFunc, arg){
     MEASURE("BBThd:\t\t"){
 
       msg = fifo->head();
+
+      if(msg->data64 != (lastNum+1)){
+        Serial.println("BBThd:\t\tBlack box missed messages!");
+      }
+      lastNum = (uint32_t)msg->data64;
 
 
       if(Serial){
