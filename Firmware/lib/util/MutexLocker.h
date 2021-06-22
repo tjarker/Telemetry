@@ -10,9 +10,7 @@
 #include <ChRt.h>
 
 /**
- * @brief   ? 
- * @param   mtx   
- * @return  0 
+ * @brief   helper function to allow the mutex locker enviroment to use a for loop
 */
 uint32_t mtxLockerPrologue(ch_mutex *mtx){
     chMtxLock(mtx);

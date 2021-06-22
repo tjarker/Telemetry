@@ -11,10 +11,7 @@
 #include <ChRt.h>
 
 /**
- * @brief   
- * @param   name ?
- * @param   t0 ?
- * @return  void
+ * @brief   helper function to allow the measure environment to use a for loop
 */ 
 void measureEpilogue(const char *name, uint32_t t0){
     char str[64];

@@ -119,9 +119,9 @@ class CanTelemetryMsg
 
   /**
    * @brief   Overloaded CanTelemetryMsg constructor function.  
-   * @param   id ?
-   * @param   len ?
-   * @param   data ?
+   * @param   id the CAN id
+   * @param   len the length of the CAN frame
+   * @param   data the data payload
   */
   public: CanTelemetryMsg(uint16_t id, uint8_t len, uint64_t data)
   {
@@ -226,10 +226,10 @@ class CanTelemetryMsg
   }
 
   /**
-   * @brief   ?
-   * @param   buf ?
-   * @param   len ?
-   * @return  ? 
+   * @brief   toString method with day-month-year tag
+   * @param   buf the target buffer
+   * @param   len the target buffer length
+   * @return  the number of bytes written to the buffer
   */ 
   public: uint32_t toString(char *buf, uint32_t len)
   {
@@ -238,10 +238,10 @@ class CanTelemetryMsg
   #else
   
   /**
-   * @brief   ? 
-   * @param   buf ?
-   * @param   len ?
-   * @return  ? 
+   * @brief   toString method
+   * @param   buf the target buffer
+   * @param   len the target buffer length
+   * @return  the number of bytes written to the buffer
   */  
   public: uint32_t toString(char *buf, uint32_t len)
   {

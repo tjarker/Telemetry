@@ -44,7 +44,7 @@ void setup(){
   
   // initialize serial port
   Serial.begin(921600);
-  while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
+  while(!Serial){} //needs to be removed when SCU not connected via serial
 
   // setup built in LED
   pinMode(LED_BUILTIN,OUTPUT);

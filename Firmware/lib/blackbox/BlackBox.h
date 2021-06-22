@@ -28,7 +28,8 @@ class BlackBox: public SdFs
     /* Setup functions */
     
     /**
-     * @brief   For now the constructor does nothing
+     * @brief   The blackbox constructor
+     * @param switchTrigger The amount of log points written to a file before a new one is opened
      */
     public: BlackBox(uint32_t switchTrigger){
         this->switchTrigger = switchTrigger;
@@ -85,14 +86,31 @@ class BlackBox: public SdFs
         snprintf(fileName,64,"log__%02d_%02d_%02d__%02d_%02d_%04d.csv",hour(),minute(),second(),day(),month(),year());
     }
 
+    /**
+     * @brief puts the current file name into the passed buffer
+     * 
+     * @param buf pointer to the buffer
+     * @param len the buffer size
+     */
     public: void getCurrentFileName(char *buf, uint32_t len) {
         memcpy(buf, fileName, len);
     }
 
+    /**
+     * @brief returns the number of bytes in the buffer
+     */
     public: uint32_t getBytesInBuffer() {
         return sdBuffer.bytesUsed();
     }
 
+    /**
+     * @brief Allows copying from the SD card buffer
+     * 
+     * @param buf pointer to the target buffer
+     * @param len size of the target buffer
+     * 
+     * @return the number of bytes read into the target buffer
+     */
     public: uint32_t cpyFromBuffer(void *buf, uint32_t len) {
         return sdBuffer.memcpyOut(buf,len);
     }
@@ -131,6 +149,13 @@ class BlackBox: public SdFs
         file.close();
     }
 
+    /**
+     * @brief take a CAN frame and add it as a log point to the currently open file
+     * 
+     * @param log pointer to the CAN fram
+     * 
+     * @return whether the log file was switched
+     */
     public: bool addNewLogStr(CanTelemetryMsg *log){
         log->toString(str,sizeof(str));
         sdBuffer.println(str);
