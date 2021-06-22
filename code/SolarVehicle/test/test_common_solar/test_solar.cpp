@@ -15,27 +15,19 @@
 #include <sys/stat.h>
 #include <ctime>
 #include <fstream>
-#include <ChRt.h>
 
 #include "BlackBox.h"
 #include "TelemetryMessages.h"
 #include "Encryption.h"
 #include "RFfunctions.h"
-#include "MultiReaderFifo.h"
+#include "Fifo.h"
 #include "ThreadState.h"
-#include "telemetry/solar-car/blackBoxThd.h"
-#include "telemetry/solar-car/CanReceiverThd.h"
 #include "telemetry/solar-car/Mutexes.h"
-#include "telemetry/solar-car/RfTxThd.h"
-#include "telemetry/solar-car/SystemThd.h"
 
 CANMessage frame;
 CanTelemetryMsg CANmsg;
 Fifo<CanTelemetryMsg> bbFifo(16), rfFifo(64);
 BlackBox bb(500);
-ThreadState blackBoxWorkerState;
-ThreadState canReceiverState;
-ThreadState rfWorkerState;
 Security security;
 ThreadState thrd;
 // void setUp(void) {
@@ -52,7 +44,7 @@ void test_sanity(void) {
     TEST_ASSERT_EQUAL(50, 25 * 2);
     TEST_ASSERT_EQUAL(32, 96 / 3);
 }
-
+/*
 // --------------------------------- setup --------------------------------- //
 
 // Should test that both CAN0 port and CAN1 port is active
@@ -130,15 +122,15 @@ void test_toCanFrame(void){
 void test_update(void){
     CANMessage MsgTest;
     CANmsg.randomize();
-        /*char tmp[200]; // Debug lines
+    char tmp[200]; // Debug lines
     snprintf(tmp,200,"%d,%d,%d,%llu",test_msg.id,test_msg.rtr,test_msg.len,test_msg.data64);
-    Serial.println(tmp);*/
+    Serial.println(tmp);
     CANmsg.update(&MsgTest);
     char test_str[200];
-    /*snprintf(test_str,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx16 ",%d,%d,%" PRIx64 "", 
+    snprintf(test_str,200,"\"%02d/%02d/%04d %02d-%02d-%02d\",%" PRIx16 ",%d,%d,%" PRIx64 "", 
         day(), month(), year(), hour(), minute(), second(), test_msg.id, test_msg.rtr, test_msg.len, 
         test_msg.data64);
-    TEST_ASSERT_EQUAL_STRING(test_str, CANMessage.toString());*/
+    TEST_ASSERT_EQUAL_STRING(test_str, CANMessage.toString());
 }
 
 // Should set correct time in seconds, minutes and hours
@@ -314,7 +306,7 @@ void test_endLogFile(void){
 
 // Should test that a new line is added in .csv log
 void test_addNewLogStr(void){
-    /*int i = 0;
+    int i = 0;
     fstream file;
     file.open(("log__%02d_%02d_%02d__%02d_%02d_%04d.csv", hour(), minute(), second(),
     day(), month(), year()), ios::in);
@@ -331,9 +323,9 @@ void test_addNewLogStr(void){
             i++;
         }
         // Hvordan kan jeg sikre mig at det er en ny linje, og at den ikke overskriver den eksisterende linje?
-    }*/
+    }
 }
-
+*/
 // ------------------------------- Fail test ------------------------------- //
 
 // Should test that a test can fail
@@ -344,7 +336,7 @@ void test_fail(void) {
 void process() {
     UNITY_BEGIN();
     RUN_TEST(test_sanity);
-    RUN_TEST(test_can_x_begin);
+    /*RUN_TEST(test_can_x_begin);
     RUN_TEST(test_toString);
     RUN_TEST(test_toString2);
     RUN_TEST(test_init);
@@ -353,7 +345,8 @@ void process() {
     RUN_TEST(test_encrypt_decrypt);
     RUN_TEST(test_getTeensy3Time);
     RUN_TEST(test_startNewLogFile);
-    RUN_TEST(test_endLogFile);
+    RUN_TEST(test_endLogFile);*/
+    RUN_TEST(test_fail);
     UNITY_END();
 }
 
@@ -364,6 +357,7 @@ void setup() {
     // NOTE!!! Wait for >2 secs
     // if board doesn't support software reset via Serial.DTR/RTS
       // initialize serial port
+    delay(2000);
     
     Serial.begin(921600);
     while(!Serial){} //needs to be removed when headless!!!!!!!!!!!!!!!!!!!!
@@ -372,7 +366,7 @@ void setup() {
     pinMode(LED_BUILTIN,OUTPUT);
 
     Serial.println("Initializing...");
-
+/*
     // setup CAN bus
     ACANSettings settings(125 * 1000);
     if(ACAN::can0.begin(settings) != 0){Serial.println("CAN setup failed!");}
@@ -387,8 +381,7 @@ void setup() {
     rfFifo.clear();
 
     Serial.println("Starting...");
-
-    //chBegin(chSetup);
+*/
     process();
 }
 
