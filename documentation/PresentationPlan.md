@@ -22,11 +22,13 @@
 - a RTOS allows multiple threads to run concurrently on a processor by giving them execution slots
 - This is taken care of by a small kernel running in the background which delegates time slots based on priorities associated with each thread
 - The real time kernel also handles timing, such as putting a thread to sleep for a defined amount of time, or inter-thread communication
-- In the SCU we use 4 threads to implement the systems functionality and in the SVU 2. The execution flow of each thread can be seen here in Fig. 4
+- In the SCU we use 4 threads to separate the systems functionality and in the SVU 2. The execution flow of each thread can be seen here in Fig. 4
+- We implemented a prototype graphical user interface in the scala language
+- Through the interface, commands can be sent over to the SCU, such as putting the SCU to sleep or enabling encryption
 
 ---
 
-- As Victor said, our peak throughput capabilities fall short of the theoretical input stream of peak 2659 messages per second
+- As Victor said, our peak throughput capability is around 500 messages per second which fall short of the theoretical peak input stream of 2659 messages per second
 - This peak throughput is only achieved if messages with no data payload are send which is quiet an urealistic premise
 - The throughput could be improved by optimizing our software and the internal communication
 - for instance many of the libraries we use hide away interrupts related to the library functionality and only give access to new data through polling
