@@ -33,3 +33,8 @@
 - The throughput could be improved by optimizing our software and the internal communication
 - for instance many of the libraries we use hide away interrupts related to the library functionality and only give access to new data through polling
 - Implementing a more interrupt based architecture would allow for finer grained management of the execution flow from our side
+
+## Steffan
+- "Our system is outlined by this schematic (points to system schematic)." 
+- "The solar car unit interacts with the on-board CAN bus and streams it wirelessly to the support vehicle unit via an RF connection."
+- "The RF transceivers provide two-way serial communication between the units over the 2.4 GHz ISM band."
