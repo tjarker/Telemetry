@@ -38,3 +38,13 @@
 - "Our system is outlined by this schematic (points to system schematic)." 
 - "The solar car unit interacts with the on-board CAN bus and streams it wirelessly to the support vehicle unit via an RF connection."
 - "The RF transceivers provide two-way serial communication between the units over the 2.4 GHz ISM band."
+- "Messages sent between the nodes are structures as Enhanced Shockburst packets complete with an address, control and flexible data payload fields."
+- "RF messages can optionally be encrypted using an RSA algorithm."
+- "From the support vehicle unit, the streamed CAN data is transmitted serially to a laptop in the support vehicle. A TelemetryUI window allows the user to view the incoming data and respond with commands or a CAN message."
+- "In addition, the laptop hosts a UDP stream on the local network that can be accessed for instance in Matlab."
+
+---
+
+- "The maximum achieved transmission range fell way short of the 400-1000 m set as a goal for the system. This may be caused by a variety of factors influenced both by hardware and software." 
+- "For instance, the RF module requires a very stable 3.3V supply which we were unfortinately unable to integrate on the perfboard."
+- "On the software side, time constraints meant that we were not able to test all of the configurations of our RF module to ensure optimal long-range performance."
